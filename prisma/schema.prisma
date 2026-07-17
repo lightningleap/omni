@@ -133,6 +133,9 @@ model Product {
   collection      Collection?   @relation(fields: [collectionId], references: [id])
   orderItems      OrderItem[]
   status          ProductStatus @default(DRAFT)
+  // Where the product came from: "SYNCED" (pulled from a Printify store) or
+  // "STUDIO" (designed in-house via the Design Studio).
+  source          String        @default("SYNCED")
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 }

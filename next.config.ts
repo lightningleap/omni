@@ -20,6 +20,20 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
       {
+        // Printify catalog / blueprint images (Design Studio picker + product mockups)
+        protocol: 'https',
+        hostname: 'images.printify.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        // Printify S3 mockup buckets (synced store product images)
+        protocol: 'https',
+        hostname: '**.amazonaws.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
         // 2. ADDED PLACEHOLDER ACCESS FOR GATEKEEPER
         protocol: 'https',
         hostname: 'via.placeholder.com',
@@ -90,6 +104,10 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     // optimizePackageImports: ['framer-motion', 'lucide-react'],
+    // Design Studio sends flattened PNG designs (base64) to the server action.
+    serverActions: {
+      bodySizeLimit: "12mb",
+    },
   },
 };
 

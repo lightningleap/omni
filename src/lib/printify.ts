@@ -12,36 +12,58 @@ export interface PrintifyProduct {
 }
 
 /**
- * Fetches all products from the Printify shop and maps them for local synchronization.
+ * Returns the list of Printify shop ids to sync from. Supports multiple stores
+ * via PRINTIFY_SHOP_IDS (comma-separated); falls back to the single PRINTIFY_SHOP_ID.
  */
-export async function fetchPrintifyProducts(page = 1): Promise<PrintifyProduct[] | null> {
-  const shopId = process.env.PRINTIFY_SHOP_ID;
-  const token = process.env.PRINTIFY_API_TOKEN || process.env.PRINTIFY_TOKEN;
+export function getPrintifyShopIds(): string[] {
+  const multi = process.env.PRINTIFY_SHOP_IDS;
+  if (multi && multi.trim()) return multi.split(",").map((s) => s.trim()).filter(Boolean);
+  const single = process.env.PRINTIFY_SHOP_ID;
+  return single ? [single] : [];
+}
 
-  if (!shopId || !token) return null;
+/**
+ * Fetches ALL products across every configured shop, paginating through each.
+ * Maps them for local synchronization.
+ */
+export async function fetchPrintifyProducts(): Promise<PrintifyProduct[] | null> {
+  const token = process.env.PRINTIFY_API_TOKEN || process.env.PRINTIFY_TOKEN;
+  const shopIds = getPrintifyShopIds();
+  if (!token || shopIds.length === 0) return null;
+
+  const headers = { "Authorization": `Bearer ${token}`, "User-Agent": "Unrwly/1.0" };
+  const all: PrintifyProduct[] = [];
 
   try {
-    const res = await fetch(`https://api.printify.com/v1/shops/${shopId}/products.json`, {
-      headers: { "Authorization": `Bearer ${token}` }
-    });
-
-    if (!res.ok) return null;
-
-    const data = await res.json();
-    
-    // Map Printify API structure to the internal sync format
-    return data.data.map((p: any) => ({
-      _id: p.id,
-      name: p.title,
-      description: p.description,
-      descriptionHtml: p.description, // Printify description is usually HTML-ready
-      image: p.images?.[0]?.src || "",
-      rawPrice: (p.variants?.[0]?.price || 0) / 100, // Printify prices are in cents
-      slug: p.id, // Use ID as slug for consistency with dynamic routes
-    }));
+    for (const shopId of shopIds) {
+      let page = 1;
+      let lastPage = 1;
+      do {
+        const res = await fetch(
+          `https://api.printify.com/v1/shops/${shopId}/products.json?page=${page}`,
+          { headers }
+        );
+        if (!res.ok) break;
+        const data = await res.json();
+        lastPage = data.last_page || 1;
+        for (const p of data.data || []) {
+          all.push({
+            _id: p.id,
+            name: p.title,
+            description: p.description,
+            descriptionHtml: p.description,
+            image: p.images?.[0]?.src || "",
+            rawPrice: (p.variants?.[0]?.price || 0) / 100,
+            slug: p.id,
+          });
+        }
+        page++;
+      } while (page <= lastPage && page <= 20); // safety cap: 20 pages/shop
+    }
+    return all;
   } catch (err) {
     console.error("fetchPrintifyProducts Error:", err);
-    return null;
+    return all.length ? all : null;
   }
 }
 
@@ -67,6 +89,35 @@ export async function fetchPrintifyProductById(productId: string) {
     console.error("fetchPrintifyProductById Error:", err);
     return null;
   }
+}
+
+/**
+ * Fetches an existing product's mockups — one per colour — for the admin editor.
+ * Returns [{ src, color }] using the front-facing camera for each colour.
+ */
+export async function fetchPrintifyMockups(printifyId: string): Promise<{ src: string; color: string }[]> {
+  const product = await fetchPrintifyProductById(printifyId);
+  if (!product) return [];
+
+  const variants: any[] = product.variants || [];
+  const colorOf = new Map<number, string>();
+  for (const v of variants) {
+    const color = (v.title || "").split("/")[0].trim() || "Default";
+    colorOf.set(v.id, color);
+  }
+
+  const images: any[] = product.images || [];
+  const seen = new Set<string>();
+  const out: { src: string; color: string }[] = [];
+  for (const img of images) {
+    if (!(img.is_default || /front/i.test(img.position || ""))) continue;
+    const color = colorOf.get(img.variant_ids?.[0]) || img.position || "Default";
+    if (seen.has(color)) continue;
+    seen.add(color);
+    if (img.src) out.push({ src: img.src, color });
+    if (out.length >= 16) break;
+  }
+  return out;
 }
 
 /**
@@ -238,7 +289,13 @@ export async function registerPrintifyWebhook(targetUrl: string) {
       const webhooks = await existingRes.json();
       const duplicate = webhooks.find((w: any) => w.url === targetUrl);
       if (duplicate) {
-        return { success: true, message: "WEBHOOK_ALREADY_REGISTERED", id: duplicate.id };
+        return {
+          success: true,
+          message: "WEBHOOK_ALREADY_REGISTERED",
+          id: duplicate.id,
+          // Needed for PRINTIFY_WEBHOOK_SECRET (signature verification)
+          secret: duplicate.secret as string | undefined,
+        };
       }
     }
 
@@ -268,7 +325,13 @@ export async function registerPrintifyWebhook(targetUrl: string) {
         body: JSON.stringify({ topic: "order:shipment:delivered", url: targetUrl })
       });
 
-      return { success: true, id: data.id };
+      // Printify returns the signing secret on creation — it's needed for
+      // PRINTIFY_WEBHOOK_SECRET so incoming events can be verified.
+      if (data.secret) {
+        console.log("[PRINTIFY] Webhook secret (set as PRINTIFY_WEBHOOK_SECRET):", data.secret);
+      }
+
+      return { success: true, id: data.id, secret: data.secret as string | undefined };
     } else {
       const error = await res.text();
       return { success: false, error };
@@ -279,13 +342,259 @@ export async function registerPrintifyWebhook(targetUrl: string) {
   }
 }
 
+// =====================================================================
+//  DESIGN STUDIO — Programmatic product creation (Printify Catalog API)
+//  Lets Unrwly create designed products in-house, without opening Printify.
+// =====================================================================
+
+const PRINTIFY_BASE = "https://api.printify.com/v1";
+
+function printifyAuth() {
+  const shopId = process.env.PRINTIFY_SHOP_ID;
+  const token = process.env.PRINTIFY_API_TOKEN || process.env.PRINTIFY_TOKEN;
+  if (!shopId || !token) return null;
+  return { shopId, token, headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" } };
+}
+
+export interface BlueprintSummary {
+  id: number;
+  title: string;
+  brand: string;
+  image: string;
+}
+
+/**
+ * Lists product "blueprints" (T-shirts, hoodies, mugs, etc.) available on Printify.
+ * Filtered to popular, easy-to-design categories to keep the picker clean.
+ */
+export async function getPrintifyBlueprints(): Promise<BlueprintSummary[] | null> {
+  const auth = printifyAuth();
+  if (!auth) return null;
+
+  try {
+    const res = await fetch(`${PRINTIFY_BASE}/catalog/blueprints.json`, { headers: auth.headers });
+    if (!res.ok) return null;
+    const data: any[] = await res.json();
+
+    const POPULAR = /(t-?shirt|hoodie|sweatshirt|tank|mug|tote|poster|canvas|sticker|phone case|hat|cap|beanie|pillow|towel|blanket|bag)/i;
+    return data
+      .filter((b) => POPULAR.test(b.title))
+      .map((b) => ({
+        id: b.id,
+        title: b.title,
+        brand: b.brand || "",
+        image: b.images?.[0] || "",
+      }));
+  } catch (err) {
+    console.error("getPrintifyBlueprints Error:", err);
+    return null;
+  }
+}
+
+/**
+ * Resolves the default print provider + variants + print position for a blueprint.
+ * Picks the first available provider (keeps the studio a one-click flow).
+ */
+export async function getBlueprintSetup(blueprintId: number) {
+  const auth = printifyAuth();
+  if (!auth) return null;
+
+  try {
+    const provRes = await fetch(
+      `${PRINTIFY_BASE}/catalog/blueprints/${blueprintId}/print_providers.json`,
+      { headers: auth.headers }
+    );
+    if (!provRes.ok) return null;
+    const providers: any[] = await provRes.json();
+    const provider = providers[0];
+    if (!provider) return null;
+
+    const varRes = await fetch(
+      `${PRINTIFY_BASE}/catalog/blueprints/${blueprintId}/print_providers/${provider.id}/variants.json`,
+      { headers: auth.headers }
+    );
+    if (!varRes.ok) return null;
+    const varData = await varRes.json();
+    const variants: any[] = varData.variants || [];
+
+    const rawPlaceholders = variants[0]?.placeholders || [];
+    const frontPlaceholder =
+      rawPlaceholders.find((p: any) => /front/i.test(p.position)) || rawPlaceholders[0];
+    const frontPosition = frontPlaceholder?.position || "front";
+
+    // All available print positions (front, back, sleeves, neck label...)
+    const placeholders = rawPlaceholders.map((p: any) => ({
+      position: p.position,
+      width: p.width || 1000,
+      height: p.height || 1000,
+    }));
+
+    // Variant details (color/size) for the picker
+    const variantDetails = variants.map((v) => ({
+      id: v.id as number,
+      color: (v.options?.color as string) || "",
+      size: (v.options?.size as string) || "",
+    }));
+
+    return {
+      providerId: provider.id,
+      providerTitle: provider.title,
+      variantIds: variants.map((v) => v.id),
+      variantDetails,
+      variantCount: variants.length,
+      frontPosition,
+      placeholders,
+      printArea: {
+        width: frontPlaceholder?.width || 1000,
+        height: frontPlaceholder?.height || 1000,
+      },
+    };
+  } catch (err) {
+    console.error("getBlueprintSetup Error:", err);
+    return null;
+  }
+}
+
+/**
+ * Uploads an artwork image to Printify — either by public URL or by raw base64
+ * `contents` (no external storage needed). Returns Printify's image id.
+ */
+export async function uploadArtworkToPrintify(
+  image: { url?: string; contents?: string },
+  fileName = "unrwly-design.png"
+) {
+  const auth = printifyAuth();
+  if (!auth) return null;
+
+  const body = image.url
+    ? { file_name: fileName, url: image.url }
+    : { file_name: fileName, contents: image.contents };
+
+  try {
+    const res = await fetch(`${PRINTIFY_BASE}/uploads/images.json`, {
+      method: "POST",
+      headers: auth.headers,
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      console.error("uploadArtworkToPrintify failed:", await res.text());
+      return null;
+    }
+    return await res.json(); // { id, file_name, width, height, preview_url }
+  } catch (err) {
+    console.error("uploadArtworkToPrintify Error:", err);
+    return null;
+  }
+}
+
+export interface DesignPlacement {
+  x: number;     // 0..1 horizontal center
+  y: number;     // 0..1 vertical center
+  scale: number; // relative size
+  angle: number; // degrees
+}
+
+/** One designed side: an already-uploaded Printify image id + its position. */
+export interface DesignSide {
+  position: string;
+  imageId: string;
+  placement?: DesignPlacement;
+}
+
+/**
+ * Creates a designed product on Printify: places uploaded artwork onto one or
+ * more print positions (front, back, sleeves...). Printify auto-generates mockups.
+ */
+export async function createDesignedPrintifyProduct(params: {
+  blueprintId: number;
+  providerId: number;
+  variantIds: number[];
+  sides: DesignSide[];
+  title: string;
+  description: string;
+  priceCents: number;
+}) {
+  const auth = printifyAuth();
+  if (!auth) return { success: false as const, error: "CREDENTIALS_MISSING" };
+
+  try {
+    const payload = {
+      title: params.title,
+      description: params.description,
+      blueprint_id: params.blueprintId,
+      print_provider_id: params.providerId,
+      variants: params.variantIds.map((id) => ({
+        id,
+        price: params.priceCents,
+        is_enabled: true,
+      })),
+      print_areas: [
+        {
+          variant_ids: params.variantIds,
+          placeholders: params.sides.map((s) => ({
+            position: s.position,
+            images: [
+              {
+                id: s.imageId,
+                x: s.placement?.x ?? 0.5,
+                y: s.placement?.y ?? 0.5,
+                scale: s.placement?.scale ?? 1,
+                angle: s.placement?.angle ?? 0,
+              },
+            ],
+          })),
+        },
+      ],
+    };
+
+    const res = await fetch(`${PRINTIFY_BASE}/shops/${auth.shopId}/products.json`, {
+      method: "POST",
+      headers: auth.headers,
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      return { success: false as const, error: await res.text() };
+    }
+
+    const product = await res.json();
+    const images: any[] = product.images || [];
+    const mockup = images.find((i) => i.is_default) || images[0];
+
+    // Collect a gallery of distinct mockup angles (one per camera position)
+    const seen = new Set<string>();
+    const mockups: string[] = [];
+    for (const img of images) {
+      const key = img.position || img.src;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      if (img.src) mockups.push(img.src);
+      if (mockups.length >= 8) break;
+    }
+
+    const baseCost = product.variants?.[0]?.cost ? product.variants[0].cost / 100 : 0;
+
+    return {
+      success: true as const,
+      product,
+      printifyId: product.id as string,
+      mockupUrl: (mockup?.src as string) || "",
+      mockups,
+      baseCost,
+    };
+  } catch (err) {
+    console.error("createDesignedPrintifyProduct Error:", err);
+    return { success: false as const, error: "NETWORK_FAILURE" };
+  }
+}
+
 /**
  * One Source of Truth: Synchronizes the local database with the Printify shop.
  * Handles fetching, model mapping, meta-description generation, and persistence.
  */
 export async function syncStorefrontWithPrintify() {
   try {
-    const liveProducts = await fetchPrintifyProducts(0);
+    const liveProducts = await fetchPrintifyProducts();
     
     if (liveProducts === null) {
       return { success: false, error: "PRINTIFY_AUTH_FAILED" };
