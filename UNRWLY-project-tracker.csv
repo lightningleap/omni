@@ -1,0 +1,169 @@
+﻿unrwly - Project Changes
+
+GitHub:,https://github.com/lightningleap/omni
+Last Updated:,2026-07-17
+Tech Stack:,"Next.js 16, React 19, Prisma + Supabase, Stripe, Printify API, Konva, Tailwind"
+
+Recent Activity (Oldest → Newest)
+Sr.No,Date,Activity,Author
+1,2026-05-03,"Remove email verification, auto-login on sign-up",sukumarlightningleap
+2,2026-05-03,Auto-create Prisma user on first account visit after Supabase sign-up,sukumarlightningleap
+3,2026-05-03,"Admin dashboard visual overhaul (background, overlap, and alignment)",sukumarlightningleap
+4,2026-05-04,"Integrate GA4 ecommerce tracking funnel (view_item, add_to_cart, view_cart, begin_checkout)",sukumarlightningleap
+5,2026-05-04,Complete GA4 360 tracking (Browser + Server-Side Measurement Protocol),sukumarlightningleap
+6,2026-05-04,Implement server-side measurement protocol with session stitching and LTV properties (analytics),sukumarlightningleap
+7,2026-07-17,Design Studio: in-app product designer (659 Printify product types),taniya
+8,2026-07-17,"Design Studio: canvas editor - upload, text, shapes, layers, drag/resize/rotate",taniya
+9,2026-07-17,Design Studio: multi-side design (Front/Back/Sleeve/Neck),taniya
+10,2026-07-17,Design Studio: free AI image generation (text prompt to artwork),taniya
+11,2026-07-17,Design Studio: colour & size (variant) selection,taniya
+12,2026-07-17,Design Studio: garment templates on canvas (t-shirt/tank/hoodie),taniya
+13,2026-07-17,Design Studio: create product on Printify + show real per-colour mockups,taniya
+14,2026-07-17,"Product page: colour mockup gallery, pick main storefront image",taniya
+15,2026-07-17,Connected live Printify account (UNRWLY Adult + Kids stores),taniya
+16,2026-07-17,"Multi-store product sync (~239 products, all pages)",taniya
+17,2026-07-17,Separate Studio-designed vs Synced products (filter tabs + badges),taniya
+18,2026-07-17,Fix: database connection pooling (timeouts),taniya
+19,2026-07-17,Fix: Printify image hosts whitelisted,taniya
+20,2026-07-17,Fix: Safari image upload (load-order bug),taniya
+21,2026-07-17,Fix: send designs to Printify as base64 (removed Vercel Blob dependency),taniya
+22,2026-07-17,"Docs: project scope, launch plan and checklist",taniya
+
+
+All Changes (Oldest → Newest)
+Sr.No,Version,Change Description,Date
+1,v0.1.0,Initial lightweight production engine,2026-03-31
+2,v0.1.0,Prisma 7 datasource compatibility,2026-03-31
+3,v0.1.0,Prisma deployment shield v6.0,2026-03-31
+4,v0.1.0,Add missing pg dependencies and types for deployment,2026-03-31
+5,v0.1.0,Add explicit pg module declaration for production build,2026-03-31
+6,v0.1.0,Final @ts-ignore bypass for pg module build blocker,2026-03-31
+7,v0.2.0,Align Printify env vars and add sync UI feedback,2026-04-01
+8,v0.2.0,Add db:admin script for easy account promotion,2026-04-01
+9,v0.3.0,"Resolve Printify sync issues, order submission bugs, and webhook validation",2026-04-04
+10,v0.3.0,Restore prisma database urls for Vercel Prisma 6 compatibility,2026-04-04
+11,v0.3.0,Resolve typescript type error in prisma.config.ts,2026-04-04
+12,v0.3.0,Resolve typescript null-safety errors for Printify products,2026-04-04
+13,v0.3.0,Remove redundant prisma.config.ts causing build errors,2026-04-04
+14,v0.3.0,Allow non-JSON bodies in Printify webhook for validation pings,2026-04-04
+15,v0.3.0,Add deep logging to printify webhook handler,2026-04-04
+16,v0.3.0,Add HEAD handler for Printify webhook validation,2026-04-04
+17,v0.3.0,Improve webhook registration error reporting and simplify validation handler,2026-04-04
+18,v0.3.0,Remove debug logs from Printify webhook handler,2026-04-04
+19,v0.3.0,Fetch full product details in webhook handler to avoid partial data,2026-04-04
+20,v0.3.0,Add automatic background refresh to admin products list,2026-04-04
+21,v0.4.0,Complete storefront overhaul with 4-tier discovery engine and luxe product cards,2026-04-06
+22,v0.4.0,Added missing database url to prisma schema for vercel deployment,2026-04-06
+23,v0.4.0,Resolved prisma config type error and removed deprecated preview feature,2026-04-06
+24,v0.4.0,Removed redundant and problematic prisma.config.ts,2026-04-06
+25,v0.4.0,Resolved Admin Finance UnitData type mismatch and missing status field,2026-04-06
+26,v0.4.0,Implement Discovery Engine with local media upload and UX refinements,2026-04-06
+27,v0.4.0,Restore DATABASE_URL and DIRECT_URL in prisma datasource,2026-04-06
+28,v0.4.0,Remove prisma.config.ts and rely on schema.prisma,2026-04-06
+29,v0.4.0,"Modernize dashboard UI, implement direct lookbook uploads, and fix type errors (admin)",2026-04-06
+30,v0.4.0,Transition to Vercel Blob to fix ENOENT on Vercel (upload),2026-04-06
+31,v0.4.0,Implement client-side uploads to bypass 4.5MB serverless limit (upload),2026-04-06
+32,v0.4.0,Add image link fallback and improve upload logging (admin),2026-04-06
+33,v0.4.0,Resolve google drive link breakage and add verbose upload diagnostics (admin),2026-04-06
+34,v0.4.0,Whitelist image domains and improve google drive link support (admin),2026-04-06
+35,v0.5.0,Authorize wallpaperaccess.com domain (images),2026-04-07
+36,v0.5.0,Expand whitelist to include major global CDNs and bibico.co.uk (images),2026-04-07
+37,v0.5.0,"Remove manual image links, enforce device uploads only (admin)",2026-04-07
+38,v0.5.0,Add 'remove image' cross icon and support null overrides in Discovery (admin),2026-04-07
+39,v0.5.0,Enable addRandomSuffix globally to prevent blob collisions (upload),2026-04-07
+40,v0.5.0,Rebrand from Omnidrop to Unrwly,2026-04-07
+41,v0.5.0,Global brand pivot to Unrwly and Myntra-style PLP redesign,2026-04-07
+42,v0.5.0,Simplify collection and product UI to high-impact minimalist gallery,2026-04-07
+43,v0.5.0,Final UI simplification and ProductCard refinement,2026-04-07
+44,v0.5.0,"Final simplification of product page (remove ratings, pincode, and reviews)",2026-04-07
+45,v0.5.0,Implement dynamic description parsing for features and care instructions,2026-04-07
+46,v0.5.0,Refine product cards and fix checkout ID mapping,2026-04-07
+47,v0.5.0,Resolve product IDs in checkout API to prevent foreign key errors,2026-04-07
+48,v0.5.0,Implement custom multi-step checkout with address/payment flow,2026-04-07
+49,v0.5.0,Resolve wishlist type error and finalize custom checkout,2026-04-07
+50,v0.5.0,Complete end-to-end fulfillment automation sync with industrial tech admin dashboard,2026-04-07
+51,v0.5.0,Restore missing Printify exports to fix build,2026-04-07
+52,v0.5.0,Explicit types for Printify products to resolve build-breaking any errors,2026-04-07
+53,v0.5.0,Module 1 - Shopify Polaris UX Reconstruction for Order Management,2026-04-07
+54,v0.5.0,Module 2 - CRM Module Polaris Refactor & OrderItem Schema Hardening,2026-04-07
+55,v0.5.0,Module 3 - Finance & Analytics Polaris Overhaul with Recharts,2026-04-07
+56,v0.5.0,Implement Database Immortality Protocol & Webhook Sanitization,2026-04-07
+57,v0.6.0,Implement Real-Time Webhook Synchronization & UI Reactivity,2026-04-08
+58,v0.6.0,Direct Inline Editing & Visibility Controls,2026-04-08
+59,v0.6.0,Storefront UX Refinements & Cart Deduplication Logic,2026-04-08
+60,v0.6.0,"Production Critical Stabilization (Auth, Checkout, Account)",2026-04-08
+61,v0.6.0,"Production Environment Synchronization (ENV, Redirects, Auth)",2026-04-08
+62,v0.6.0,Checkout Success Hub Implementation,2026-04-08
+63,v0.6.0,UNRWLY Login Portal Overhaul,2026-04-08
+64,v0.6.0,Master Admin Claim & Guest Gatekeeper Implementation,2026-04-08
+65,v0.6.0,Account Dashboard Overhaul & Secure Admin Routing,2026-04-08
+66,v0.6.0,Security: Harden Admin Role with MASTER_ADMIN_EMAIL check,2026-04-08
+67,v0.6.0,Stripe & Printify Order Flow Optimization,2026-04-08
+68,v0.6.0,Streamlined Checkout with Order Review & Stripe Identity,2026-04-08
+69,v0.6.0,Finalized Zero-Friction Order Review & API Sanitization,2026-04-08
+70,v0.6.0,"Implemented autonomous logistics engine with programmatic printify webhook registration, hardened shipment ingestion, and real-time tracking dashboard",2026-04-08
+71,v0.6.0,Architectural Audit & Clean Sweep Protocol Execution,2026-04-08
+72,v0.6.0,"Final UI refinements, policy population, and directory pruning",2026-04-08
+73,v0.6.0,Clean Sweep: Removed VTO and Legacy Hero components // COMPONENTS: PRUNED // ARCHITECTURE: TIGHT // BRAND: PURE.,2026-04-08
+74,v0.6.0,UI: ALIGNED // DARK: ELIMINATED // BRAND: COHESIVE. Re-skinned Contact and FAQ to Polaris Light.,2026-04-08
+75,v0.6.0,TONALITY: WARM // ACCENTS: TERRACOTTA // THEME: PEACH POLARIS. Applied Peach & Indigo overhaul.,2026-04-08
+76,v0.6.0,Fix: Guarded ProductClient images and finalized typography transition.,2026-04-08
+77,v0.6.0,Fix: Hardened product image resolution in ProductClient and accurately mapped Printify images in ProductPage.,2026-04-08
+78,v0.6.0,Security: Enforced Gatekeeper protocol for product status.,2026-04-08
+79,v0.7.0,Feature: Implemented Hero Video Sequencer with 4-track cinematic cycling.,2026-04-09
+80,v0.7.0,Refactor: Hierarchical Hero Assets & Admin Dashboard Pruning.,2026-04-09
+81,v0.7.0,Refactor: Motion-Fluid Slides & Spatial Hierarchy.,2026-04-09
+82,v0.7.0,Refactor: Elevated 110vh Cinematic Hero & Mobile Responsiveness.,2026-04-09
+83,v0.7.0,Refactor: Smart Hide Navbar with Scroll Detection & Glassmorphism.,2026-04-09
+84,v0.7.0,Refactor: Locked Solid Navbar Background & Refined Vertical Motion.,2026-04-09
+85,v0.7.0,Admin: Refined Marketing Dashboard with Polaris Light Aesthetic.,2026-04-09
+86,v0.7.0,Marketing: Integrated Dynamic Welcome Protocol & Admin Controls.,2026-04-09
+87,v0.7.0,Marketing: Redesigned Flash Sale Sticker & Creative Admin UI.,2026-04-09
+88,v0.7.0,Marketing: Refactored Flash Sale to Floating Ticket style.,2026-04-09
+89,v0.7.0,Marketing: Reverted Flash Sale to Peach Wall-Sticker style.,2026-04-09
+90,v0.7.0,"Harden admin ui, implement csv exports, and overhaul sidebar to polaris light aesthetic",2026-04-09
+91,v0.7.0,Implement bulk product deletion and floating action bar,2026-04-09
+92,v0.7.0,Align sidebar typography and prune customer registry,2026-04-09
+93,v0.7.0,Remove export button from customer registry,2026-04-09
+94,v0.7.0,Implement real-time orders sync with background polling,2026-04-09
+95,v0.7.0,Mobile-first responsive refinements and luxury navigation overhaul,2026-04-09
+96,v0.8.0,Fix metadata and force-dynamic for Vercel,2026-05-02
+97,v0.8.0,Refactor metadata and add database resilience,2026-05-02
+98,v0.8.0,Upgrade to Prisma 7 and implement connection safety,2026-05-02
+99,v0.8.0,Final Build Fix: Resolved Prisma 7 type conflicts and optimized build,2026-05-02
+100,v0.8.0,Implement Auto-Promote Master Admin system,2026-05-02
+101,v0.8.0,Implement auto-promote master admin system,2026-05-02
+102,v0.8.0,Final: Migration to Supabase SSR with Master Admin email gate,2026-05-02
+103,v0.8.0,Fix: All Admin actions migrated to Supabase Master Admin Gate,2026-05-02
+104,v0.8.0,Fix: Migrated Merch actions to Supabase Auth Gate,2026-05-02
+105,v0.8.0,Matched action name and refreshed client,2026-05-02
+106,v0.8.0,Refactored account client to remove next-auth dependencies,2026-05-02
+107,v0.8.0,Resolve stripeSessionId type error,2026-05-02
+108,v0.8.0,Final removal of all legacy auth imports across crm and upload,2026-05-02
+109,v0.8.0,Correctly map isAssigned property to resolve FinanceClient type error,2026-05-02
+110,v0.8.0,Finalized supabase ssr migration and verified production build,2026-05-02
+111,v0.8.0,"Move auth-actions, optimize pool, and fix redirect logic",2026-05-02
+112,v0.8.0,Update auth-actions imports and remove invalid directUrl from prisma config,2026-05-02
+113,v0.8.0,"Replace broken loading state with useFormStatus, fix DATABASE_URL tenant identifier",2026-05-02
+114,v0.9.0,"Remove email verification, auto-login on sign-up",2026-05-03
+115,v0.9.0,Auto-create Prisma user on first account visit after Supabase sign-up,2026-05-03
+116,v0.9.0,"Admin dashboard visual overhaul (background, overlap, and alignment)",2026-05-03
+117,v0.10.0,"Integrate GA4 ecommerce tracking funnel (view_item, add_to_cart, view_cart, begin_checkout)",2026-05-04
+118,v0.10.0,Complete GA4 360 tracking (Browser + Server-Side Measurement Protocol),2026-05-04
+119,v0.10.0,Implement server-side measurement protocol with session stitching and LTV properties (analytics),2026-05-04
+120,v1.0.0,Design Studio: in-app product designer (659 Printify product types),2026-07-17
+121,v1.0.0,"Design Studio: canvas editor - upload, text, shapes, layers, drag/resize/rotate",2026-07-17
+122,v1.0.0,Design Studio: multi-side design (Front/Back/Sleeve/Neck),2026-07-17
+123,v1.0.0,Design Studio: free AI image generation (text prompt to artwork),2026-07-17
+124,v1.0.0,Design Studio: colour & size (variant) selection,2026-07-17
+125,v1.0.0,Design Studio: garment templates on canvas (t-shirt/tank/hoodie),2026-07-17
+126,v1.0.0,Design Studio: create product on Printify + show real per-colour mockups,2026-07-17
+127,v1.0.0,"Product page: colour mockup gallery, pick main storefront image",2026-07-17
+128,v1.0.0,Connected live Printify account (UNRWLY Adult + Kids stores),2026-07-17
+129,v1.0.0,"Multi-store product sync (~239 products, all pages)",2026-07-17
+130,v1.0.0,Separate Studio-designed vs Synced products (filter tabs + badges),2026-07-17
+131,v1.0.0,Fix: database connection pooling (timeouts),2026-07-17
+132,v1.0.0,Fix: Printify image hosts whitelisted,2026-07-17
+133,v1.0.0,Fix: Safari image upload (load-order bug),2026-07-17
+134,v1.0.0,Fix: send designs to Printify as base64 (removed Vercel Blob dependency),2026-07-17
+135,v1.0.0,"Docs: project scope, launch plan and checklist",2026-07-17

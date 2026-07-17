@@ -1,0 +1,981 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Unrwly — Project Document</title>
+<style>
+  @page { margin: 18mm 16mm; }
+  body {
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: #1f2230; line-height: 1.62; font-size: 11pt;
+    max-width: 880px; margin: 0 auto; padding: 44px 34px 80px; background: #ffffff;
+  }
+  h1 {
+    font-size: 27pt; font-weight: 800; letter-spacing: -.02em; line-height: 1.1;
+    margin: 0 0 10px; color: #12141d; border-bottom: 3px solid #4f46e5; padding-bottom: 14px;
+  }
+  h1 + p { font-size: 12.5pt; color: #4a4e60; }
+  h2 {
+    font-size: 17pt; font-weight: 750; letter-spacing: -.01em; color: #12141d;
+    margin: 38px 0 12px; padding-bottom: 7px; border-bottom: 2px solid #e6e8f0;
+    page-break-after: avoid;
+  }
+  h3 {
+    font-size: 12.5pt; font-weight: 700; color: #4f46e5; margin: 24px 0 8px;
+    page-break-after: avoid;
+  }
+  h4 { font-size: 11pt; font-weight: 700; color: #2c3040; margin: 18px 0 6px; }
+  p { margin: 0 0 11px; }
+  strong { color: #12141d; font-weight: 680; }
+  a { color: #4f46e5; text-decoration: none; }
+
+  ul, ol { margin: 0 0 12px; padding-left: 22px; }
+  li { margin: 4px 0; }
+  li::marker { color: #8b8fa3; }
+
+  table {
+    width: 100%; border-collapse: collapse; margin: 14px 0 20px;
+    font-size: 9.6pt; page-break-inside: avoid;
+  }
+  th {
+    background: #f2f3f9; color: #2c3040; text-align: left; font-weight: 700;
+    padding: 9px 11px; border: 1px solid #dcdfeb; font-size: 9pt;
+    text-transform: uppercase; letter-spacing: .04em;
+  }
+  td { padding: 8px 11px; border: 1px solid #e6e8f0; vertical-align: top; color: #3a3e4f; }
+  tr:nth-child(even) td { background: #fafbfe; }
+
+  blockquote {
+    margin: 16px 0; padding: 13px 18px; background: #f5f3ff;
+    border-left: 4px solid #4f46e5; border-radius: 0 7px 7px 0; color: #3a3350;
+  }
+  blockquote p { margin: 0; }
+
+  code {
+    font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 9pt;
+    background: #f2f3f9; border: 1px solid #e2e5f0; border-radius: 4px;
+    padding: 1px 5px; color: #4338ca;
+  }
+  pre {
+    background: #f7f8fc; border: 1px solid #e2e5f0; border-radius: 8px;
+    padding: 14px 16px; overflow-x: auto; page-break-inside: avoid;
+  }
+  pre code { background: none; border: none; padding: 0; color: #2c3040; font-size: 9pt; line-height: 1.5; }
+
+  hr { border: none; border-top: 1px solid #e6e8f0; margin: 30px 0; }
+
+  input[type=checkbox] { margin-right: 7px; }
+
+  @media print {
+    body { padding: 0; max-width: none; }
+    h1, h2, h3 { page-break-after: avoid; }
+    table, pre, blockquote { page-break-inside: avoid; }
+  }
+</style>
+</head><body><h1>Unrwly — Project Document</h1>
+<p>Print-on-demand storefront with an in-house <strong>Design Studio</strong>, built on <strong>Printify + Stripe + Supabase</strong>.</p>
+<blockquote>
+<p><strong>What makes it special:</strong> most POD storefronts make you go to Printify to design products. Ours doesn&#39;t — you design, generate AI artwork, pick colours, and publish without ever leaving Unrwly.</p>
+</blockquote>
+<p><strong>Legend</strong> — Status: ✅ built · 🔨 buildable · ❌ not possible · Effort: <code>S</code> small · <code>M</code> medium · <code>L</code> large · <code>XL</code> very large</p>
+<hr>
+<h2>Contents</h2>
+<ol>
+<li><a href="#1-overview">Overview</a></li>
+<li><a href="#2-current-status--whats-built">Current status</a></li>
+<li><a href="#3-full-feature-scope--whats-possible">Full feature scope</a></li>
+<li><a href="#4-plan-to-launch">Plan to launch</a></li>
+<li><a href="#5-checklist">Checklist</a></li>
+<li><a href="#6-reference">Reference</a></li>
+</ol>
+<hr>
+<h1>1. Overview</h1>
+<h2>Two portals, one app</h2>
+<table>
+<thead>
+<tr>
+<th>Portal</th>
+<th>Who</th>
+<th>Where</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Admin (Management Studio)</strong></td>
+<td>You</td>
+<td><code>/admin/*</code></td>
+<td>Design products, manage orders, customers, finance, analytics</td>
+</tr>
+<tr>
+<td><strong>Customer</strong></td>
+<td>Shoppers</td>
+<td>Storefront + <code>/account</code></td>
+<td>Browse, buy, track orders</td>
+</tr>
+</tbody></table>
+<p>Login routing (same <code>/auth</code> page): admin email → <code>/admin/products</code>; any other email → <code>/account</code>.</p>
+<h2>How it works end-to-end</h2>
+<pre><code>Design in Studio  →  Create on Printify  →  Real mockups back
+                                              ↓
+Customer buys  →  Stripe charges  →  Order auto-pushed to Printify
+                                              ↓
+                     Printify prints &amp; ships  →  Webhook → Shipped / Delivered
+</code></pre>
+<h2>The honest gap</h2>
+<p>The happy path works. But everything <strong>around</strong> it is missing — you can&#39;t refund, cancel, or email a customer, and checkout has two real security holes. That&#39;s the difference between a demo and a store.</p>
+<hr>
+<h1>2. Current status — what&#39;s built</h1>
+<h2>Design Studio</h2>
+<ul>
+<li>✅ Product picker — 659 product types, live from Printify catalog</li>
+<li>✅ Canvas editor — layers, drag / resize / rotate, delete</li>
+<li>✅ Image upload (PNG / JPG / WEBP)</li>
+<li>✅ Text — font family, size, bold, colour</li>
+<li>✅ Shapes — rectangle, circle, colour</li>
+<li>✅ Multi-side design — Front / Back / Sleeve / Neck, each separate</li>
+<li>✅ <strong>AI image generation</strong> — text prompt → image (free, no key)</li>
+<li>✅ Colour &amp; size selection — choose exactly which variants to offer</li>
+<li>✅ Garment templates — t-shirt / tank / hoodie outlines on canvas</li>
+<li>✅ Live preview — rough design-on-product preview</li>
+<li>✅ <strong>Real mockups</strong> — Printify generates per-colour mockups on create</li>
+</ul>
+<h2>Products &amp; store</h2>
+<ul>
+<li>✅ Multi-store sync — Adult + Kids, all pages (~239 products)</li>
+<li>✅ Synced vs Studio separation — filter tabs + badges</li>
+<li>✅ Profit calculator — retail − (cost + Stripe fees), with margin %</li>
+<li>✅ Collections + draft/live gatekeeper</li>
+<li>✅ Colour mockup gallery — pick the main storefront image</li>
+<li>✅ Bulk publish / bulk delete</li>
+</ul>
+<h2>Storefront &amp; orders (pre-existing)</h2>
+<ul>
+<li>✅ Home, products, collections, cart, checkout, wishlist, account</li>
+<li>✅ About / FAQ / Contact / Policies, newsletter, flash-sale banner</li>
+<li>✅ Stripe checkout → order → auto-push to Printify</li>
+<li>✅ Printify webhook → Shipped / Delivered + tracking</li>
+<li>✅ Admin order list, force-push, repair order</li>
+<li>✅ GA4 ecommerce tracking (browser + server-side)</li>
+</ul>
+<h2>Bugs fixed this cycle</h2>
+<p>DB connection pooling · Printify image hosts · Safari image upload · storage (base64 straight to Printify, no Vercel Blob)</p>
+<hr>
+<h1>3. Full feature scope — what&#39;s possible</h1>
+<h2>3.1 Design Studio</h2>
+<p><strong>Buildable</strong></p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Effort</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>🔨 Graphics / clipart library</td>
+<td><code>M</code></td>
+<td>Our own hosted asset set</td>
+</tr>
+<tr>
+<td>🔨 Stock photos</td>
+<td><code>S</code></td>
+<td>Unsplash / Pexels free API</td>
+</tr>
+<tr>
+<td>🔨 More fonts</td>
+<td><code>S</code></td>
+<td>Google Fonts picker</td>
+</tr>
+<tr>
+<td>🔨 Undo / redo</td>
+<td><code>M</code></td>
+<td>Canvas history</td>
+</tr>
+<tr>
+<td>🔨 Duplicate layer</td>
+<td><code>S</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 Alignment guides / snapping</td>
+<td><code>M</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 Layer opacity / lock</td>
+<td><code>S</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 Curved / arced text</td>
+<td><code>M</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 Image filters</td>
+<td><code>M</code></td>
+<td>B&amp;W, contrast, saturation</td>
+</tr>
+<tr>
+<td>🔨 <strong>Background removal</strong></td>
+<td><code>M</code></td>
+<td>⭐ Big for POD</td>
+</tr>
+<tr>
+<td>🔨 Save design as template</td>
+<td><code>M</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 Design library</td>
+<td><code>M</code></td>
+<td>Saved, reusable artwork</td>
+</tr>
+<tr>
+<td>🔨 <strong>One design → many products</strong></td>
+<td><code>L</code></td>
+<td>⭐ Design once → tee + hoodie + mug together</td>
+</tr>
+<tr>
+<td>🔨 Bulk product creation</td>
+<td><code>L</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 Better AI (paid model)</td>
+<td><code>S</code></td>
+<td>OpenAI/Gemini — cents per image</td>
+</tr>
+<tr>
+<td>🔨 AI prompt presets</td>
+<td><code>S</code></td>
+<td>&quot;Vintage&quot;, &quot;Y2K&quot;, &quot;Minimal&quot;</td>
+</tr>
+</tbody></table>
+<p><strong>Not possible</strong></p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>❌ Printify&#39;s graphics library</td>
+<td>Their private assets — not in the API</td>
+</tr>
+<tr>
+<td>❌ Printify&#39;s AI</td>
+<td>Not exposed (we built our own instead)</td>
+</tr>
+<tr>
+<td>❌ Shutterstock / Fiverr</td>
+<td>Printify-internal</td>
+</tr>
+<tr>
+<td>❌ Printify&#39;s garment line-art</td>
+<td>Their private assets (we drew our own)</td>
+</tr>
+<tr>
+<td>❌ Editor preview in real garment colours</td>
+<td>Catalog gives one photo per product. Real colours appear in the Printify mockup on create</td>
+</tr>
+</tbody></table>
+<h2>3.2 Product management</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Effort</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>🔨 Per-variant pricing</td>
+<td><code>M</code></td>
+<td>XL costs more</td>
+</tr>
+<tr>
+<td>🔨 Bulk pricing rules</td>
+<td><code>M</code></td>
+<td>&quot;2.2× markup on all hoodies&quot;</td>
+</tr>
+<tr>
+<td>🔨 Inventory / stock sync</td>
+<td><code>M</code></td>
+<td>Block sold-out variants</td>
+</tr>
+<tr>
+<td>🔨 Print provider selection</td>
+<td><code>M</code></td>
+<td>Price/quality/location trade-off</td>
+</tr>
+<tr>
+<td>🔨 Edit an existing product&#39;s design</td>
+<td><code>L</code></td>
+<td>Re-open in Studio</td>
+</tr>
+<tr>
+<td>🔨 Product duplication</td>
+<td><code>S</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 Bulk edit</td>
+<td><code>M</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 SEO fields per product</td>
+<td><code>S</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 Tags / categories</td>
+<td><code>M</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 CSV import / export</td>
+<td><code>M</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 Scheduled publishing</td>
+<td><code>M</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 Shipping cost display</td>
+<td><code>S</code></td>
+<td>Printify shipping API</td>
+</tr>
+</tbody></table>
+<h2>3.3 Storefront</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Effort</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>🔨 Product search</td>
+<td><code>M</code></td>
+<td>+ autocomplete</td>
+</tr>
+<tr>
+<td>🔨 Filters &amp; sorting</td>
+<td><code>M</code></td>
+<td>Price, colour, size</td>
+</tr>
+<tr>
+<td>🔨 <strong>Reviews &amp; ratings</strong></td>
+<td><code>L</code></td>
+<td>⭐ Biggest conversion lever</td>
+</tr>
+<tr>
+<td>🔨 Size guide</td>
+<td><code>S</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 Related / recommended</td>
+<td><code>M</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 Recently viewed</td>
+<td><code>S</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 Image zoom / colour gallery</td>
+<td><code>S</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 Customer order detail page</td>
+<td><code>M</code></td>
+<td>Tracking number, carrier, link</td>
+</tr>
+<tr>
+<td>🔨 Multi-currency</td>
+<td><code>L</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 Shipping calculator</td>
+<td><code>M</code></td>
+<td>Real Printify rates</td>
+</tr>
+<tr>
+<td>🔨 Blog / content</td>
+<td><code>M</code></td>
+<td>SEO</td>
+</tr>
+<tr>
+<td>🔨 Social share</td>
+<td><code>S</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 Live chat widget</td>
+<td><code>S</code></td>
+<td></td>
+</tr>
+</tbody></table>
+<h2>3.4 Payments &amp; pricing</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Effort</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>🔨 <strong>Server-side price validation</strong></td>
+<td><code>S</code></td>
+<td>🔴 Security — checkout trusts browser prices</td>
+</tr>
+<tr>
+<td>🔨 Coupons / discount codes</td>
+<td><code>M</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 Apple Pay / Google Pay</td>
+<td><code>S</code></td>
+<td>Stripe built-in</td>
+</tr>
+<tr>
+<td>🔨 Gift cards</td>
+<td><code>L</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 Store credit / wallet</td>
+<td><code>L</code></td>
+<td>POD-friendly refund alternative</td>
+</tr>
+<tr>
+<td>🔨 Tax handling</td>
+<td><code>M</code></td>
+<td>Stripe Tax</td>
+</tr>
+<tr>
+<td>🔨 Bundles / upsells</td>
+<td><code>M</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 Subscriptions</td>
+<td><code>XL</code></td>
+<td>Merch drops</td>
+</tr>
+<tr>
+<td>🔨 Fraud / risk score</td>
+<td><code>S</code></td>
+<td>Stripe Radar</td>
+</tr>
+</tbody></table>
+<h2>3.5 Orders &amp; fulfilment</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Effort</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>🔨 <strong>Printify webhook signature check</strong></td>
+<td><code>S</code></td>
+<td>🔴 Security — accepts unsigned events</td>
+</tr>
+<tr>
+<td>🔨 Admin order detail panel</td>
+<td><code>S</code></td>
+<td>Component exists, not wired</td>
+</tr>
+<tr>
+<td>🔨 Cancel order</td>
+<td><code>M</code></td>
+<td>Stripe refund + Printify cancel</td>
+</tr>
+<tr>
+<td>🔨 Refunds (full / partial)</td>
+<td><code>M</code></td>
+<td>None exists today</td>
+</tr>
+<tr>
+<td>🔨 Real tracking sync</td>
+<td><code>S</code></td>
+<td>Current button is a stub</td>
+</tr>
+<tr>
+<td>🔨 More Stripe webhook events</td>
+<td><code>M</code></td>
+<td>Refunds, disputes, failures</td>
+</tr>
+<tr>
+<td>🔨 Append-only audit log</td>
+<td><code>S</code></td>
+<td>Notes overwritten today</td>
+</tr>
+<tr>
+<td>🔨 Bulk order actions</td>
+<td><code>M</code></td>
+<td>Checkboxes exist, unwired</td>
+</tr>
+<tr>
+<td>🔨 Structured shipping address</td>
+<td><code>M</code></td>
+<td>Currently a text string</td>
+</tr>
+<tr>
+<td>🔨 Packing slip / invoice PDF</td>
+<td><code>M</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 Split shipments</td>
+<td><code>L</code></td>
+<td>Per-line-item status</td>
+</tr>
+<tr>
+<td>🔨 Multi-store order routing</td>
+<td><code>M</code></td>
+<td>Kids orders → Kids store</td>
+</tr>
+<tr>
+<td>🔨 Fulfilment SLA dashboard</td>
+<td><code>M</code></td>
+<td>Stuck-order alerts</td>
+</tr>
+</tbody></table>
+<h2>3.6 Returns &amp; support — <em>nothing built yet</em></h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Effort</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>🔨 Return / refund statuses</td>
+<td><code>S</code></td>
+<td>Schema can&#39;t represent a return today</td>
+</tr>
+<tr>
+<td>🔨 Return / RMA model</td>
+<td><code>M</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 Customer return request</td>
+<td><code>M</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 <strong>Defect → reprint-or-refund</strong></td>
+<td><code>M</code></td>
+<td>⭐ The POD-correct approach</td>
+</tr>
+<tr>
+<td>🔨 Store credit instead of refund</td>
+<td><code>L</code></td>
+<td></td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>POD reality:</strong> there&#39;s no warehouse and no shelf. Classic &quot;ship it back and restock&quot; doesn&#39;t apply. Build returns as <strong>replace or refund</strong> — photo of the defect → auto-approve small cases → Printify reprint or Stripe refund. Nothing ships back. Far simpler.</p>
+</blockquote>
+<h2>3.7 Customer communication — <em>nothing built yet (zero emails sent)</em></h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Effort</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>🔨 Resend setup</td>
+<td><code>S</code></td>
+<td>Free: 3k emails/month</td>
+</tr>
+<tr>
+<td>🔨 Order confirmation</td>
+<td><code>S</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 Shipped / Delivered</td>
+<td><code>S</code></td>
+<td>With tracking link</td>
+</tr>
+<tr>
+<td>🔨 Refund / cancellation</td>
+<td><code>S</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 <strong>Abandoned cart</strong></td>
+<td><code>M</code></td>
+<td>⭐ Real revenue lift</td>
+</tr>
+<tr>
+<td>🔨 Review request</td>
+<td><code>S</code></td>
+<td>Post-delivery</td>
+</tr>
+<tr>
+<td>🔨 Welcome / newsletter</td>
+<td><code>M</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 SMS notifications</td>
+<td><code>M</code></td>
+<td>Twilio</td>
+</tr>
+<tr>
+<td>🔨 Email template system</td>
+<td><code>M</code></td>
+<td>Branded</td>
+</tr>
+</tbody></table>
+<h2>3.8 Customers &amp; accounts</h2>
+<p>✅ Signup/login, guest checkout, admin customer list, internal notes, ADMIN/CUSTOMER roles</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>🔨 Password reset</td>
+<td><code>S</code></td>
+</tr>
+<tr>
+<td>🔨 Social login (Google)</td>
+<td><code>S</code></td>
+</tr>
+<tr>
+<td>🔨 Saved addresses</td>
+<td><code>M</code></td>
+</tr>
+<tr>
+<td>🔨 Customer LTV / segments</td>
+<td><code>M</code></td>
+</tr>
+<tr>
+<td>🔨 Multiple admins + permissions</td>
+<td><code>M</code></td>
+</tr>
+<tr>
+<td>🔨 Email verification</td>
+<td><code>S</code></td>
+</tr>
+</tbody></table>
+<h2>3.9 Marketing &amp; growth</h2>
+<p>✅ Flash-sale banner, newsletter capture, GA4 (browser + server-side, LTV)</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>🔨 Coupons / discount codes</td>
+<td><code>M</code></td>
+</tr>
+<tr>
+<td>🔨 Referral program</td>
+<td><code>L</code></td>
+</tr>
+<tr>
+<td>🔨 Affiliate / influencer codes</td>
+<td><code>L</code></td>
+</tr>
+<tr>
+<td>🔨 Abandoned cart recovery</td>
+<td><code>M</code></td>
+</tr>
+<tr>
+<td>🔨 Email campaigns</td>
+<td><code>M</code></td>
+</tr>
+<tr>
+<td>🔨 Upsells / cross-sells</td>
+<td><code>M</code></td>
+</tr>
+<tr>
+<td>🔨 Meta / TikTok pixel</td>
+<td><code>S</code></td>
+</tr>
+<tr>
+<td>🔨 Google Shopping feed</td>
+<td><code>M</code></td>
+</tr>
+</tbody></table>
+<h2>3.10 Analytics</h2>
+<p>✅ Finance page, analytics page, unit economics, GA4 funnel</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>🔨 Best sellers / worst performers</td>
+<td><code>M</code></td>
+</tr>
+<tr>
+<td>🔨 Profit dashboard over time</td>
+<td><code>M</code></td>
+</tr>
+<tr>
+<td>🔨 In-app conversion funnel</td>
+<td><code>M</code></td>
+</tr>
+<tr>
+<td>🔨 Cohort / retention</td>
+<td><code>L</code></td>
+</tr>
+<tr>
+<td>🔨 CSV report export</td>
+<td><code>S</code></td>
+</tr>
+</tbody></table>
+<h2>3.11 Multi-store &amp; channels</h2>
+<p>✅ Sync from multiple Printify stores (Adult + Kids)</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Effort</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>🔨 Per-store order routing</td>
+<td><code>M</code></td>
+<td>Required to sell both stores safely</td>
+</tr>
+<tr>
+<td>🔨 Store filter in admin</td>
+<td><code>S</code></td>
+<td></td>
+</tr>
+<tr>
+<td>🔨 Etsy sync control</td>
+<td><code>M</code></td>
+<td>Both stores are Etsy-connected</td>
+</tr>
+<tr>
+<td>🔨 Multi-channel publishing</td>
+<td><code>L</code></td>
+<td>Website + Etsy from one place</td>
+</tr>
+</tbody></table>
+<h2>3.12 Platform &amp; ops</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>🔨 Error monitoring (Sentry)</td>
+<td><code>S</code></td>
+</tr>
+<tr>
+<td>🔨 Staging environment</td>
+<td><code>S</code></td>
+</tr>
+<tr>
+<td>🔨 Rate limiting</td>
+<td><code>S</code></td>
+</tr>
+<tr>
+<td>🔨 Automated backups</td>
+<td><code>S</code></td>
+</tr>
+<tr>
+<td>🔨 CI (typecheck + build on PR)</td>
+<td><code>S</code></td>
+</tr>
+<tr>
+<td>🔨 Cron: daily product auto-sync</td>
+<td><code>S</code></td>
+</tr>
+</tbody></table>
+<hr>
+<h1>4. Plan to launch</h1>
+<blockquote>
+<p><strong>Guiding principle:</strong> fix what breaks <strong>trust or money</strong> first. Everything else is polish.</p>
+</blockquote>
+<h2>Stage 0 · Decisions (not code — needed from the business)</h2>
+<ul>
+<li>Printify <strong>store scope</strong> — Adult only, or Adult + Kids? <em>(Adult-only skips Stage 4 and ships sooner)</em></li>
+<li>Printify <strong>billing</strong> — payment method on the store, or nothing prints</li>
+<li><strong>Stripe live account</strong> — approved, live keys available</li>
+<li><strong>Domain</strong> — real URL</li>
+<li><strong>Sender email</strong> — e.g. <code>orders@unrwly.com</code></li>
+</ul>
+<h2>Stage 1 · Security 🔴 <code>S–M</code> — <em>before a single real payment</em></h2>
+<ul>
+<li>Server-side price re-validation at checkout <code>S</code></li>
+<li>Turn on Printify webhook signature check <code>S</code></li>
+<li>Handle more Stripe webhook events (refunds, disputes, failures) <code>M</code></li>
+</ul>
+<h2>Stage 2 · Order operations <code>M–L</code> — <em>so you can run the store</em></h2>
+<ul>
+<li>Wire up the admin order detail panel <code>S</code></li>
+<li>Cancel order (Stripe refund + Printify cancel) <code>M</code></li>
+<li>Refunds, full + partial <code>M</code></li>
+<li>Real tracking sync <code>S</code></li>
+<li>Append-only order notes / audit log <code>S</code></li>
+</ul>
+<h2>Stage 3 · Customer communication <code>M</code></h2>
+<ul>
+<li>Resend setup <code>S</code></li>
+<li>Order confirmation email <code>S</code></li>
+<li>Shipped + Delivered emails <code>S</code></li>
+<li>Customer order detail page <code>M</code></li>
+</ul>
+<h2>Stage 4 · Multi-store correctness <code>M</code> — <em>only if Adult + Kids both</em></h2>
+<ul>
+<li>Store each product&#39;s shop id <code>S</code></li>
+<li>Route orders to the right store <code>M</code></li>
+</ul>
+<h2>Stage 5 · Returns (POD-shaped) <code>L</code></h2>
+<ul>
+<li>New order statuses <code>S</code></li>
+<li>Return / RMA model <code>M</code></li>
+<li>Customer return request flow <code>M</code></li>
+</ul>
+<h2>Stage 6 · Launch <code>S–M</code></h2>
+<ul>
+<li>Production Supabase + migrations</li>
+<li>Deploy to Vercel + all env values</li>
+<li>Domain + <code>NEXT_PUBLIC_APP_URL</code></li>
+<li>Live Stripe webhook + signing secret</li>
+<li>Printify shipment webhook on live domain</li>
+<li>Admin account</li>
+<li><strong>Dress rehearsal</strong> — real card, small amount: charged → Printify receives → emails arrive → Shipped → refund it back</li>
+</ul>
+<h2>Stage 7 · After launch</h2>
+<p>Coupons · inventory sync · bulk order actions · structured address · packing slips · SMS · Studio extras · SLA dashboard</p>
+<h2>Recommended order</h2>
+<pre><code>Stage 0 (you) → 1 (security) → 2 (order ops) → 3 (emails) → 6 (launch)
+   Stage 4 only if Adult + Kids   ·   Stage 5 close behind   ·   Stage 7 = growth
+</code></pre>
+<p><strong>Fastest sensible path:</strong> launch <strong>Adult-only</strong> — skips Stage 4 entirely.
+<strong>Never:</strong> launch without Stage 1.</p>
+<hr>
+<h1>5. Checklist</h1>
+<h2>Configure for production</h2>
+<ul>
+<li><input disabled="" type="checkbox"> 🔴 Confirm billing on the Printify store</li>
+<li><input disabled="" type="checkbox"> Decide store scope — Adult / Kids / both</li>
+<li><input disabled="" type="checkbox"> 🔴 Stripe live keys (currently <code>sk_test_…</code>)</li>
+<li><input disabled="" type="checkbox"> Production Supabase — <code>DATABASE_URL</code>, <code>DIRECT_URL</code>, keys</li>
+<li><input disabled="" type="checkbox"> Admin email + real domain</li>
+</ul>
+<h2>Deploy</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Deploy to Vercel + add all env values</li>
+<li><input disabled="" type="checkbox"> Point domain, set app URL</li>
+<li><input disabled="" type="checkbox"> Create live Stripe webhook (<code>checkout.session.completed</code>)</li>
+<li><input disabled="" type="checkbox"> Register Printify shipment webhook</li>
+<li><input disabled="" type="checkbox"> Create admin account at <code>/auth</code></li>
+</ul>
+<h2>Verify the full loop</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Log in as admin</li>
+<li><input checked="" disabled="" type="checkbox"> Create a product → see real mockup <em>(verified locally)</em></li>
+<li><input disabled="" type="checkbox"> Test order → Stripe charge → reaches Printify</li>
+<li><input disabled="" type="checkbox"> Status updates Shipped / Delivered via webhook</li>
+</ul>
+<h2>Still open (priority order)</h2>
+<ul>
+<li><input disabled="" type="checkbox"> ⏭️ Multi-store order routing</li>
+<li><input disabled="" type="checkbox"> 🔴 Checkout security (price validation + webhook signature)</li>
+<li><input disabled="" type="checkbox"> Transactional emails</li>
+<li><input disabled="" type="checkbox"> Refunds, cancel order, returns / RMA</li>
+<li><input disabled="" type="checkbox"> 🟡 Tag older Studio products</li>
+</ul>
+<blockquote>
+<p>⚠️ <strong>Before taking real money:</strong> the two <strong>Checkout security</strong> items are the highest priority — checkout currently trusts client-sent prices and accepts unsigned Printify webhooks.</p>
+</blockquote>
+<hr>
+<h1>6. Reference</h1>
+<h2>From Printify</h2>
+<ol>
+<li><strong>Personal Access Token</strong> — My Profile → Connections → Personal Access Tokens → Generate (all scopes) — <em>done, Adult connected</em></li>
+<li><strong>Shop IDs</strong> — Adult <code>12699407</code>, Kids <code>27560160</code></li>
+<li><strong>Billing / payment method</strong> on the store — <em>confirm</em></li>
+</ol>
+<h2>Key environment variables</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>PRINTIFY_API_TOKEN</code></td>
+<td>Printify token — set</td>
+</tr>
+<tr>
+<td><code>PRINTIFY_SHOP_ID</code></td>
+<td><code>12699407</code> (Adult, primary — create + orders)</td>
+</tr>
+<tr>
+<td><code>PRINTIFY_SHOP_IDS</code></td>
+<td><code>12699407,27560160</code> (both — storefront sync)</td>
+</tr>
+<tr>
+<td><code>STRIPE_SECRET_KEY</code> / publishable</td>
+<td>swap test → <strong>live</strong></td>
+</tr>
+<tr>
+<td><code>STRIPE_WEBHOOK_SECRET</code></td>
+<td>from live Stripe webhook</td>
+</tr>
+<tr>
+<td><code>DATABASE_URL</code> / <code>DIRECT_URL</code></td>
+<td>production Supabase</td>
+</tr>
+<tr>
+<td><code>MASTER_ADMIN_EMAIL</code></td>
+<td>admin login email</td>
+</tr>
+<tr>
+<td><code>NEXT_PUBLIC_APP_URL</code></td>
+<td>real domain (currently localhost)</td>
+</tr>
+<tr>
+<td><code>AUTH_SECRET</code></td>
+<td>session signing — set</td>
+</tr>
+<tr>
+<td><code>RESEND_API_KEY</code></td>
+<td><em>(when emails are added)</em></td>
+</tr>
+</tbody></table>
+<h2>Tech stack</h2>
+<p>Next.js 16 (Turbopack) · React 19 · Prisma + Supabase Postgres · Stripe · Printify API · Konva (design canvas) · Tailwind · Vercel</p>
+<hr>
+<h2>The honest summary</h2>
+<p><strong>Special:</strong> in-house Design Studio with free AI — no need to open Printify.
+<strong>Missing to be a real store:</strong> security (2 items), refunds/cancel, emails, returns. Everything else is growth.
+<strong>Never possible:</strong> Printify&#39;s private editor assets. We build our own equivalents — and for AI, we already did.</p>
+</body></html>
