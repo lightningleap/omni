@@ -5,7 +5,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://unrwly.com'
 
   // Fetch Products via shared Printify utility
-  const products = await fetchPrintifyProducts(60) || [];
+  const products = await fetchPrintifyProducts() || [];
   const productRoutes = products.map((p) => ({
     url: `${baseUrl}/products/${p.slug}`,
     lastModified: new Date(),

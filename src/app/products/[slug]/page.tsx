@@ -103,7 +103,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     category: dbProduct.collection?.name || printifyProduct.category
   };
   // 4. Get recommendations (can use cached Printify list or DB)
-  const allProducts = await fetchPrintifyProducts(60) || [];
+  const allProducts = await fetchPrintifyProducts() || [];
   const recommendations = allProducts
     .filter(p => p.slug !== slug)
     .slice(0, 4);
