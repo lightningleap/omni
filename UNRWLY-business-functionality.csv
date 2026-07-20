@@ -1,0 +1,48 @@
+Business Function,Capability,What it does,Business value,Status
+Custom Product Design,Design-your-own products,"Customers create their own products across 659 item types — tees, hoodies, mugs, phone cases, bags and more.","Turns shoppers into creators and opens a personalised-product revenue stream plain merch stores can't offer.",Live
+Custom Product Design,Drag-and-drop editor,"A visual editor to add, move, resize and rotate elements with layers.","Anyone can design in minutes with no design skills — lowers the barrier to purchase.",Live
+Custom Product Design,Upload own artwork,"Customers upload their own images and designs (PNG, JPG, WEBP).","Supports personal gifts, team/event merch and fan art — high emotional value orders.",Live
+Custom Product Design,Custom text and fonts,"Add text in different fonts, sizes, colours and bold styling.","Enables quotes, names and slogans — a huge share of custom-merch demand.",Live
+Custom Product Design,Shapes and graphics,"Add rectangles, circles and shapes to designs.","More creative freedom means more finished, purchasable designs.",Live
+Custom Product Design,Multi-side design,"Design front, back, sleeve and neck as separate areas.","Premium, fully-custom products that justify higher prices.",Live
+Custom Product Design,Free AI artwork generator,"Customers type an idea and AI instantly creates artwork — free, at no added cost per design.","A standout, sticky feature that drives repeat visits and word of mouth.",Live
+Custom Product Design,In-editor colour and size,"Pick product colours and sizes inside the designer.","Fewer steps to checkout — smoother path to purchase.",Live
+Custom Product Design,Live preview and real mockups,"See the design on the product, with realistic mockups generated automatically.","Buyers see what they get, reducing hesitation and wrong-expectation returns.",Live
+Product Catalogue,Automatic catalogue,"Around 239 products auto-synced from the supplier catalogue (Adult and Kids).","A full store from day one with zero manual product entry.",Live
+Product Catalogue,Collections and merchandising,"Group products into shoppable collections and control what is live vs draft.","Guide customers to the right ranges and launch products on your schedule.",Live
+Product Catalogue,Profit calculator,"Each product shows real profit after cost and payment fees.","Always price for margin instead of guessing.",Live
+Product Catalogue,Storefront image control,"Choose which colour mockup shows on the storefront per product.","Best-looking product always leads — higher click-through.",Live
+Product Catalogue,Bulk product actions,"Publish or remove many products at once.","Manage a large catalogue quickly with minimal effort.",Live
+Online Selling,Branded storefront,"A fully-branded shop with home, product and collection pages.","Your own brand experience, not a marketplace listing.",Live
+Online Selling,Secure checkout,"Cart and secure card payments powered by Stripe.","A trusted, professional buying experience that converts.",Live
+Online Selling,Guest checkout,"Customers can buy without creating an account.","Fewer drop-offs and higher conversion.",Live
+Online Selling,Wishlist,"Shoppers save products to buy later.","Brings customers back and captures intent.",Live
+Online Selling,Promotions banner,"A site-wide flash-sale banner controlled from the admin.","Create urgency and push sales campaigns instantly.",Live
+Order Fulfilment,Automatic fulfilment,"Paid orders are automatically sent to the print partner.","The business runs hands-off — no manual processing per order.",Live
+Order Fulfilment,Automatic shipping updates,"Shipping and delivery status, with tracking, update on their own.","Customers stay informed without any staff effort.",Live
+Order Fulfilment,Order dashboard,"See and search every order in one admin view.","Full operational visibility in one place.",Live
+Order Fulfilment,Order recovery tools,"Force-push or repair any order stuck in fulfilment.","Nothing falls through the cracks — protects customer trust.",Live
+Customer Management,Customer directory,"All customers with total spend and history.","Understand and prioritise your best customers.",Live
+Customer Management,Internal notes,"Private notes on any customer.","Faster, more personal support.",Live
+Customer Management,Accounts and order history,"Customers get an account and can view past orders.","Convenience that encourages repeat purchase.",Live
+Customer Management,Secure admin access,"Separate, protected admin vs customer roles.","Keeps sensitive controls safe.",Live
+Customer Communications,Order confirmation email,"Automatic branded confirmation email after every purchase.","Reassures buyers and cuts 'where is my order' queries.",Live
+Customer Communications,Newsletter welcome email,"New subscribers get a welcome email with a 10% discount.","Converts subscribers into first-time buyers.",Live
+Customer Communications,Contact form to team,"Customer queries reach the team by email.","No missed customer messages.",Live
+Customer Communications,Email service connected,"A professional email service (Resend) is wired in.","A foundation for all future automated emails.",Live
+Marketing and Growth,Newsletter capture,"Collect customer emails from the storefront.","Build a marketing audience you own.",Live
+Marketing and Growth,Professional analytics,"Full Google Analytics ecommerce tracking with customer lifetime value.","Data-driven marketing decisions from real behaviour.",Live
+Analytics and Finance,Finance overview,"Revenue and profit summary.","See the health of the business at a glance.",Live
+Analytics and Finance,Store analytics,"Store performance and unit economics per product.","Know exactly what makes money.",Live
+Multi-store Operations,Multiple stores together,"Adult and Kids stores managed from one admin.","Run multiple ranges or brands without doubling work.",Live
+Payment and Margin Security,Server-side price protection,"Prices are verified on the server, not trusted from the browser.","Protects margin from price tampering and fraud.",Live
+Payment and Margin Security,Verified payment events,"Payment notifications are verified as genuine before fulfilment.","Prevents fake orders being fulfilled.",Live
+Payment and Margin Security,Margin protection,"Checks prevent selling below a safe margin.","Guards profitability automatically.",Live
+Discovery and Conversion,Product search,"Customers search products by name with autocomplete.","Helps customers find products fast — more sales.",Planned (High priority)
+Discovery and Conversion,Filters and sorting,"Filter and sort by price, colour and size.","Easier browsing, higher conversion on large catalogues.",Planned (High priority)
+Discovery and Conversion,Reviews and ratings,"Customer reviews on products.","The single biggest lever for trust and conversion.",Planned (High priority)
+Order Fulfilment,Cancellations and refunds,"Cancel orders and issue full or partial refunds from the admin.","Handle problems professionally and keep customers happy.",Planned (High priority)
+Returns and Support,Returns handling,"A print-on-demand returns flow (reprint-or-refund, no goods shipped back).","Resolve issues while controlling cost.",Planned (High priority)
+Customer Communications,Shipping and delivery emails,"Automatic emails with tracking when orders ship and deliver.","Keeps buyers informed end-to-end.",Planned (High priority)
+Marketing and Growth,Abandoned cart recovery,"Automatic emails to recover carts left behind.","Direct, measurable revenue lift.",Planned (Medium priority)
+Customer Management,Multiple admins and permissions,"More than one admin, each with controlled permissions.","Lets a growing team operate safely.",Planned (Medium priority)

@@ -1,0 +1,32 @@
+Category,Capability,What it means for the business,Status
+Product Management,Automatic product catalogue,"Around 239 products are pulled in automatically from the Printify catalogue (Adult and Kids stores) — no manual product entry.",Live
+Product Management,Profit calculator,"Every product shows your real profit after product cost and payment fees, so you always price for margin.",Live
+Product Management,Collections and visibility control,"Organise products into collections and control what is live vs hidden (draft).",Live
+Product Management,Storefront image control,"Choose exactly which colour mockup shows on the storefront for each product.",Live
+Product Management,Bulk publish and delete,"Publish or remove many products at once instead of one by one.",Live
+Product Management,Studio vs synced separation,"Clear separation between catalogue products and custom Studio-created products, with filters and badges.",Live
+Order Management,Automatic order fulfilment,"The moment a customer pays, the order is automatically sent to the print partner — zero manual work per order.",Live
+Order Management,Automatic shipping updates,"When the print partner ships or delivers, the order status and tracking update automatically.",Live
+Order Management,Order dashboard,"See and search every order in one admin dashboard.",Live
+Order Management,Order recovery tools,"Built-in tools to force-push or repair any order that gets stuck in fulfilment.",Live
+Customer Management,Customer directory,"See all customers with their total spend and history in one place.",Live
+Customer Management,Internal customer notes,"Add private notes on any customer for smoother support.",Live
+Customer Management,Admin vs customer roles,"Separate, protected admin access from regular customer access.",Live
+Analytics and Finance,Finance overview,"A finance page summarising revenue and profit.",Live
+Analytics and Finance,Store analytics,"Analytics on store performance and unit economics — profit per product.",Live
+Analytics and Finance,Professional traffic analytics,"Full Google Analytics ecommerce tracking (views, add-to-cart, checkout, purchase) plus customer lifetime value — the data marketing teams expect.",Live
+Marketing Tools,Newsletter list building,"Capture customer emails from the storefront to build a marketing audience.",Live
+Marketing Tools,Promotion control,"Turn the site-wide flash-sale banner and offers on/off from the admin.",Live
+Multi-store,Multiple stores in one place,"Adult and Kids stores managed together from a single admin.",Live
+Security and Payments,Server-side price protection,"Prices are verified on the server so they can't be tampered with in the browser — protects your margin from fraud.",Live
+Security and Payments,Verified payment events,"Incoming payment notifications are verified as genuine before any order is fulfilled.",Live
+Security and Payments,Margin protection,"Built-in checks so products are never sold below a safe margin.",Live
+Communications,Email service connected,"A professional email service (Resend) is connected to send order, marketing and support emails.",Live
+Order Management,Cancel and refund orders,"Cancel orders and issue full or partial refunds from the admin.",Planned (High priority)
+Returns and Support,Returns / refund handling,"A proper returns flow, including the print-on-demand approach of reprint-or-refund without goods shipping back.",Planned (High priority)
+Order Management,Order detail panel,"A full per-order detail view for support and fulfilment.",Planned (High priority)
+Communications,Shipped and delivered emails,"Automatic emails to customers with tracking links when orders ship and deliver.",Planned (High priority)
+Customer Management,Password reset,"Self-service password reset for customers.",Planned (High priority)
+Customer Management,Multiple admins and permissions,"Allow more than one admin, each with controlled permissions.",Planned (Medium priority)
+Marketing Tools,Abandoned cart recovery,"Automatic emails to recover customers who leave items in their cart — direct revenue lift.",Planned (Medium priority)
+Analytics and Finance,Best and worst sellers,"Reporting on top and bottom performing products over time.",Planned (Medium priority)

@@ -1,0 +1,29 @@
+Design Area,Element,What it delivers,Design / experience value,Status
+Brand Identity,Editorial fashion look,"A bold, editorial 'UNRWLY' visual identity with strong typography and a streetwear tone.","Positions the store as a premium fashion brand, not a generic print shop — supports higher prices.",Live
+Brand Identity,Consistent design system,"Shared colours, spacing, buttons and components across every page.","A polished, cohesive experience that builds trust.",Live
+Motion and Animation,Cinematic hero sequence,"An animated, sequenced hero that reveals content with motion.","A memorable first impression that feels premium.",Live
+Motion and Animation,Scroll-reveal animations,"Sections animate gracefully into view as the customer scrolls.","Keeps the page feeling alive and engaging.",Live
+Motion and Animation,Purchase celebration,"A celebratory confetti moment on successful purchase.","A delightful, shareable finish that boosts brand affection.",Live
+Motion and Animation,Smooth micro-interactions,"Hover states, transitions and button feedback throughout.","Feels responsive and high-quality on every tap.",Live
+Interactive Components,Slide-out cart drawer,"A cart that slides in over the page without a full reload.","Customers keep shopping — less friction, more items per order.",Live
+Interactive Components,Product carousels,"Trending, category and collection carousels that swipe and scroll.","Showcases more products in less space, driving discovery.",Live
+Interactive Components,Interactive lookbook,"A shoppable editorial lookbook customers can explore.","Inspires purchases and lifts average order value.",Live
+Interactive Components,Search modal,"An instant search overlay.","Fast product discovery from anywhere on the site.",Live
+Interactive Components,Popups and modals,"Newsletter, auth and search modals that appear in context.","Captures actions without breaking the browsing flow.",Live
+Navigation UX,Clear top navigation,"Category menus with an always-visible header.","Effortless browsing across the whole catalogue.",Live
+Navigation UX,Quick-access icons,"Profile, wishlist and bag shortcuts in the header.","Key actions are one tap away.",Live
+Navigation UX,Live countdown banner,"A visible flash-sale countdown during promotions.","Creates urgency that lifts conversion.",Live
+Responsive Design,Mobile and desktop layouts,"Layouts adapt cleanly across phone, tablet and desktop.","A great experience for the majority mobile-shopping audience.",Live
+Responsive Design,Touch-friendly controls,"Swipeable carousels and tap-friendly buttons.","Comfortable, natural mobile shopping.",Live
+Product Visualisation,Rich product galleries,"Multiple product images with a clear gallery.","Customers see exactly what they're buying.",Live
+Product Visualisation,Colour mockup previews,"Product updates to show the selected colour.","Confidence in the exact variant ordered.",Live
+Product Visualisation,Live design preview,"The Design Studio shows the design on a realistic mockup in real time.","Reduces hesitation and wrong-expectation returns.",Live
+Content and Storytelling,Social proof feed,"A UGC-style feed of real product imagery.","Builds trust and community.",Live
+Content and Storytelling,Editorial sections,"Curated, magazine-style content blocks on the homepage.","Elevates the brand and inspires browsing.",Live
+Performance,Optimised images,"Images are served in optimised, fast-loading formats.","Faster pages mean lower bounce and better SEO.",Live
+Usability,Guest-first checkout,"No forced sign-up before buying.","Removes a common reason customers abandon carts.",Live
+Usability,Clear feedback states,"Loading spinners and success/confirmation messages on actions.","Customers always know what's happening.",Live
+Accessibility,Readable, structured layout,"Clear hierarchy, legible type and consistent structure.","Comfortable for all users to read and navigate.",Live
+Responsive Design,Full accessibility pass,"Screen-reader labels, keyboard navigation and contrast checks.","Inclusive experience and better compliance.",Planned (Medium priority)
+Product Visualisation,Image zoom,"Pinch/hover zoom on product images.","Closer look at print quality and detail.",Planned (Medium priority)
+Usability,Dark mode,"An optional dark theme.","Modern touch some shoppers prefer.",Planned (Low priority)
