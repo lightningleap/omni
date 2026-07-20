@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import Stripe from "stripe"
 import { createPrintifyOrder } from "@/lib/printify"
+import { sendEmail, orderConfirmationEmail } from "@/lib/email"
 import crypto from "crypto"
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
@@ -70,6 +71,29 @@ export async function POST(req: Request) {
 
     // 3. Printify Handoff
     await createPrintifyOrder(orderId, stripeObject);
+
+    // 3b. Order confirmation email to the customer
+    if (customerEmail) {
+      try {
+        await sendEmail({
+          to: customerEmail,
+          subject: `Your UNRWLY order is confirmed`,
+          html: orderConfirmationEmail({
+            customerName,
+            orderId,
+            amountPaid,
+            currency: (stripeObject.currency || "usd").toUpperCase(),
+            items: orderWithItems.items.map((i) => ({
+              name: i.product?.name || "Product",
+              quantity: i.quantity,
+              price: i.price,
+            })),
+          }),
+        });
+      } catch (e) {
+        console.error("[EMAIL WEBHOOK ERROR]", e);
+      }
+    }
 
     // ==========================================
     // 4. GA4 SERVER-SIDE MEASUREMENT (STITCHED)
