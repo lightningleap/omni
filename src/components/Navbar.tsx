@@ -20,6 +20,32 @@ export async function getVisibleCollections() {
   }
 }
 
+// Split the collections into the two storefront sections (ADULT / KIDS).
+// A collection appears under a section only if it actually has LIVE products
+// for that audience — so the KIDS menu never shows an empty category.
+export async function getCollectionsByAudience() {
+  try {
+    const [collections, adultGroups, kidsGroups] = await Promise.all([
+      prisma.collection.findMany({ select: { id: true, name: true, handle: true, imageUrl: true } }),
+      prisma.product.groupBy({ by: ["collectionId"], where: { status: "LIVE", audience: "ADULT" }, _count: true }),
+      prisma.product.groupBy({ by: ["collectionId"], where: { status: "LIVE", audience: "KIDS" }, _count: true }),
+    ]);
+
+    const adultIds = new Set(adultGroups.map((g) => g.collectionId));
+    const kidsIds = new Set(kidsGroups.map((g) => g.collectionId));
+
+    const format = (c: (typeof collections)[number]) => ({ id: c.id, handle: c.handle, title: c.name, imageUrl: c.imageUrl });
+
+    return {
+      adult: collections.filter((c) => adultIds.has(c.id)).map(format),
+      kids: collections.filter((c) => kidsIds.has(c.id)).map(format),
+    };
+  } catch (error) {
+    console.error("Error grouping collections by audience:", error);
+    return { adult: [], kids: [] };
+  }
+}
+
 export default async function Navbar({ user: propUser }: { user?: any }) {
   let user = propUser;
 
@@ -31,14 +57,7 @@ export default async function Navbar({ user: propUser }: { user?: any }) {
     user = fetchedUser;
   }
 
-  const collections = await getVisibleCollections();
-
-  const formattedCollections = collections.map((c) => ({
-    id: c.id,
-    handle: c.handle,
-    title: c.name,
-    imageUrl: c.imageUrl,
-  }));
+  const { adult, kids } = await getCollectionsByAudience();
 
   // Determine if user is admin based on environment variable
   const masterEmail = process.env.MASTER_ADMIN_EMAIL?.toLowerCase().trim();
@@ -50,5 +69,5 @@ export default async function Navbar({ user: propUser }: { user?: any }) {
     role: isAdmin ? 'ADMIN' : 'CUSTOMER'
   } : null;
 
-  return <NavbarClient initialCollections={formattedCollections} user={safeUser} />;
+  return <NavbarClient adultCollections={adult} kidsCollections={kids} user={safeUser} />;
 }

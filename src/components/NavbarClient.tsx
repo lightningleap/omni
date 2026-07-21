@@ -10,9 +10,8 @@ import SearchModal from './SearchModal';
 import { signOutAction } from '@/app/auth/auth-actions';
 import { useCartStore } from '@/store/useCartStore';
 import { useWishlistStore } from '@/store/useWishlistStore';
-import { getVisibleCollections } from '@/app/actions/storefront';
 
-const NavbarClient = ({ initialCollections = [], user }: { initialCollections?: any[], user?: any }) => {
+const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: { adultCollections?: any[], kidsCollections?: any[], user?: any }) => {
   const items = useCartStore((state) => state.items);
   const itemCount = items.reduce((total, item) => total + item.quantity, 0);
   const setDrawerOpen = useCartStore((state) => state.setDrawerOpen);
@@ -24,12 +23,8 @@ const NavbarClient = ({ initialCollections = [], user }: { initialCollections?: 
   // States
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [collections, setCollections] = useState<any[]>(initialCollections);
-
-  // Sync state when props change (revalidation)
-  useEffect(() => {
-    setCollections(initialCollections);
-  }, [initialCollections]);
+  // Which top section dropdown is open: 'adult' | 'kids' | null
+  const [openMenu, setOpenMenu] = useState<null | 'adult' | 'kids'>(null);
 
   const isAdmin = user?.role === 'ADMIN';
   const router = useRouter();
@@ -73,10 +68,10 @@ const NavbarClient = ({ initialCollections = [], user }: { initialCollections?: 
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
-  const [isMoreOpen, setIsMoreOpen] = useState(false);
-
-  const topCollections = collections.slice(0, 5);
-  const remainingCollections = collections.slice(5);
+  const sections: { key: 'adult' | 'kids'; label: string; items: any[] }[] = [
+    { key: 'adult', label: 'Adult', items: adultCollections },
+    { key: 'kids', label: 'Kids', items: kidsCollections },
+  ];
 
   return (
     <>
@@ -94,55 +89,47 @@ const NavbarClient = ({ initialCollections = [], user }: { initialCollections?: 
             Unrwly
           </Link>
 
-          {/* COLLECTIONS & MORE */}
-          <div className="hidden lg:flex items-center gap-6 shrink-0">
-            {topCollections.map((col) => (
-              <Link
-                key={col.id}
-                href={`/collections/${col.handle}`}
-                className="text-sm font-bold text-[#334155] uppercase tracking-wide whitespace-nowrap hover:border-b-2 hover:border-[#4F46E5] pb-1 transition-all"
-              >
-                {col.name || col.title}
-              </Link>
-            ))}
-            {remainingCollections.length > 0 && (
-              <div className="relative">
-                <button 
-                  onClick={() => setIsMoreOpen(!isMoreOpen)}
-                  className={`text-sm font-bold text-[#334155] uppercase tracking-wide flex items-center gap-1 pb-1 transition-colors ${isMoreOpen ? 'text-[#4F46E5]' : ''}`}
+          {/* ADULT / KIDS SECTIONS */}
+          <div className="hidden lg:flex items-center gap-8 shrink-0">
+            {sections.map((section) => (
+              section.items.length > 0 && (
+                <div
+                  key={section.key}
+                  className="relative"
+                  onMouseEnter={() => setOpenMenu(section.key)}
+                  onMouseLeave={() => setOpenMenu(null)}
                 >
-                  More <ChevronDown size={14} className={`transition-transform duration-200 ${isMoreOpen ? 'rotate-180' : ''}`} />
-                </button>
-                
-                <AnimatePresence>
-                  {isMoreOpen && (
-                    <>
-                      <div 
-                        className="fixed inset-0 z-40" 
-                        onClick={() => setIsMoreOpen(false)} 
-                      />
-                      <motion.div 
+                  <button
+                    onClick={() => setOpenMenu(openMenu === section.key ? null : section.key)}
+                    className={`text-sm font-bold uppercase tracking-wide flex items-center gap-1 pb-1 transition-colors ${openMenu === section.key ? 'text-[#4F46E5]' : 'text-[#334155]'}`}
+                  >
+                    {section.label} <ChevronDown size={14} className={`transition-transform duration-200 ${openMenu === section.key ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  <AnimatePresence>
+                    {openMenu === section.key && (
+                      <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="absolute top-[34px] left-0 w-56 bg-white border border-[#eaeaec] shadow-2xl p-5 space-y-4 z-50 text-left"
+                        className="absolute top-[30px] left-0 w-56 bg-white border border-[#eaeaec] shadow-2xl p-5 grid grid-cols-1 gap-3 z-50 text-left"
                       >
-                        {remainingCollections.map((col) => (
+                        {section.items.map((col) => (
                           <Link
                             key={col.id}
-                            href={`/collections/${col.handle}`}
-                            onClick={() => setIsMoreOpen(false)}
+                            href={`/collections/${col.handle}?audience=${section.key}`}
+                            onClick={() => setOpenMenu(null)}
                             className="block text-xs font-bold text-[#282C3F] hover:text-[#ff3f6c] transition-colors uppercase tracking-wide"
                           >
-                            {col.name || col.title}
+                            {col.title || col.name}
                           </Link>
                         ))}
                       </motion.div>
-                    </>
-                  )}
-                </AnimatePresence>
-              </div>
-            )}
+                    )}
+                  </AnimatePresence>
+                </div>
+              )
+            ))}
           </div>
 
           {/* INLINE SEARCH BAR */}
@@ -248,22 +235,28 @@ const NavbarClient = ({ initialCollections = [], user }: { initialCollections?: 
               </button>
             </div>
 
-            <div className="flex flex-col gap-6 overflow-y-auto pb-12">
-              <span className="text-[10px] font-bold tracking-[0.3em] text-slate-400 uppercase">Registry</span>
-              {collections.map((col) => (
-                <Link 
-                  key={col.id} 
-                  href={`/collections/${col.handle}`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-4xl font-black tracking-tighter text-[#1A1A1A] hover:text-[#4F46E5] transition-all uppercase italic"
-                >
-                  {col.title || col.name}
-                </Link>
+            <div className="flex flex-col gap-8 overflow-y-auto pb-12">
+              {sections.map((section) => (
+                section.items.length > 0 && (
+                  <div key={section.key} className="flex flex-col gap-4">
+                    <span className="text-[10px] font-bold tracking-[0.3em] text-slate-400 uppercase">{section.label}</span>
+                    {section.items.map((col) => (
+                      <Link
+                        key={col.id}
+                        href={`/collections/${col.handle}?audience=${section.key}`}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="text-3xl font-black tracking-tighter text-[#1A1A1A] hover:text-[#4F46E5] transition-all uppercase italic"
+                      >
+                        {col.title || col.name}
+                      </Link>
+                    ))}
+                  </div>
+                )
               ))}
-              <Link 
-                href="/collections/all" 
+              <Link
+                href="/collections/all"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="text-4xl font-black tracking-tighter text-[#1A1A1A] hover:text-[#4F46E5] transition-all uppercase italic"
+                className="text-3xl font-black tracking-tighter text-[#1A1A1A] hover:text-[#4F46E5] transition-all uppercase italic"
               >
                 New Drops
               </Link>

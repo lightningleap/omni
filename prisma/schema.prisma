@@ -55,10 +55,12 @@ model Order {
   orderNumber     String?     @unique
   userId          String?
   stripeSessionId String?     @unique
+  stripePaymentIntentId String? @unique
   printifyOrderId String?     @unique
   status          OrderStatus @default(PENDING)
   totalAmount     Float
   totalPaid       Float?      @default(0)
+  refundedAmount  Float?      @default(0)
   profit          Float?      @default(0)
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
@@ -133,6 +135,8 @@ model Product {
   collection      Collection?   @relation(fields: [collectionId], references: [id])
   orderItems      OrderItem[]
   status          ProductStatus @default(DRAFT)
+  // Who the product is for — drives the ADULT / KIDS split in the storefront nav.
+  audience        Audience      @default(ADULT)
   // Where the product came from: "SYNCED" (pulled from a Printify store) or
   // "STUDIO" (designed in-house via the Design Studio).
   source          String        @default("SYNCED")
@@ -151,6 +155,11 @@ enum ProductStatus {
   DRAFT
 }
 
+enum Audience {
+  ADULT
+  KIDS
+}
+
 enum OrderStatus {
   PENDING
   PAID
@@ -158,5 +167,9 @@ enum OrderStatus {
   SHIPPED
   DELIVERED
   CANCELLED
+  REFUNDED
+  PARTIALLY_REFUNDED
+  DISPUTED
+  PAYMENT_FAILED
   MANUAL_INTERVENTION_REQUIRED
 }

@@ -11,10 +11,17 @@ export const revalidate = 3600; // ISR: 1 hour
 
 interface CollectionPageProps {
   params: Promise<{ handle: string }>;
+  searchParams: Promise<{ audience?: string }>;
 }
 
-export default async function IndividualCollectionPage({ params }: CollectionPageProps) {
+export default async function IndividualCollectionPage({ params, searchParams }: CollectionPageProps) {
   const { handle } = await params;
+  const { audience } = await searchParams;
+  // Optional ADULT / KIDS narrowing driven by the storefront nav.
+  const audienceFilter =
+    audience?.toLowerCase() === 'kids' ? 'KIDS' as const :
+    audience?.toLowerCase() === 'adult' ? 'ADULT' as const :
+    undefined;
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   const { data: { user } } = await supabase.auth.getUser();
@@ -36,7 +43,7 @@ export default async function IndividualCollectionPage({ params }: CollectionPag
     },
     include: {
       products: {
-        where: { status: 'LIVE' }
+        where: { status: 'LIVE', ...(audienceFilter ? { audience: audienceFilter } : {}) }
       }
     }
   });
@@ -80,11 +87,16 @@ export default async function IndividualCollectionPage({ params }: CollectionPag
   });
   const categories = ['All', ...allCollections.map(c => c.name)];
 
+  const audienceLabel = audienceFilter === 'KIDS' ? 'Kids' : audienceFilter === 'ADULT' ? 'Adult' : '';
+  const pageTitle = collection?.name
+    ? (audienceLabel ? `${audienceLabel} · ${collection.name}` : collection.name)
+    : "New Arrivals";
+
   return (
-    <CollectionClient 
-      initialProducts={formattedProducts} 
+    <CollectionClient
+      initialProducts={formattedProducts}
       categories={categories}
-      title={collection?.name || "New Arrivals"}
+      title={pageTitle}
       user={safeUser}
     />
   );
