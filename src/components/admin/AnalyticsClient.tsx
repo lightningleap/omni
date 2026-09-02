@@ -32,8 +32,8 @@ export default function AnalyticsClient({ data }: { data: AnalyticsData }) {
 
       {/* High-Impact Core Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="p-8 bg-white border border-neutral-200/60 rounded-3xl group hover:shadow-xl hover:shadow-indigo-500/5 transition-all relative overflow-hidden shadow-sm">
-          <div className="absolute -right-6 -top-6 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity text-indigo-600">
+        <div className="p-8 bg-white border border-neutral-200/60 rounded-3xl group hover:shadow-xl hover:shadow-accent-500/5 transition-all relative overflow-hidden shadow-sm">
+          <div className="absolute -right-6 -top-6 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity text-accent-700">
             <DollarSign size={120} />
           </div>
           <h3 className="text-[10px] uppercase tracking-[0.2em] text-neutral-400 font-black mb-4">Gross processing volume</h3>
@@ -50,7 +50,7 @@ export default function AnalyticsClient({ data }: { data: AnalyticsData }) {
           </div>
         </div>
 
-        <div className="p-8 bg-indigo-600 rounded-3xl group hover:shadow-2xl hover:shadow-indigo-600/20 transition-all relative overflow-hidden">
+        <div className="p-8 bg-accent-800 rounded-3xl group hover:shadow-2xl hover:shadow-accent-800/20 transition-all relative overflow-hidden">
           <div className="absolute -right-6 -top-6 opacity-10 group-hover:opacity-20 transition-opacity text-white">
             <TrendingUp size={120} />
           </div>
@@ -68,7 +68,7 @@ export default function AnalyticsClient({ data }: { data: AnalyticsData }) {
           <h3 className="text-[10px] uppercase tracking-[0.3em] text-neutral-400 font-black">30-day revenue vs volume matrix</h3>
           <div className="flex gap-6">
             <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-indigo-600" />
+              <div className="w-2.5 h-2.5 rounded-full bg-accent-800" />
               <span className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest">Gross Revenue</span>
             </div>
             <div className="flex items-center gap-2">

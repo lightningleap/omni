@@ -13,7 +13,7 @@ export function StatusBadge({ status }: { status: string }) {
       colors = "bg-sky-50 text-sky-700 border-sky-100 font-bold";
       break;
     case "SHIPPED":
-      colors = "bg-indigo-50 text-indigo-700 border-indigo-100 font-bold";
+      colors = "bg-accent-50 text-accent-800 border-accent-100 font-bold";
       break;
     case "REFUNDED":
     case "PARTIALLY_REFUNDED":

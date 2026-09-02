@@ -73,7 +73,7 @@ export default function CollectionsClient({ initialCollections }: { initialColle
       {/* Creation Sleek Card */}
       <div className="bg-white border border-neutral-200/60 rounded-3xl p-8 space-y-6 shadow-sm transition-all hover:shadow-md">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+          <div className="p-2 bg-accent-50 text-accent-700 rounded-lg">
             <FolderTree size={20} />
           </div>
           <h3 className="text-sm font-bold text-neutral-900 tracking-tight">Create New Collection</h3>
@@ -88,13 +88,13 @@ export default function CollectionsClient({ initialCollections }: { initialColle
                 value={newColName}
                 onChange={e => setNewColName(e.target.value)}
                 disabled={isCreating}
-                className="w-full bg-neutral-50 border border-neutral-200 rounded-xl text-sm font-bold text-neutral-900 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all placeholder:text-neutral-300"
+                className="w-full bg-neutral-50 border border-neutral-200 rounded-xl text-sm font-bold text-neutral-900 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-800 transition-all placeholder:text-neutral-300"
               />
             </div>
             <button 
               type="submit"
               disabled={isCreating || !newColName.trim()}
-              className="w-full bg-indigo-600 text-white font-bold text-xs py-3.5 rounded-xl flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all disabled:opacity-50"
+              className="w-full bg-accent-800 text-white font-bold text-xs py-3.5 rounded-xl flex items-center justify-center gap-2 hover:bg-accent-950 transition-all disabled:opacity-50"
             >
               {isCreating ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
               Initialize Collection
@@ -108,7 +108,7 @@ export default function CollectionsClient({ initialCollections }: { initialColle
               onChange={e => setNewColDesc(e.target.value)}
               disabled={isCreating}
               rows={4}
-              className="w-full bg-neutral-50 border border-neutral-200 rounded-xl text-sm font-medium text-neutral-600 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all resize-none placeholder:text-neutral-300"
+              className="w-full bg-neutral-50 border border-neutral-200 rounded-xl text-sm font-medium text-neutral-600 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-800 transition-all resize-none placeholder:text-neutral-300"
             />
           </div>
         </form>
@@ -134,12 +134,12 @@ export default function CollectionsClient({ initialCollections }: { initialColle
                   <tr key={col.id} className="group hover:bg-neutral-50/50 transition-all duration-200">
                     <td className="p-5">
                       <div className="flex flex-col">
-                        <span className="text-sm font-bold text-neutral-900 group-hover:text-indigo-600 transition-colors tracking-tight">{col.name}</span>
+                        <span className="text-sm font-bold text-neutral-900 group-hover:text-accent-700 transition-colors tracking-tight">{col.name}</span>
                         <span className="text-[10px] text-neutral-400 font-medium mt-0.5 uppercase tracking-widest">/{col.handle}</span>
                       </div>
                     </td>
                     <td className="p-5 text-center">
-                      <span className="inline-flex items-center px-3 py-1 bg-indigo-50 text-indigo-700 text-[10px] font-bold rounded-full border border-indigo-100">
+                      <span className="inline-flex items-center px-3 py-1 bg-accent-50 text-accent-800 text-[10px] font-bold rounded-full border border-accent-100">
                         {col.productCount} Items
                       </span>
                     </td>

@@ -87,10 +87,11 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
       {
+        // Supabase Storage — where the admin panel's own uploads live.
         protocol: 'https',
-        hostname: '*.public.blob.vercel-storage.com',
+        hostname: '*.supabase.co',
         port: '',
-        pathname: '/**',
+        pathname: '/storage/v1/object/public/**',
       },
       {
         protocol: 'https',

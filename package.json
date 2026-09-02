@@ -21,7 +21,6 @@
     "@stripe/stripe-js": "^9.0.0",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.105.1",
-    "@vercel/blob": "^2.3.3",
     "bcryptjs": "^3.0.3",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",

@@ -108,13 +108,13 @@ export default function CustomersClient({ initialCustomers }: { initialCustomers
         {/* Filter Bar */}
         <div className="p-4 border-b border-slate-100 bg-white">
           <div className="relative group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={16} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-accent-700 transition-colors" size={16} />
             <input
               type="text"
               placeholder="Search customers"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 text-sm text-slate-900 pl-10 pr-4 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-slate-400"
+              className="w-full bg-slate-50 border border-slate-200 text-sm text-slate-900 pl-10 pr-4 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-700 transition-all placeholder:text-slate-400"
             />
           </div>
         </div>
@@ -126,7 +126,7 @@ export default function CustomersClient({ initialCustomers }: { initialCustomers
               <tr className="bg-slate-50/50 text-[11px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100">
                 <th className="px-6 py-4 w-12 text-center">
                    <div 
-                    className={`w-4 h-4 border rounded cursor-pointer mx-auto flex items-center justify-center transition-all ${selectedIds.size === filteredCustomers.length && filteredCustomers.length > 0 ? 'bg-indigo-600 border-indigo-600' : 'bg-white border-slate-300'}`}
+                    className={`w-4 h-4 border rounded cursor-pointer mx-auto flex items-center justify-center transition-all ${selectedIds.size === filteredCustomers.length && filteredCustomers.length > 0 ? 'bg-accent-800 border-accent-800' : 'bg-white border-slate-300'}`}
                     onClick={toggleAll}
                   >
                     {selectedIds.size === filteredCustomers.length && filteredCustomers.length > 0 && <div className="w-1.5 h-px bg-white rotate-45" />}
@@ -146,10 +146,10 @@ export default function CustomersClient({ initialCustomers }: { initialCustomers
                   <tr 
                     key={customer.id} 
                     onClick={() => setSelectedUserId(customer.id)}
-                    className={`group hover:bg-slate-50 cursor-pointer transition-colors ${isSelected ? 'bg-indigo-50/30' : ''}`}
+                    className={`group hover:bg-slate-50 cursor-pointer transition-colors ${isSelected ? 'bg-accent-50/30' : ''}`}
                   >
                     <td className="px-6 py-4" onClick={(e) => toggleOne(customer.id, e)}>
-                       <div className={`w-4 h-4 border rounded transition-all mx-auto flex items-center justify-center ${isSelected ? 'bg-indigo-600 border-indigo-600' : 'bg-white border-slate-300'}`}>
+                       <div className={`w-4 h-4 border rounded transition-all mx-auto flex items-center justify-center ${isSelected ? 'bg-accent-800 border-accent-800' : 'bg-white border-slate-300'}`}>
                           {isSelected && <div className="w-1.5 h-px bg-white rotate-45" />}
                        </div>
                     </td>
@@ -176,7 +176,7 @@ export default function CustomersClient({ initialCustomers }: { initialCustomers
                             disabled={savingId === customer.id}
                             onClick={(e) => e.stopPropagation()}
                             onChange={(e) => changeRole(customer.id, e.target.value as Role)}
-                            className={`text-[11px] font-bold rounded-full border px-2 py-1 cursor-pointer disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                            className={`text-[11px] font-bold rounded-full border px-2 py-1 cursor-pointer disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-accent-500 ${
                               customer.role === "ADMIN"
                                 ? "bg-rose-50 text-rose-700 border-rose-100"
                                 : customer.role === "VIP"

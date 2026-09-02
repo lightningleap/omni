@@ -356,7 +356,7 @@ export default function DesignEditor({
             {selected.type === "text" && (
               <div className="space-y-2">
                 <textarea value={selected.text} onChange={(e) => update(selected.id, { text: e.target.value })} rows={2}
-                  className="w-full text-xs border border-slate-200 rounded-lg p-2 resize-none focus:outline-none focus:border-indigo-400" />
+                  className="w-full text-xs border border-slate-200 rounded-lg p-2 resize-none focus:outline-none focus:border-accent-600" />
                 <select value={selected.fontFamily} onChange={(e) => update(selected.id, { fontFamily: e.target.value })}
                   className="w-full text-xs border border-slate-200 rounded-lg p-2 bg-white">
                   {FONTS.map((f) => <option key={f} value={f}>{f}</option>)}
@@ -369,7 +369,7 @@ export default function DesignEditor({
                   <input type="color" value={selected.fill} onChange={(e) => update(selected.id, { fill: e.target.value })}
                     className="w-8 h-8 rounded cursor-pointer border border-slate-200" />
                   <input type="range" min={8} max={displayH} value={selected.fontSize}
-                    onChange={(e) => update(selected.id, { fontSize: parseInt(e.target.value) })} className="flex-1 accent-indigo-600" />
+                    onChange={(e) => update(selected.id, { fontSize: parseInt(e.target.value) })} className="flex-1 accent-accent-800" />
                 </div>
               </div>
             )}
@@ -394,7 +394,7 @@ export default function DesignEditor({
             <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 px-1">Layers</span>
             {[...layers].reverse().map((l) => (
               <button key={l.id} onClick={() => setSelectedId(l.id)}
-                className={`w-full text-left px-2 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2 ${selectedId === l.id ? "bg-indigo-50 text-indigo-700" : "text-slate-600 hover:bg-slate-50"}`}>
+                className={`w-full text-left px-2 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2 ${selectedId === l.id ? "bg-accent-50 text-accent-800" : "text-slate-600 hover:bg-slate-50"}`}>
                 {l.type === "text" ? <Type size={12} /> : l.type === "image" ? <Upload size={12} /> : l.type === "rect" ? <Square size={12} /> : <CircleIcon size={12} />}
                 <span className="truncate">{l.type === "text" ? (l as TextLayer).text : l.type}</span>
               </button>
@@ -410,7 +410,7 @@ export default function DesignEditor({
           <div className="bg-white rounded-3xl shadow-xl w-full max-w-md p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between">
               <span className="text-base font-black text-slate-900 flex items-center gap-2">
-                <Sparkles size={18} className="text-indigo-500" /> AI Image
+                <Sparkles size={18} className="text-accent-700" /> AI Image
               </span>
               <button onClick={() => !aiLoading && setAiOpen(false)} className="text-slate-400 hover:text-slate-700">
                 <X size={18} />
@@ -423,13 +423,13 @@ export default function DesignEditor({
               rows={3}
               autoFocus
               placeholder="Describe the image… e.g. 'a retro sunset with palm trees, bold vintage poster style'"
-              className="w-full bg-white border border-slate-200 rounded-xl text-sm text-slate-800 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 resize-none"
+              className="w-full bg-white border border-slate-200 rounded-xl text-sm text-slate-800 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-accent-500/10 focus:border-accent-700 resize-none"
             />
             {aiError && <p className="text-xs font-bold text-rose-500">{aiError}</p>}
             <button
               onClick={runAi}
               disabled={aiLoading || !aiPrompt.trim()}
-              className="w-full py-3 bg-indigo-600 text-white rounded-xl text-sm font-black uppercase tracking-widest hover:bg-indigo-700 transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full py-3 bg-accent-800 text-white rounded-xl text-sm font-black uppercase tracking-widest hover:bg-accent-950 transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {aiLoading ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
               {aiLoading ? "Generating…" : "Generate & Add"}
@@ -448,8 +448,8 @@ function ToolBtn({ icon, label, onClick, accent }: { icon: React.ReactNode; labe
   return (
     <button onClick={onClick}
       className={`flex flex-col items-center justify-center gap-1 w-14 h-14 rounded-xl border transition-colors ${accent
-        ? "bg-indigo-50 border-indigo-200 text-indigo-600 hover:bg-indigo-100"
-        : "bg-white border-slate-200 text-slate-600 hover:border-indigo-400 hover:text-indigo-600"}`}>
+        ? "bg-accent-50 border-accent-200 text-accent-700 hover:bg-accent-100"
+        : "bg-white border-slate-200 text-slate-600 hover:border-accent-600 hover:text-accent-700"}`}>
       {icon}
       <span className="text-[9px] font-bold uppercase tracking-wide">{label}</span>
     </button>

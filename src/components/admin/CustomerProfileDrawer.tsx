@@ -86,7 +86,7 @@ export default function CustomerProfileDrawer({
   if (loading) {
     return (
       <div className="h-full flex items-center justify-center bg-white">
-        <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
+        <Loader2 className="w-8 h-8 text-accent-700 animate-spin" />
       </div>
     );
   }
@@ -98,7 +98,7 @@ export default function CustomerProfileDrawer({
       {/* HEADER */}
       <div className="px-8 py-6 bg-white border-b border-slate-200 flex justify-between items-center sticky top-0 z-10">
         <div className="flex items-center gap-4">
-           <div className="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+           <div className="w-10 h-10 bg-accent-800 rounded-full flex items-center justify-center text-white font-bold text-lg">
               {profile.name?.[0] || profile.email[0].toUpperCase()}
            </div>
            <div>
@@ -183,7 +183,7 @@ export default function CustomerProfileDrawer({
                  <button 
                   onClick={handleSaveNotes}
                   disabled={savingNotes}
-                  className="text-indigo-600 hover:text-indigo-700 p-1 transition-colors"
+                  className="text-accent-700 hover:text-accent-800 p-1 transition-colors"
                  >
                     {savingNotes ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
                  </button>
@@ -191,7 +191,7 @@ export default function CustomerProfileDrawer({
               <textarea 
                  value={notes}
                  onChange={(e) => setNotes(e.target.value)}
-                 className="w-full h-40 p-4 bg-slate-50 border border-slate-100 rounded-lg text-sm text-slate-600 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all leading-relaxed"
+                 className="w-full h-40 p-4 bg-slate-50 border border-slate-100 rounded-lg text-sm text-slate-600 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-accent-500/10 focus:border-accent-700 transition-all leading-relaxed"
                  placeholder="Jot down internal intelligence..."
               />
            </section>

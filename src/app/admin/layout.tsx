@@ -16,7 +16,7 @@ export default async function AdminRootLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F8F9FA]">
+    <div data-admin-surface className="flex min-h-screen bg-[#F8F9FA]">
       <AdminSidebar user={user} />
       <main className="flex-1 ml-64 p-12 overflow-x-hidden">
         {children}

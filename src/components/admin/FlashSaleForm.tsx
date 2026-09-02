@@ -162,7 +162,7 @@ export default function FlashSaleForm({ initialData }: FlashSaleFormProps) {
       {/* SECTION 2: WELCOME PROTOCOL */}
       <div className="space-y-8 bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm">
         <div className="flex items-center gap-4 mb-2">
-          <BellRing className="text-indigo-600" size={24} />
+          <BellRing className="text-accent-700" size={24} />
           <h2 className="text-2xl font-serif italic font-black tracking-tighter lowercase text-slate-900">Welcome Protocol (Newsletter)</h2>
         </div>
 
@@ -179,7 +179,7 @@ export default function FlashSaleForm({ initialData }: FlashSaleFormProps) {
             type="button"
             onClick={() => setWelcomeActive(!welcomeActive)}
             className={`relative w-14 h-7 rounded-full transition-colors duration-300 border-2 ${
-              welcomeActive ? "bg-indigo-600 border-indigo-600" : "bg-slate-200 border-slate-300"
+              welcomeActive ? "bg-accent-800 border-accent-800" : "bg-slate-200 border-slate-300"
             }`}
           >
             <span
@@ -198,7 +198,7 @@ export default function FlashSaleForm({ initialData }: FlashSaleFormProps) {
               required
               value={welcomeTitle}
               onChange={(e) => setWelcomeTitle(e.target.value)}
-              className="w-full bg-slate-50/50 border border-slate-100 text-sm font-medium px-6 py-5 text-slate-900 focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-600 focus:bg-white transition-all rounded-3xl"
+              className="w-full bg-slate-50/50 border border-slate-100 text-sm font-medium px-6 py-5 text-slate-900 focus:outline-none focus:ring-4 focus:ring-accent-500/5 focus:border-accent-800 focus:bg-white transition-all rounded-3xl"
             />
           </div>
           <div className="space-y-3">
@@ -208,7 +208,7 @@ export default function FlashSaleForm({ initialData }: FlashSaleFormProps) {
               required
               value={welcomeSubtitle}
               onChange={(e) => setWelcomeSubtitle(e.target.value)}
-              className="w-full bg-slate-50/50 border border-slate-100 text-sm font-medium px-6 py-5 text-slate-900 focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-600 focus:bg-white transition-all rounded-3xl"
+              className="w-full bg-slate-50/50 border border-slate-100 text-sm font-medium px-6 py-5 text-slate-900 focus:outline-none focus:ring-4 focus:ring-accent-500/5 focus:border-accent-800 focus:bg-white transition-all rounded-3xl"
             />
           </div>
           <div className="space-y-3 md:col-span-2">
@@ -218,7 +218,7 @@ export default function FlashSaleForm({ initialData }: FlashSaleFormProps) {
               required
               value={welcomeDescription}
               onChange={(e) => setWelcomeDescription(e.target.value)}
-              className="w-full bg-slate-50/50 border border-slate-100 text-sm font-medium px-6 py-5 text-slate-900 focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-600 focus:bg-white transition-all rounded-3xl"
+              className="w-full bg-slate-50/50 border border-slate-100 text-sm font-medium px-6 py-5 text-slate-900 focus:outline-none focus:ring-4 focus:ring-accent-500/5 focus:border-accent-800 focus:bg-white transition-all rounded-3xl"
             />
           </div>
         </div>

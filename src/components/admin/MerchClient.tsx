@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { updateMerchSettings, updateCollectionImage, upsertDiscoveryItem, removeDiscoveryItem } from "@/app/actions/merch";
-import { upload } from "@vercel/blob/client";
+import { uploadMerchAsset } from "@/app/actions/upload";
 import { Video, Megaphone, Image as ImageIcon, Trash2, Plus, Loader2, Star, Zap, Edit3, Check, Search, LayoutGrid, Flame, Upload, X } from "lucide-react";
 
 type Config = {
@@ -128,13 +128,17 @@ export default function MerchClient({
     if (!file) return;
     setIsUploading(true);
     try {
-      const blob = await upload(file.name, file, {
-        access: 'public',
-        handleUploadUrl: '/api/upload',
-      });
-      setHeroImageUrl(blob.url);
-    } catch (error) {
-      alert("Poster Upload Failed.");
+      const body = new FormData();
+      body.append("file", file);
+      const result = await uploadMerchAsset(body);
+
+      if (!result.success) {
+        alert(result.message);
+        return;
+      }
+      setHeroImageUrl(result.url);
+    } catch {
+      alert("Poster upload failed. Please try again.");
     } finally {
       setIsUploading(false);
     }
@@ -166,27 +170,21 @@ export default function MerchClient({
     setIsUploading(true);
 
     try {
-      const blob = await upload(file.name, file, {
-        access: 'public',
-        handleUploadUrl: '/api/upload',
-      });
-      
-      setEditForm((prev: any) => ({ ...prev, imageUrl: blob.url }));
-    } catch (error: any) {
-      console.group("Discovery Upload Diagnostic");
-      console.error("Error Object:", error);
-      if (error instanceof Response) {
-        try {
-          const body = await error.json();
-          console.error("Server Response Body:", body);
-          alert(`UPLOAD FAILED [${body.code || 'UNKNOWN'}]: ${body.error || error.statusText}`);
-        } catch {
-          console.error("Raw status:", error.status, error.statusText);
-        }
-      } else {
-        alert(error.message || "UPLOAD FAILED. Check console.");
+      const body = new FormData();
+      body.append("file", file);
+      const result = await uploadMerchAsset(body);
+
+      // The action reports why it refused — file too large, wrong type, bucket
+      // missing — so show that instead of a generic failure.
+      if (!result.success) {
+        alert(result.message);
+        return;
       }
-      console.groupEnd();
+
+      setEditForm((prev: any) => ({ ...prev, imageUrl: result.url }));
+    } catch (error: any) {
+      console.error("[MERCH] Discovery image upload failed:", error);
+      alert(error?.message || "Upload failed. Please try again.");
     } finally {
       setIsUploading(false);
     }
@@ -229,7 +227,7 @@ export default function MerchClient({
           <button 
             onClick={handleSaveConfig}
             disabled={isSavingConfig}
-            className="w-full md:w-auto px-8 py-3.5 bg-indigo-600 text-white text-sm font-bold rounded-2xl hover:bg-indigo-700 transition-all flex items-center justify-center gap-3"
+            className="w-full md:w-auto px-8 py-3.5 bg-accent-800 text-white text-sm font-bold rounded-2xl hover:bg-accent-950 transition-all flex items-center justify-center gap-3"
           >
             {isSavingConfig ? <Loader2 className="animate-spin" size={18} /> : <Check size={18} />} 
             Save Global Assets
@@ -246,15 +244,15 @@ export default function MerchClient({
               }}
               className={`relative overflow-hidden group p-8 rounded-3xl border-2 transition-all text-left ${
                 activeSection === section.id 
-                ? 'bg-white border-indigo-600 ring-4 ring-indigo-50 shadow-sm' 
+                ? 'bg-white border-accent-800 ring-4 ring-accent-50 shadow-sm' 
                 : 'bg-white border-slate-200 hover:border-slate-300'
               }`}
             >
               <div className="flex justify-between items-start">
-                <div className={`p-4 rounded-2xl ${activeSection === section.id ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'}`}>
+                <div className={`p-4 rounded-2xl ${activeSection === section.id ? 'bg-accent-800 text-white' : 'bg-slate-100 text-slate-600'}`}>
                   <section.icon size={28} />
                 </div>
-                {activeSection === section.id && <div className="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest">Active Scope</div>}
+                {activeSection === section.id && <div className="bg-accent-50 text-accent-800 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest">Active Scope</div>}
               </div>
               <div className="mt-8 space-y-2">
                 <h3 className={`text-2xl font-black transition-colors leading-none ${activeSection === section.id ? 'text-slate-900' : 'text-slate-400'}`}>
@@ -278,7 +276,7 @@ export default function MerchClient({
             </div>
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="w-full md:w-auto px-8 py-3 bg-indigo-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all"
+              className="w-full md:w-auto px-8 py-3 bg-accent-800 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-accent-950 transition-all"
             >
               <Plus size={20} /> Select Collection from Menu
             </button>
@@ -294,7 +292,7 @@ export default function MerchClient({
                     placeholder="Search all collections catalog..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all font-medium"
+                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-accent-500 focus:bg-white outline-none transition-all font-medium"
                   />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -303,11 +301,11 @@ export default function MerchClient({
                       key={coll.id}
                       onClick={() => handleAddDiscovery(coll.id)}
                       disabled={isAddingDiscovery === coll.id}
-                      className="group p-4 bg-white border border-slate-200 rounded-xl hover:border-indigo-600 hover:ring-2 hover:ring-indigo-50 transition-all text-left"
+                      className="group p-4 bg-white border border-slate-200 rounded-xl hover:border-accent-800 hover:ring-2 hover:ring-accent-50 transition-all text-left"
                     >
                       <div className="flex justify-between items-center">
-                        <span className="text-sm font-bold text-slate-700 group-hover:text-indigo-600 transition-colors uppercase truncate">{coll.name}</span>
-                        {isAddingDiscovery === coll.id ? <Loader2 size={14} className="animate-spin text-indigo-600" /> : <Plus size={14} className="text-slate-300 group-hover:text-indigo-600" />}
+                        <span className="text-sm font-bold text-slate-700 group-hover:text-accent-700 transition-colors uppercase truncate">{coll.name}</span>
+                        {isAddingDiscovery === coll.id ? <Loader2 size={14} className="animate-spin text-accent-700" /> : <Plus size={14} className="text-slate-300 group-hover:text-accent-700" />}
                       </div>
                     </button>
                   ))}
@@ -330,7 +328,7 @@ export default function MerchClient({
                     <div className="flex justify-between items-start">
                       <div className="space-y-1">
                         <h3 className="text-lg font-extrabold text-slate-900 tracking-tight uppercase italic">{item.collection.name}</h3>
-                        <div className="inline-block bg-indigo-50 text-indigo-700 text-[10px] font-black px-2 py-1 rounded-md tracking-widest uppercase">
+                        <div className="inline-block bg-accent-50 text-accent-800 text-[10px] font-black px-2 py-1 rounded-md tracking-widest uppercase">
                           {item.customDescription || "Set description"}
                         </div>
                       </div>
@@ -343,7 +341,7 @@ export default function MerchClient({
                               description: item.customDescription || "" 
                             });
                           }}
-                          className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
+                          className="p-2 text-slate-400 hover:text-accent-700 hover:bg-accent-50 rounded-lg transition-all"
                         >
                           <Edit3 size={18} />
                         </button>
@@ -362,11 +360,11 @@ export default function MerchClient({
                           <div className="space-y-3">
                             <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Storefront Asset Media (1080x1350px Optimized)</label>
                             
-                            <label className="cursor-pointer group flex items-center justify-center gap-4 w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl py-12 hover:border-indigo-500 hover:bg-indigo-50/30 transition-all duration-300">
+                            <label className="cursor-pointer group flex items-center justify-center gap-4 w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl py-12 hover:border-accent-700 hover:bg-accent-50/30 transition-all duration-300">
                               {isUploading ? (
                                 <div className="flex flex-col items-center gap-2">
-                                  <Loader2 className="animate-spin text-indigo-600" size={32} />
-                                  <span className="text-xs font-bold text-indigo-600 uppercase tracking-widest">Uploading Media...</span>
+                                  <Loader2 className="animate-spin text-accent-700" size={32} />
+                                  <span className="text-xs font-bold text-accent-700 uppercase tracking-widest">Uploading Media...</span>
                                 </div>
                               ) : editForm.imageUrl ? (
                                 <div className="flex flex-col items-center gap-2">
@@ -386,14 +384,14 @@ export default function MerchClient({
                                       <ImageIcon size={20} className="text-white" />
                                     </div>
                                   </div>
-                                  <span className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em]">Change Asset</span>
+                                  <span className="text-[10px] font-black text-accent-700 uppercase tracking-[0.2em]">Change Asset</span>
                                 </div>
                               ) : (
                                 <div className="flex flex-col items-center gap-2">
                                   <div className="p-4 bg-white rounded-full shadow-sm group-hover:scale-110 transition-transform">
-                                    <Upload className="text-slate-400 group-hover:text-indigo-600" size={24} />
+                                    <Upload className="text-slate-400 group-hover:text-accent-700" size={24} />
                                   </div>
-                                  <span className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] group-hover:text-indigo-600">Select File from Device</span>
+                                  <span className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] group-hover:text-accent-700">Select File from Device</span>
                                 </div>
                               )}
                               <input 
@@ -413,7 +411,7 @@ export default function MerchClient({
                               value={editForm.description}
                               onChange={(e) => setEditForm({...editForm, description: e.target.value})}
                               placeholder="E.G. UNDER ₹599"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-4 text-sm font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-4 text-sm font-bold focus:ring-2 focus:ring-accent-500 outline-none transition-all"
                             />
                           </div>
                         </div>
@@ -421,7 +419,7 @@ export default function MerchClient({
                         <div className="flex gap-4 pt-4">
                           <button 
                             onClick={() => handleSaveItemEdit(item.id, item.collectionId)}
-                            className="flex-1 bg-indigo-600 text-white text-sm font-bold py-4 rounded-xl hover:bg-indigo-700 transition-all flex items-center justify-center gap-3"
+                            className="flex-1 bg-accent-800 text-white text-sm font-bold py-4 rounded-xl hover:bg-accent-950 transition-all flex items-center justify-center gap-3"
                           >
                             <Check size={20} /> Finalize and Ingest Curation
                           </button>
@@ -472,17 +470,17 @@ export default function MerchClient({
                       value={heroImageUrl}
                       onChange={(e) => setHeroImageUrl(e.target.value)}
                       placeholder="https://images.unsplash.com/..."
-                      className="w-full bg-slate-50 border border-slate-200 text-sm font-medium text-slate-900 rounded-xl px-12 py-4 outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all"
+                      className="w-full bg-slate-50 border border-slate-200 text-sm font-medium text-slate-900 rounded-xl px-12 py-4 outline-none focus:ring-2 focus:ring-accent-500 focus:bg-white transition-all"
                     />
                   </div>
                   
-                  <label className="cursor-pointer group flex items-center justify-center gap-4 w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl py-8 hover:border-indigo-500 hover:bg-indigo-50/30 transition-all duration-300">
+                  <label className="cursor-pointer group flex items-center justify-center gap-4 w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl py-8 hover:border-accent-700 hover:bg-accent-50/30 transition-all duration-300">
                     {isUploading ? (
-                      <Loader2 className="animate-spin text-indigo-600" size={24} />
+                      <Loader2 className="animate-spin text-accent-700" size={24} />
                     ) : (
                       <div className="flex items-center gap-2">
-                        <Upload size={18} className="text-slate-400 group-hover:text-indigo-600" />
-                        <span className="text-xs font-black text-slate-500 uppercase tracking-widest group-hover:text-indigo-600">Upload from Device</span>
+                        <Upload size={18} className="text-slate-400 group-hover:text-accent-700" />
+                        <span className="text-xs font-black text-slate-500 uppercase tracking-widest group-hover:text-accent-700">Upload from Device</span>
                       </div>
                     )}
                     <input type="file" className="hidden" accept="image/*" onChange={handleHeroPosterUpload} disabled={isUploading} />
@@ -493,7 +491,7 @@ export default function MerchClient({
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Animation Sequencer Playlist</label>
-                   <span className="text-[8px] font-bold text-indigo-500 uppercase tracking-widest">Tip: Use Cloudinary f_auto,q_auto links</span>
+                   <span className="text-[8px] font-bold text-accent-700 uppercase tracking-widest">Tip: Use Cloudinary f_auto,q_auto links</span>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -509,7 +507,7 @@ export default function MerchClient({
                           setHeroVideoUrls(next);
                         }}
                         placeholder={`Hero Animation ${idx + 1}`}
-                        className="w-full bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 rounded-xl px-10 py-3.5 outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all"
+                        className="w-full bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 rounded-xl px-10 py-3.5 outline-none focus:ring-2 focus:ring-accent-500 focus:bg-white transition-all"
                       />
                     </div>
                   ))}
@@ -519,7 +517,7 @@ export default function MerchClient({
               <button
                 type="submit"
                 disabled={isSavingConfig}
-                className="w-full bg-[#121212] text-white py-4 rounded-xl text-xs font-black uppercase tracking-[0.3em] flex items-center justify-center gap-2 hover:bg-indigo-900 transition-all"
+                className="w-full bg-[#121212] text-white py-4 rounded-xl text-xs font-black uppercase tracking-[0.3em] flex items-center justify-center gap-2 hover:bg-accent-950 transition-all"
               >
                 {isSavingConfig ? <Loader2 className="animate-spin" size={16} /> : "Finalize Global Hierarchy"}
               </button>

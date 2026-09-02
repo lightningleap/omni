@@ -8,8 +8,8 @@ export default function AdminDashboardPage() {
       
       {/* Hero Greeting */}
       <div className="space-y-4">
-        <div className="flex items-center gap-3 text-indigo-600">
-          <div className="p-2 bg-indigo-50 rounded-lg">
+        <div className="flex items-center gap-3 text-accent-700">
+          <div className="p-2 bg-accent-50 rounded-lg">
             <Package size={20} />
           </div>
           <h1 className="text-sm font-bold tracking-tight uppercase">Dashboard Overview</h1>
@@ -32,37 +32,37 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         {/* Quick Action: View Shop */}
-        <Link href="/" target="_blank" className="group p-8 bg-white border border-neutral-200/60 rounded-3xl hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-500/5 transition-all relative block">
-          <div className="w-12 h-12 bg-neutral-50 rounded-2xl flex items-center justify-center mb-6 text-neutral-400 group-hover:text-indigo-600 group-hover:bg-indigo-50 transition-all duration-300">
+        <Link href="/" target="_blank" className="group p-8 bg-white border border-neutral-200/60 rounded-3xl hover:border-accent-200 hover:shadow-xl hover:shadow-accent-500/5 transition-all relative block">
+          <div className="w-12 h-12 bg-neutral-50 rounded-2xl flex items-center justify-center mb-6 text-neutral-400 group-hover:text-accent-700 group-hover:bg-accent-50 transition-all duration-300">
             <Store size={24} />
           </div>
           <h2 className="text-sm font-bold tracking-tight text-neutral-900 mb-2">View Storefront</h2>
           <p className="text-xs text-neutral-500 font-medium leading-relaxed">Preview the live client interface and user experience.</p>
-          <div className="mt-6 flex items-center gap-2 text-indigo-600 font-bold text-[10px] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="mt-6 flex items-center gap-2 text-accent-700 font-bold text-[10px] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
             Visit Site <Play size={10} className="fill-current" />
           </div>
         </Link>
         
         {/* Quick Action: Sync Printify */}
-        <Link href="/admin/products" className="group p-8 bg-white border border-neutral-200/60 rounded-3xl hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-500/5 transition-all relative block">
-          <div className="w-12 h-12 bg-neutral-50 rounded-2xl flex items-center justify-center mb-6 text-neutral-400 group-hover:text-indigo-600 group-hover:bg-indigo-50 transition-all duration-300">
+        <Link href="/admin/products" className="group p-8 bg-white border border-neutral-200/60 rounded-3xl hover:border-accent-200 hover:shadow-xl hover:shadow-accent-500/5 transition-all relative block">
+          <div className="w-12 h-12 bg-neutral-50 rounded-2xl flex items-center justify-center mb-6 text-neutral-400 group-hover:text-accent-700 group-hover:bg-accent-50 transition-all duration-300">
             <Play size={24} />
           </div>
           <h2 className="text-sm font-bold tracking-tight text-neutral-900 mb-2">Product Sync</h2>
           <p className="text-xs text-neutral-500 font-medium leading-relaxed">Trigger manual synchronization with Printify catalog.</p>
-          <div className="mt-6 flex items-center gap-2 text-indigo-600 font-bold text-[10px] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="mt-6 flex items-center gap-2 text-accent-700 font-bold text-[10px] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
             Manage Catalog <Play size={10} className="fill-current" />
           </div>
         </Link>
 
         {/* Quick Action: Check Orders */}
-        <Link href="/admin/orders" className="group p-8 bg-white border border-neutral-200/60 rounded-3xl hover:border-indigo-200 hover:shadow-xl hover:shadow-indigo-500/5 transition-all relative block">
-          <div className="w-12 h-12 bg-neutral-50 rounded-2xl flex items-center justify-center mb-6 text-neutral-400 group-hover:text-indigo-600 group-hover:bg-indigo-50 transition-all duration-300">
+        <Link href="/admin/orders" className="group p-8 bg-white border border-neutral-200/60 rounded-3xl hover:border-accent-200 hover:shadow-xl hover:shadow-accent-500/5 transition-all relative block">
+          <div className="w-12 h-12 bg-neutral-50 rounded-2xl flex items-center justify-center mb-6 text-neutral-400 group-hover:text-accent-700 group-hover:bg-accent-50 transition-all duration-300">
             <Package size={24} />
           </div>
           <h2 className="text-sm font-bold tracking-tight text-neutral-900 mb-2">Order Tracking</h2>
           <p className="text-xs text-neutral-500 font-medium leading-relaxed">Verify logistics, fulfillment, and shipping signals.</p>
-          <div className="mt-6 flex items-center gap-2 text-indigo-600 font-bold text-[10px] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="mt-6 flex items-center gap-2 text-accent-700 font-bold text-[10px] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
             Check Orders <Play size={10} className="fill-current" />
           </div>
         </Link>
