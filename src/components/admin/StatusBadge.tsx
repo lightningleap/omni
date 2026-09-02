@@ -15,16 +15,27 @@ export function StatusBadge({ status }: { status: string }) {
     case "SHIPPED":
       colors = "bg-indigo-50 text-indigo-700 border-indigo-100 font-bold";
       break;
+    case "REFUNDED":
+    case "PARTIALLY_REFUNDED":
+      colors = "bg-amber-50 text-amber-700 border-amber-100 font-bold";
+      break;
     case "CANCELLED":
     case "FAILED":
+    case "PAYMENT_FAILED":
+    case "DISPUTED":
     case "MANUAL_INTERVENTION_REQUIRED":
       colors = "bg-rose-50 text-rose-700 border-rose-100 font-bold";
       break;
   }
 
+  const label =
+    norm === "MANUAL_INTERVENTION_REQUIRED"
+      ? "INTERVENTION REQ"
+      : norm.replace(/_/g, " ");
+
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wide border ${colors}`}>
-      {norm === 'MANUAL_INTERVENTION_REQUIRED' ? 'INTERVENTION REQ' : norm}
+      {label}
     </span>
   );
 }

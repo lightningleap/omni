@@ -22,7 +22,7 @@ const FilterSection = ({ title, children, defaultOpen = true }: { title: string;
     <div className="border-b border-neutral-100 pb-6 mb-6">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center justify-between w-full text-[10px] uppercase tracking-[0.3em] font-black text-neutral-900 hover:text-[#ff3f6c] transition-colors mb-4"
+        className="type-label mb-4 flex w-full items-center justify-between text-neutral-900 transition-colors hover:text-[#ff3f6c]"
       >
         {title}
         <ChevronDown size={12} className={`transition-transform duration-300 ${open ? 'rotate-180' : ''}`} />
@@ -200,10 +200,10 @@ const FilterSidebar = ({ availableSizes, isOpen, onClose }: FilterSidebarProps) 
       {/* Desktop Persistent Sidebar */}
       <aside className="hidden lg:block w-[260px] flex-shrink-0 pr-8 sticky top-32 h-[calc(100vh-160px)] overflow-y-auto no-scrollbar border-r border-neutral-100">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-[11px] uppercase tracking-[0.3em] font-black text-black">Filters</h2>
+          <h2 className="type-label text-black">Filters</h2>
           <button
             onClick={() => router.push(window.location.pathname, { scroll: false })}
-            className="text-[9px] uppercase tracking-[0.1em] font-bold text-[#ff3f6c] hover:underline"
+            className="type-button text-[11px] uppercase tracking-[0.1em] text-[#ff3f6c] hover:underline"
           >
             Clear All
           </button>
@@ -231,12 +231,12 @@ const FilterSidebar = ({ availableSizes, isOpen, onClose }: FilterSidebarProps) 
             >
               <div className="flex items-center justify-between mb-10">
                 <div className="flex items-center gap-4">
-                  <h2 className="text-[10px] uppercase tracking-[0.4em] font-black text-black">
+                  <h2 className="type-label text-black">
                     Filters
                   </h2>
                   <button
                     onClick={() => router.push(window.location.pathname, { scroll: false })}
-                    className="text-[9px] uppercase tracking-[0.1em] font-bold text-[#ff3f6c]"
+                    className="type-button text-[11px] uppercase tracking-[0.1em] text-[#ff3f6c]"
                   >
                     Clear All
                   </button>

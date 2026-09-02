@@ -1,25 +1,7 @@
 "use server"
 
 import { put } from "@vercel/blob"
-import { createClient } from "@/utils/supabase/server"
-import { cookies } from "next/headers"
-
-/**
- * Gatekeeper: Ensures only the Master Admin defined in Vercel environment
- * variables can access the file upload engine.
- */
-const requireAdmin = async () => {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
-  const { data: { user } } = await supabase.auth.getUser();
-
-  const masterEmail = process.env.MASTER_ADMIN_EMAIL?.toLowerCase().trim();
-  const userEmail = user?.email?.toLowerCase().trim();
-
-  if (!user || userEmail !== masterEmail) {
-    throw new Error("Unauthorized. Administrative clearance required for asset upload.");
-  }
-}
+import { requireAdmin } from "@/lib/auth";
 
 export async function uploadFile(formData: FormData) {
   // 1. Verify Identity

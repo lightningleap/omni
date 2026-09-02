@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 /* ─────────────────────────────────────────────────────
@@ -13,21 +12,75 @@
 @theme {
   --color-brand-peach: #FFF5F2;
   --color-brand-terracotta: #D97757;
-  --color-brand-indigo: #4F46E5;
+  --color-brand-mint: #75AC95;
 
-  /* Typography — Stylish Serif */
+  /* ── ACCENT UTILITIES ───────────────────────────────────
+     Registers the accent scale below as real Tailwind colours, so components
+     write `bg-accent`, `text-accent-ink`, `ring-accent/30`, `border-accent-800`
+     instead of spelling a hex. Each one points at the `--accent-*` custom
+     property rather than at a literal value, which is what makes the accent
+     THEMEABLE: `[data-storefront-mode="kids"]` re-declares those properties and
+     every utility below re-resolves through the cascade. No component knows
+     which storefront it is rendering in.
+
+     Opacity modifiers work as normal — Tailwind compiles `ring-accent/30` to a
+     `color-mix()` over the variable. */
+  --color-accent: var(--accent-900);
+  --color-accent-50: var(--accent-50);
+  --color-accent-100: var(--accent-100);
+  --color-accent-200: var(--accent-200);
+  --color-accent-300: var(--accent-300);
+  --color-accent-400: var(--accent-400);
+  --color-accent-500: var(--accent-500);
+  --color-accent-600: var(--accent-600);
+  --color-accent-700: var(--accent-700);
+  --color-accent-800: var(--accent-800);
+  --color-accent-900: var(--accent-900);
+  --color-accent-950: var(--accent-950);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-on: var(--accent-on);
+  --color-accent-on-strong: var(--accent-on-strong);
+
+  /* ── TWO-FONT SYSTEM ───────────────────────────────────
+     Manrope  → every interface element (nav, product info, buttons, forms).
+     Mellos   → editorial display only (hero, section titles, banners).
+     `font-display` / `font-sans` are the only two families components should
+     reach for; `font-serif` remains for the legacy admin styling. */
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Mellos", var(--font-playfair), ui-serif, Georgia, "Times New Roman", serif;
   --font-serif: var(--font-playfair), "Georgia", ui-serif, serif;
 }
 
+/* ── DISPLAY FACE ──────────────────────────────────────
+   Mellos is a licensed font, so the file is not committed. Drop
+   `mellos-regular.woff2` into `public/fonts/` (see public/fonts/README.md) and
+   it takes over automatically. Until then this @font-face simply fails to
+   resolve and the stack falls through to Playfair Display — the same editorial
+   serif register — so nothing breaks and no layout shifts.
+
+   Regular (400) is the only weight loaded: the scale below never asks for a
+   bolder display cut, per the performance budget. */
+@font-face {
+  font-family: "Mellos";
+  src: url("/fonts/mellos-regular.woff2") format("woff2"),
+       url("/fonts/mellos-regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
+  /* Primary UI typeface — Manrope, with a system fallback stack */
+  --ads-font: var(--font-manrope), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+
   /* Brand Palette */
   --myntra-pink:    #ff3f6c;
   --brand-peach:    #FFF5F2;
   --brand-terracotta: #D97757;
-  --brand-indigo:   #4F46E5;
+  --brand-mint:     #75AC95;   /* mirrors --accent-900; see the accent scale below */
 
   /* Neutral Scale */
-  --color-bg:       #ffffff;
+  --color-bg:       #F8F6F2;   /* warm off-white base */
   --color-surface:  #f5f5f6;
   --color-text:     #334155;
   --color-heading:  #0F172A;
@@ -35,8 +88,127 @@
   --color-meta:     #94969f;
   --color-border:   #eaeaec;
 
-  /* Accent */
-  --accent: var(--brand-indigo);
+  /* ── ACCENT: UNRWLY mint ────────────────────────────────────────────────
+     The storefront accent is the mint from the brand banner, #75AC95, as a
+     full scale rather than a single value — one colour cannot be both a
+     readable button ground and a light tint.
+
+     The dark end is not a darkened guess: each shade that replaced a navy was
+     chosen to sit at the SAME relative luminance as the navy it stands in for,
+     so every existing text-on-accent pairing keeps the contrast it already had.
+     Contrast against white is noted per step; --accent-600 and lighter are for
+     tints, borders and fills, never for white text.
+
+     Components no longer spell these values literally. They use the Tailwind
+     colours registered in the `@theme` block at the top of this file —
+     `bg-accent`, `text-accent-ink`, `hover:bg-accent-800` — which resolve
+     through the properties below. That indirection is the whole point: the Kids
+     storefront re-declares this scale (see the `[data-storefront-mode="kids"]`
+     block after `:root`) and the entire UI re-colours without a component
+     changing. This block is the source of truth for what each step MEANS; the
+     Kids block is the same meanings in a different hue. */
+  --accent-50:  #F2F8F5;  /* lightest wash — 1.08:1 on white */
+  --accent-100: #E6F1EC;  /* tinted surface */
+  --accent-200: #D0E2DB;  /* hairline borders, selection highlight */
+  --accent-300: #B5D1C5;  /* soft fills */
+  --accent-400: #93BEAD;  /* decorative fills */
+  --accent-500: #70A992;  /* focus rings on light grounds */
+  --accent-600: #509176;  /* 3.68:1 — large text / non-text only */
+  --accent-700: #3E715C;  /* 5.65:1 — AA body text on white */
+  --accent-800: #2F5646;  /* 8.28:1 — hover ground under white text */
+  /* Set to the requested accent directly. NOTE: this step is the ground under
+     white text (newsletter band, announcement bar, primary buttons, the
+     Adult/Kids pill) and at 2.60:1 white on it is still under the 4.5:1 AA floor
+     — it sat at 11.25:1 before this value was set by hand. Those surfaces want a
+     dark foreground: #0F172A on this green measures 6.88:1. */
+  --accent-900: #75AC95;  /* 2.60:1 on white — mid-tone, NOT a white-text ground */
+  --accent-950: #162C23;  /* 14.80:1 — pressed / darkest headings */
+
+  /* --brand-mint above mirrors this accent. Nothing reads it today.
+
+     The logo no longer has a colour of its own to disagree with this one. The
+     supplied artwork is drawn in #809B71, an olive sage, but that file is now
+     used as a stencil rather than painted — `BrandMark` masks it and fills it
+     from the accent below, so the mark is this value exactly, in whichever
+     storefront is showing. */
+  --accent: var(--accent-900);
+
+  /* ── ACCENT ROLES ────────────────────────────────────────────────────────
+     Four properties that say what the accent is FOR, rather than what it is.
+     The numbered scale above cannot answer "what colour goes on top of this?",
+     and that question has a different answer per storefront: Adult's accent is
+     a mid-tone that white sits on, Kids' is a bright mint that white vanishes
+     into. Components ask by role, so neither has to know about the other.
+
+     Every value here is Adult's existing behaviour restated, so the Adult
+     storefront renders pixel-for-pixel what it did before. */
+
+  /* The accent as a FOREGROUND on a light ground — text, icons, glyphs. */
+  --accent-ink: var(--accent-900);
+  /* The foreground that goes ON an --accent-900 ground (buttons, chips). */
+  --accent-on: #FFFFFF;
+  /* The foreground on the dark steps — 700 / 800 / 950 hover grounds. */
+  --accent-on-strong: #FFFFFF;
+
+  /* Channel lists, for the translucent accent tints that shadows and focus
+     rings are built from: `rgb(var(--accent-ring-rgb)/0.30)`. Split out because
+     an alpha value cannot be applied to a hex custom property inline. */
+  --accent-ring-rgb: 33 65 51;    /* focus rings, accent-coloured drop shadows */
+  --accent-shade-rgb: 22 44 35;   /* hairlines and ambient shadows (--accent-950) */
+}
+
+/* ── KIDS STOREFRONT ────────────────────────────────────────────────────────
+   The Kids accent is #2BF6C5. Everything else about the design system — type,
+   spacing, neutrals, layout, motion — is shared with Adult; only this scale
+   changes, and only while the Kids storefront is selected.
+
+   HOW IT IS SCOPED
+   `data-storefront-mode` is stamped on <html> from the mode store (see
+   `StorefrontTheme`), so the swap reaches portalled UI too — the cart drawer,
+   the search and newsletter modals, the mobile menu — none of which render
+   inside the page tree. Switching the header toggle re-colours all of it with
+   no re-render and no page load: the browser simply re-resolves the cascade.
+
+   HOW THE STEPS WERE CHOSEN
+   Each step holds the SAME ROLE, at the same rough luminance, as the Adult step
+   it replaces — that is what lets every existing pairing keep working:
+
+     step  kids      on white   adult equivalent   role
+     600   #0FA486   3.15:1     3.68:1             large text / non-text only
+     700   #0C7F69   4.94:1     5.65:1             AA body text on white
+     800   #0A5C4E   7.91:1     8.28:1             hover ground under white text
+     900   #2BF6C5   1.39:1     2.60:1             THE ACCENT — grounds, not text
+     950   #06312A   14.18:1    14.80:1            pressed / darkest headings
+
+   THE ONE PLACE THE TWO MODES GENUINELY DIVERGE
+   `--accent-900` is a ground, never a text colour, in both modes — the Adult
+   scale already says so. But Adult gets away with white on its 2.60:1 mint,
+   and Kids cannot: white on #2BF6C5 measures 1.39:1 and is unreadable. So the
+   two role tokens flip:
+     --accent-on   white -> #06312A   (10.19:1 on the mint — buttons stay legible)
+     --accent-ink  the mint -> #0C7F69 (4.94:1 — accent text/icons stay visible)
+   Kids therefore shows #2BF6C5 exactly as specified everywhere the accent is a
+   FILL: buttons, chips, badges, active states, borders, rings, indicators and
+   decorative marks. What it does not do is print 1.39:1 label text in it. */
+[data-storefront-mode="kids"] {
+  --accent-50:  #ECFEF9;
+  --accent-100: #D3FCF0;
+  --accent-200: #A9F7E1;
+  --accent-300: #74EFCD;
+  --accent-400: #43E4BB;
+  --accent-500: #17C9A2;
+  --accent-600: #0FA486;
+  --accent-700: #0C7F69;
+  --accent-800: #0A5C4E;
+  --accent-900: #2BF6C5;   /* the Kids accent */
+  --accent-950: #06312A;
+
+  --accent-ink: var(--accent-700);
+  --accent-on: var(--accent-950);
+  --accent-on-strong: #FFFFFF;
+
+  --accent-ring-rgb: 6 49 42;
+  --accent-shade-rgb: 6 49 42;
 }
 
 /* ── RESET ────────────────────────────────────────── */
@@ -48,21 +220,469 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Hide scrollbars on horizontal scroll tracks (arrow-driven carousels) */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
-  font-family: "Assistant", ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--ads-font);
+  font-size: 14px;    /* ADS font.body */
+  line-height: 20px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  line-height: 1.5;
 }
 
-/* ── TYPOGRAPHY SCALE ─────────────────────────────── */
+/* ── Site-wide subtle film grain ──────────────────────
+   A fixed, grayscale SVG-noise layer sitting just above the off-white base
+   colour but behind all content. Static (no animation), pointer-events off,
+   very low opacity (~3%) so it only reads as fine tactile texture — not a
+   visible pattern. White cards and solid sections naturally sit on top of it. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.14;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='1.6' intercept='-0.3'/%3E%3CfeFuncG type='linear' slope='1.6' intercept='-0.3'/%3E%3CfeFuncB type='linear' slope='1.6' intercept='-0.3'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+/* ── TYPOGRAPHY SCALE ───────────────────────────────────
+   Sizes are fluid via clamp(), so the scale steps down proportionally from
+   desktop → tablet → mobile without breakpoint-specific overrides. The lower
+   bound of each clamp is the mobile size (chosen to stay impactful but fit
+   without awkward breaks); the upper bound is the full editorial desktop size.
+
+   Never apply positive tracking to the display sizes — the serif already
+   carries generous spacing, so each step tightens instead. */
+:root {
+  /* Editorial display steps — Mellos Regular */
+  --type-h1-size: clamp(2.75rem, 6.4vw, 5.5rem);   /* 44px → 88px */
+  --type-h1-leading: 1.02;
+  --type-h1-tracking: -0.03em;
+
+  /* Standalone / page-level display headings — "Order Confirmed", "Get Early
+     Access", empty states. NOT the homepage section rail: that has its own,
+     much quieter step (--type-section-*) so shrinking the rail can't drag page
+     titles down with it. */
+  --type-h2-size: clamp(1.875rem, 1.4rem + 1.78vw, 3rem);  /* 30px → 48px */
+  --type-h2-leading: 1.05;
+  --type-h2-tracking: -0.02em;
+
+  /* ── HOMEPAGE SECTION RAIL ───────────────────────────
+     The label + title pair every major section shares (see SectionHeader).
+     Deliberately understated: the title is a fixed 20px at every breakpoint so
+     there is zero variation between sections, and the imagery below stays the
+     page's primary focus. */
+  --type-section-title-size: 1.5rem;    /* 24px */
+  --type-section-title-leading: 1.2;
+  --type-section-title-tracking: -0.02em;
+
+  /* Section description. Its own step rather than `.type-body`, so shrinking the
+     section rail can't touch body copy anywhere else on the site. Family, weight,
+     tracking and leading are inherited from the body step unchanged — only the
+     size differs. Flat at every breakpoint: 12px is already at the floor for
+     sentence-length copy, so there is nothing sensible to scale down to. */
+  --type-section-subtitle-size: 0.75rem;   /* 12px */
+  --type-section-subtitle-leading: 1.6;    /* same ratio as --type-body-leading */
+
+  --type-h3-size: clamp(1.625rem, 2.9vw, 2.5rem);  /* 26px → 40px */
+  --type-h3-leading: 1.1;
+  --type-h3-tracking: -0.01em;
+
+  /* ── TRUST STEPS ─────────────────────────────────────
+     Two typographic roles the display scale did not have, added as tokens
+     rather than as inline sizes so the Etsy legacy strip and the Etsy review
+     section are typeset by the SAME system as every other section — and so a
+     future trust surface inherits them instead of inventing a third size.
+
+     A statistic (5.0 · 8 · 54 · 2.5). Display face, regular weight: the figure
+     carries by its size and the typeface's proportions, never by thickness —
+     a bold numeral here would read as a marketing badge, which is the exact
+     register this section has to avoid.
+
+     Both steps below sit BELOW `.type-h3` (26→40px) on purpose. These are trust
+     surfaces, not campaign banners: the first pass set them above it and the
+     result read as two hero sections stapled into the middle of the page. A
+     statistic that has to shout is a statistic nobody believes. */
+  --type-stat-size: clamp(2rem, 1.4rem + 2.4vw, 3rem);   /* 32px → 48px */
+  --type-stat-leading: 1;
+  --type-stat-tracking: -0.03em;
+
+  /* A customer's own words — a REVIEW BODY step, not a display one.
+
+     This started life as a pull quote in a testimonial block, in the display
+     face at up to 42px, and every reduction since has been chasing the same
+     mistake: it was the wrong KIND of type, not merely the wrong size. Once the
+     card grew the rest of a real review around it — reviewer, date, stars, the
+     item bought — an oversized serif quote stopped reading as a customer
+     talking and started reading as a slogan. A review that looks like
+     advertising copy is a review nobody believes.
+
+     So it is now the UI face at regular weight with normal tracking, sized just
+     above body copy: a paragraph someone wrote, set to be read. That also puts
+     it well below `.type-section-title` (24px display) and `.type-stat`
+     (32→48px), which is the hierarchy the section wants — heading loudest,
+     rating next, the review simply legible. */
+  --type-review-size: clamp(1.0625rem, 1rem + 0.28vw, 1.25rem);  /* 17px → 20px */
+  --type-review-leading: 1.5;
+
+  /* UI steps — Manrope */
+  --type-body-size: clamp(1rem, 0.94rem + 0.25vw, 1.125rem); /* 16px → 18px */
+  --type-body-leading: 1.6;
+}
+
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Assistant", ui-sans-serif, system-ui, sans-serif;
-  font-weight: 700;
   color: var(--color-heading);
+}
+
+/* Defaults, layered as `base` so explicit Tailwind text-* / font-* utilities on
+   components still win — this is the DEFAULT, not a straitjacket.
+
+   h1 is always an editorial page title on this site, so it defaults to the
+   display face. h2–h6 stay on Manrope because they are used as often for UI
+   headings (Shopping Bag, Filters, product names in search) as for editorial
+   ones — those opt into the display face with `.type-h2` / `.type-h3`. */
+@layer base {
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--type-h1-size);
+    line-height: var(--type-h1-leading);
+    letter-spacing: var(--type-h1-tracking);
+  }
+  h2, h3, h4, h5, h6 { font-family: var(--ads-font); }
+  h2 { font-size: 29px; line-height: 32px; font-weight: 600; letter-spacing: -0.01em; }
+  h3 { font-size: 24px; line-height: 28px; font-weight: 500; letter-spacing: -0.008em; }
+  h4 { font-size: 20px; line-height: 24px; font-weight: 500; }
+  h5 { font-size: 16px; line-height: 20px; font-weight: 600; }
+  h6 { font-size: 14px; line-height: 16px; font-weight: 600; }
+  small { font-size: 11px; line-height: 16px; }
+}
+
+/* ── TYPE SYSTEM CLASSES ────────────────────────────────
+   The vocabulary every surface should use, so hierarchy stays consistent and
+   there is one place to tune it. Declared in the `components` layer, which
+   means a local Tailwind utility can still override a single value when a
+   design genuinely needs it.
+
+   Hierarchy, largest → smallest:
+     .type-h1             hero headline
+     .type-h2             standalone / page-level display headings
+     .type-h3             editorial feature / banner headings
+     .type-stat           headline statistic (Etsy legacy strip)
+     .type-section-title  homepage section rail title (quietest display step)
+     (product name → .type-product-name, price → .type-price)
+     .type-review         customer review text (one step above body copy)
+     .type-body           body copy
+     .type-label          small uppercase labels / section identifiers
+     .type-caption        supporting text / captions */
+@layer components {
+  .type-h1,
+  .type-h2,
+  .type-h3,
+  .type-section-title,
+  .type-stat {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-style: normal;
+  }
+  .type-h1 {
+    font-size: var(--type-h1-size);
+    line-height: var(--type-h1-leading);
+    letter-spacing: var(--type-h1-tracking);
+  }
+  .type-h2 {
+    font-size: var(--type-h2-size);
+    line-height: var(--type-h2-leading);
+    letter-spacing: var(--type-h2-tracking);
+  }
+  .type-h3 {
+    font-size: var(--type-h3-size);
+    line-height: var(--type-h3-leading);
+    letter-spacing: var(--type-h3-tracking);
+  }
+
+  /* Homepage section title — understated by design, and identical at every
+     breakpoint so no two sections can drift apart. Regular weight only: the
+     elegance is the typeface's proportions, never added thickness. */
+  .type-section-title {
+    font-size: var(--type-section-title-size);
+    line-height: var(--type-section-title-leading);
+    letter-spacing: var(--type-section-title-tracking);
+  }
+
+  /* A headline statistic. Numerals are tabular so a row of stats sits on a
+     shared rhythm rather than each figure setting its own width. */
+  .type-stat {
+    font-size: var(--type-stat-size);
+    line-height: var(--type-stat-leading);
+    letter-spacing: var(--type-stat-tracking);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Customer review text. The UI face, regular weight, normal tracking — one
+     step above `.type-body` and nothing more. Deliberately NOT in the display
+     family: at this size a serif still reads as a pull quote, and the whole
+     point is that it reads as a person. */
+  .type-review {
+    font-family: var(--ads-font);
+    font-size: var(--type-review-size);
+    font-weight: 400;
+    line-height: var(--type-review-leading);
+    letter-spacing: 0;
+  }
+
+  /* Homepage section description — matches `.type-body` in every respect except
+     size, so the six sections read identically. */
+  .type-section-subtitle {
+    font-family: var(--ads-font);
+    font-size: var(--type-section-subtitle-size);
+    font-weight: 400;
+    line-height: var(--type-section-subtitle-leading);
+    letter-spacing: 0;
+  }
+
+  /* Body copy — Manrope Regular, generous leading for long-form readability. */
+  .type-body {
+    font-family: var(--ads-font);
+    font-size: var(--type-body-size);
+    font-weight: 400;
+    line-height: var(--type-body-leading);
+    letter-spacing: 0;
+  }
+
+  /* Small uppercase labels / section identifiers. Tracking is opened up here —
+     the one place positive tracking belongs. Weight 600 rather than 700 and a
+     slightly wider 0.20em: a label should identify a section, not compete with
+     the heading under it. */
+  .type-label {
+    font-family: var(--ads-font);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.3;
+    text-transform: uppercase;
+    letter-spacing: 0.20em;
+  }
+
+  /* Captions / supporting microcopy. */
+  .type-caption {
+    font-family: var(--ads-font);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: 0.01em;
+  }
+
+  /* Product typography — readability first, never the display face. */
+  .type-product-name {
+    font-family: var(--ads-font);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .type-price {
+    font-family: var(--ads-font);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+  }
+  .type-rating {
+    font-family: var(--ads-font);
+    font-weight: 500;
+  }
+
+  /* Navigation — clean, minimal, very subtle tracking. */
+  .type-nav {
+    font-family: var(--ads-font);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+
+  /* Buttons — legible over expressive. */
+  .type-button {
+    font-family: var(--ads-font);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+}
+
+/* ── PREMIUM SECTION HEADING ───────────────────────────
+   Keeps the existing wordmark (font + brand color) but adds an ambient
+   pseudo-element glow, a scroll reveal, and a brief line-art drift.
+   Animates transform / opacity / filter only. */
+.sh-title {
+  /* Section title → display face, H2 step (see .type-h2) */
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--type-h2-size);
+  line-height: var(--type-h2-leading);
+  letter-spacing: var(--type-h2-tracking);
+  color: var(--accent-950);
+  opacity: 0;
+  transform: translateY(24px);
+  filter: blur(8px);
+  transition:
+    opacity .85s cubic-bezier(.22,.61,.36,1),
+    transform .85s cubic-bezier(.22,.61,.36,1),
+    filter .85s cubic-bezier(.22,.61,.36,1);
+  will-change: opacity, transform;
+}
+.sh-title[data-visible="true"] {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+/* Ambient cloud of light — two layered radial gradients via pseudo-elements. */
+.sh-aura {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(1100px, 96vw);
+  height: 240px;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  /* Soft white base glow underneath — fades out well inside the box so the
+     (unblurred) container never shows a rectangular cut */
+  background: radial-gradient(ellipse 55% 58% at 50% 52%, rgba(255,255,255,0.45), rgba(255,255,255,0) 66%);
+  /* Feather the WHOLE composite (container + blurred layers) to zero alpha
+     inside the box — a tight halo around the title that fully dissolves
+     before reaching neighbouring cards or sections, with no edges. */
+  -webkit-mask-image: radial-gradient(ellipse 50% 46% at 50% 50%, #000 32%, transparent 70%);
+  mask-image: radial-gradient(ellipse 50% 46% at 50% 50%, #000 32%, transparent 70%);
+  transition: opacity .9s cubic-bezier(.22,.61,.36,1);
+  pointer-events: none;
+}
+.sh-aura[data-visible="true"] { opacity: 1; }
+/* Gentle pulse on trigger (scroll / click) — swell + drift, then settle back. */
+.sh-aura.is-intense { animation: sh-pulse .85s ease-in-out; }
+.sh-aura::before,
+.sh-aura::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  /* No border-radius / masking — the radial gradients feather their own
+     shape, so there is no clipped ellipse or rectangle edge anywhere. */
+}
+/* Sea-green glow from the left + soft sea-glass teal through the centre.
+   Every layer reaches full transparency well inside the box, leaving 100px+
+   of empty margin for the blur to dissolve — identical feathering on all
+   four sides, no visible start or end. */
+.sh-aura::before {
+  background:
+    radial-gradient(ellipse 48% 64% at 30% 50%, rgba(200,247,239,0.75), rgba(200,247,239,0) 66%),
+    radial-gradient(ellipse 42% 58% at 52% 54%, rgba(190,239,232,0.60), rgba(190,239,232,0) 66%);
+  filter: blur(42px);
+}
+/* Light-aqua centre-right + misty blue edge + broad mist */
+.sh-aura::after {
+  background:
+    radial-gradient(ellipse 40% 56% at 60% 46%, rgba(221,251,247,0.62), rgba(221,251,247,0) 66%),
+    radial-gradient(ellipse 44% 58% at 74% 52%, rgba(208,226,219,0.55), rgba(208,226,219,0) 66%),
+    radial-gradient(ellipse 52% 60% at 50% 56%, rgba(230,241,236,0.45), rgba(230,241,236,0) 68%);
+  filter: blur(48px);
+}
+.sh-aura[data-visible="true"]::before,
+.sh-aura[data-visible="true"]::after {
+  animation: sh-breathe 7s ease-in-out infinite;
+}
+/* ::after breathes out of phase with ::before so the aurora feels alive */
+.sh-aura[data-visible="true"]::after {
+  animation-delay: -3.5s;
+}
+@media (max-width: 1023px) { .sh-aura { width: min(880px, 94vw); height: 220px; } }
+@media (max-width: 639px)  { .sh-aura { width: min(560px, 92vw); height: 190px; } }
+
+.sh-underline {
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(147,190,173,0.42) 30%, rgba(80,145,118,0.58) 50%, rgba(147,190,173,0.42) 70%, rgba(255,255,255,0) 100%);
+  transform: scaleX(0);
+  opacity: 0;
+  transition: transform .7s cubic-bezier(.22,.61,.36,1) .12s, opacity .5s ease .12s;
+  will-change: transform, opacity;
+}
+.sh-underline[data-visible="true"] { transform: scaleX(1); opacity: 1; }
+
+/* Line-art decorative icon — sits behind the text, drifts, then fades out. */
+.sh-ico {
+  position: absolute;
+  pointer-events: none;
+  color: #5E9E96;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: sh-drift 2.6s cubic-bezier(.22,.61,.36,1) forwards;
+}
+
+/* Soft ripple of light on trigger — expands, fades, and merges into the glow. */
+.sh-ripple {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(320px, 60vw);
+  height: 150px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(200,247,239,0.6), rgba(208,226,219,0) 70%);
+  filter: blur(18px);
+  will-change: transform, opacity;
+  animation: sh-ripple .7s ease-out forwards;
+}
+
+@keyframes sh-breathe {
+  0%, 100% { opacity: .85; transform: translate3d(0, 0, 0) scale(1); }
+  50%      { opacity: 1;   transform: translate3d(3px, 0, 0) scale(1.03); }
+}
+@keyframes sh-pulse {
+  0%   { transform: translate(-50%, -50%) scale(1);    filter: brightness(1); }
+  45%  { transform: translate(calc(-50% + 3px), -50%) scale(1.08); filter: brightness(1.2); }
+  100% { transform: translate(-50%, -50%) scale(1);    filter: brightness(1); }
+}
+@keyframes sh-ripple {
+  0%   { opacity: .55; transform: translate(-50%, -50%) scale(.5); }
+  100% { opacity: 0;   transform: translate(-50%, -50%) scale(1.3); }
+}
+@keyframes sh-drift {
+  0%   { opacity: 0; transform: translate3d(0, 0, 0) scale(.55) rotate(0deg); }
+  10%  { opacity: var(--sh-peak, .28); transform: translate3d(calc(var(--sh-tx, 0px) * .18), calc(var(--sh-ty, 0px) * .18), 0) scale(1) rotate(calc(var(--sh-rot, 0deg) * .25)); }
+  69%  { opacity: var(--sh-peak, .28); transform: translate3d(var(--sh-tx, 0px), var(--sh-ty, 0px), 0) scale(1) rotate(var(--sh-rot, 0deg)); }
+  100% { opacity: 0; transform: translate3d(var(--sh-tx, 0px), var(--sh-ty, 0px), 0) scale(1) rotate(var(--sh-rot, 0deg)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sh-title { opacity: 1 !important; transform: none !important; filter: none !important; transition: none !important; }
+  .sh-underline { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .sh-aura { opacity: 1 !important; }
+  .sh-aura[data-visible="true"]::before, .sh-aura[data-visible="true"]::after { animation: none !important; }
+  .sh-aura.is-intense { animation: none !important; transform: translate(-50%, -50%) !important; filter: none !important; }
+  .sh-ico, .sh-ripple { display: none !important; }
+}
+
+/* ── CATEGORY DOODLE BACKGROUND ────────────────────────
+   Subtle line-art doodles behind category pages. Fades in on load;
+   each icon floats a couple px on a long, desynced loop (transform only). */
+.cat-bg { opacity: 0; animation: bg-fadein .8s ease forwards; }
+.cat-doodle {
+  animation: bg-float var(--dur, 16s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+  transform: rotate(var(--r, 0deg));
+  will-change: transform;
+}
+@keyframes bg-fadein { from { opacity: 0 } to { opacity: 1 } }
+@keyframes bg-float {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(var(--r, 0deg)); }
+  50%      { transform: translate3d(var(--fx, 0px), var(--fy, -3px), 0) rotate(var(--r, 0deg)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cat-bg { opacity: 1 !important; animation: none !important; }
+  .cat-doodle { animation: none !important; }
 }
 
 /* ── SCROLLBAR ────────────────────────────────────── */
@@ -93,7 +713,7 @@ h1, h2, h3, h4, h5, h6 {
   text-transform: uppercase;
   transition: all 0.3s ease;
 }
-.btn-pink:hover { background-color: #3730A3; }
+.btn-pink:hover { background-color: var(--accent-800); }
 
 .btn-outline {
   border: 1px solid #d4d5d9;

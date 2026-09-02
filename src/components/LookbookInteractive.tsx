@@ -55,7 +55,7 @@ const LookbookInteractive = () => {
             className="group relative flex items-center justify-center p-2"
           >
             <span className="absolute inset-0 rounded-full bg-white/40 animate-ping opacity-75" />
-            <div className={`relative w-6 h-6 rounded-full bg-white shadow-xl flex items-center justify-center transition-transform duration-300 ${activeHotspot === spot.id ? 'rotate-45 bg-blue-600 text-white' : 'group-hover:scale-110'}`}>
+            <div className={`relative w-6 h-6 rounded-full bg-white shadow-xl flex items-center justify-center transition-transform duration-300 ${activeHotspot === spot.id ? 'rotate-45 bg-accent-700 text-white' : 'group-hover:scale-110'}`}>
               <Plus size={16} />
             </div>
           </button>
@@ -77,12 +77,12 @@ const LookbookInteractive = () => {
                         <X size={12} />
                     </button>
                     <div className="space-y-2">
-                        <span className="text-[8px] font-bold text-blue-600 uppercase tracking-widest block">Available Now</span>
+                        <span className="text-[8px] font-bold text-accent-700 uppercase tracking-widest block">Available Now</span>
                         <h4 className="text-xs font-black text-gray-900 uppercase tracking-tight leading-none pr-4">{spot.productName}</h4>
                         <p className="text-xs font-bold text-gray-500">{spot.price}</p>
                         <Link 
                             href={`/products/${spot.slug}`}
-                            className="flex items-center gap-2 text-[10px] font-bold text-gray-900 uppercase tracking-widest border-t border-gray-100 pt-3 group/link hover:text-blue-600 transition-colors"
+                            className="flex items-center gap-2 text-[10px] font-bold text-gray-900 uppercase tracking-widest border-t border-gray-100 pt-3 group/link hover:text-accent-700 transition-colors"
                         >
                             <ShoppingBag size={12} />
                             View Product

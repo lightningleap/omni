@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
 import ProductEditorClient from "@/components/admin/ProductEditorClient"
+import { fetchPrintifyMockups } from "@/lib/printify"
 
 export default async function ProductEditorPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
@@ -15,6 +16,9 @@ export default async function ProductEditorPage({ params }: { params: Promise<{ 
   const collections = await prisma.collection.findMany({
     orderBy: { createdAt: "desc" }
   })
+
+  // Per-colour mockups from Printify (so all colours show on the editor)
+  const mockups = product.printifyId ? await fetchPrintifyMockups(product.printifyId) : []
 
   // Legacy status normalization removed due to schema purge
 
@@ -32,7 +36,7 @@ export default async function ProductEditorPage({ params }: { params: Promise<{ 
 
   return (
     <div className="w-full">
-      <ProductEditorClient product={productData} collections={collections} />
+      <ProductEditorClient product={productData} collections={collections} mockups={mockups} />
     </div>
   )
 }

@@ -1,0 +1,43 @@
+Page / Area,Capability,What the customer experiences,Business value,Status
+Homepage,Cinematic hero,"An animated, sequenced hero section that introduces the brand with motion.","Strong first impression that sets a premium, fashion-brand tone.",Live
+Homepage,Trending carousel,"A scrolling carousel of trending products.","Puts best-sellers front and centre to drive quick sales.",Live
+Homepage,Category carousels,"Browse-by-category carousels, including budget-friendly picks.","Helps customers find their entry point fast.",Live
+Homepage,Interactive lookbook,"A shoppable, interactive lookbook / editorial section.","Inspires customers and lifts average order value.",Live
+Homepage,Social proof feed,"A user-generated-content (UGC) style feed of real product imagery.","Builds trust and community around the brand.",Live
+Homepage,Flash-sale countdown,"A live countdown timer for active promotions.","Creates urgency that boosts conversion during sales.",Live
+Homepage,Welcome offer popup,"A newsletter popup offering a 10% welcome discount.","Captures emails and converts first-time visitors.",Live
+Navigation,Top navigation menu,"Category menus (Bags, Women's, Kids, Jewellery, Phone Case and more) with a clean header.","Effortless browsing across the whole catalogue.",Live
+Navigation,Instant search,"A search modal to look up products quickly.","Shoppers reach what they want in seconds.",Live
+Navigation,Quick access icons,"Profile, wishlist and bag shortcuts always visible in the header.","Fewer clicks to key actions — smoother journey.",Live
+Product Listing,Collection pages,"Dedicated pages for each collection with grids and carousels.","Merchandise ranges and seasonal drops attractively.",Live
+Product Listing,Filter sidebar,"A filter panel to narrow products down.","Helps customers browse large catalogues with ease.",Live
+Product Page,Image gallery,"A rich product gallery with multiple images.","Customers see the product clearly before buying.",Live
+Product Page,Colour and size selection,"Choose colour and size with live mockup updates.","Confidence in exactly what is being ordered.",Live
+Product Page,Product reviews,"A reviews and ratings section on the product page.","Social proof — the biggest lever for conversion.",Live
+Product Page,Add to cart / wishlist,"Add items to cart or save to wishlist from the product page.","Captures both immediate and future intent.",Live
+Custom Design Studio,Design-your-own,"A full in-browser studio to create custom products from 659 item types.","Signature differentiator — a personalised revenue stream.",Live
+Custom Design Studio,Drag-and-drop editor,"Add and arrange images, text and shapes with layers.","Anyone can design in minutes, no skills needed.",Live
+Custom Design Studio,Upload artwork,"Upload personal images and designs.","Enables gifts, events and fan merch — high-value orders.",Live
+Custom Design Studio,Free AI artwork,"Type an idea and AI creates artwork instantly, free.","A sticky, memorable feature that drives repeat use.",Live
+Custom Design Studio,Multi-side design,"Design front, back, sleeve and neck separately.","Premium custom products at higher price points.",Live
+Custom Design Studio,Live preview and mockups,"See the design on a realistic product mockup.","Reduces hesitation and wrong-expectation returns.",Live
+Cart and Checkout,Slide-out cart,"A cart drawer that slides in without leaving the page.","Keeps customers shopping — less friction.",Live
+Cart and Checkout,Secure checkout,"Secure card payment powered by Stripe.","Trusted, professional payment experience.",Live
+Cart and Checkout,Guest checkout,"Buy without creating an account.","Fewer drop-offs, higher conversion.",Live
+Cart and Checkout,Order success page,"A confirmation page after a successful purchase.","Reassures the customer their order went through.",Live
+Customer Account,Sign up and login,"Create an account and sign in.","Builds an owned customer relationship.",Live
+Customer Account,Order history,"View past orders from the account page.","Convenience that encourages repeat purchase.",Live
+Customer Account,Wishlist page,"A dedicated page of saved products.","Brings customers back to buy later.",Live
+Support and Trust,About page,"A brand story / about page.","Builds brand connection and trust.",Live
+Support and Trust,FAQ page,"An accordion FAQ answering common questions.","Reduces support load and buying hesitation.",Live
+Support and Trust,Contact form,"A contact form that emails the team.","No missed customer queries.",Live
+Support and Trust,Policy pages,"Shipping, returns and privacy policy pages.","Builds trust and meets platform expectations.",Live
+Emails,Order confirmation,"An automatic branded confirmation email after purchase.","Reassurance that cuts 'where is my order' queries.",Live
+Emails,Welcome email,"A welcome email with a discount for new subscribers.","Converts subscribers into first-time buyers.",Live
+Product Listing,Product search with autocomplete,"Search products by name with suggestions as you type.","Faster product discovery — more sales.",Planned (High priority)
+Product Listing,Filters and sorting,"Sort and filter by price, colour and size.","Easier browsing on a large catalogue.",Planned (High priority)
+Product Page,Size guide,"A size guide on the product page.","Fewer wrong-size orders and returns.",Planned (Medium priority)
+Product Page,Related products,"Recommended and recently viewed products.","Increases average order value.",Planned (Medium priority)
+Customer Account,Live order tracking page,"A page showing tracking number, carrier and live status.","Reduces 'where is my order' queries and builds trust.",Planned (High priority)
+Cart and Checkout,Apple Pay / Google Pay,"One-tap wallet payments at checkout.","Faster checkout, higher conversion on mobile.",Planned (Medium priority)
+Cart and Checkout,Discount codes,"Enter coupon codes at checkout.","Run targeted promotions and partnerships.",Planned (Medium priority)

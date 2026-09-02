@@ -1,0 +1,26 @@
+# Local development in a container — hot reload, source bind-mounted.
+#
+#   docker compose -f docker-compose.dev.yml up
+#
+# Slower than running `npm run dev` on the host; use it when you want the exact
+# Node version the production image uses, or when the host toolchain is broken.
+
+services:
+  web:
+    image: node:22-alpine
+    working_dir: /app
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "${HOST_PORT:-3000}:3000"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - .:/app
+      # Keep the container's node_modules — the host's are built for macOS/arm64
+      # and its native binaries (sharp, prisma engines) will not load on Alpine.
+      - node_modules:/app/node_modules
+
+volumes:
+  node_modules:

@@ -11,8 +11,51 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { items } = body;
 
-    if (!items || items.length === 0) {
+    if (!Array.isArray(items) || items.length === 0) {
       return new NextResponse("Cart is empty", { status: 400 });
+    }
+
+    // ==========================================================
+    // TRUST BOUNDARY — never trust prices sent by the browser.
+    // Only the product id, quantity and variant come from the client;
+    // every price/name/image is re-read from the database below.
+    // ==========================================================
+    const MAX_QTY = 25;
+    const requested = items
+      .map((i: any) => ({
+        productId: String(i.productId || i.id || ""),
+        quantity: Math.floor(Number(i.quantity)),
+        variantId: i.variantId ?? null,
+      }))
+      .filter((i) => i.productId);
+
+    if (requested.length === 0) {
+      return new NextResponse("Invalid cart", { status: 400 });
+    }
+    if (requested.some((i) => !Number.isFinite(i.quantity) || i.quantity < 1 || i.quantity > MAX_QTY)) {
+      return new NextResponse(`Quantity must be between 1 and ${MAX_QTY}.`, { status: 400 });
+    }
+
+    const dbProducts = await prisma.product.findMany({
+      where: { id: { in: requested.map((i) => i.productId) } },
+      select: { id: true, name: true, price: true, imageUrl: true, status: true },
+    });
+    const byId = new Map(dbProducts.map((p) => [p.id, p]));
+
+    // Re-price every line from the DB; reject anything unavailable
+    const priced = [];
+    for (const r of requested) {
+      const p = byId.get(r.productId);
+      if (!p) {
+        return new NextResponse("A product in your cart is no longer available.", { status: 400 });
+      }
+      if (p.status !== "LIVE") {
+        return new NextResponse(`"${p.name}" is not available for purchase.`, { status: 400 });
+      }
+      if (!Number.isFinite(p.price) || p.price <= 0) {
+        return new NextResponse(`"${p.name}" is not priced correctly.`, { status: 400 });
+      }
+      priced.push({ product: p, quantity: r.quantity, variantId: r.variantId });
     }
 
     const cookieStore = await cookies();
@@ -41,21 +84,22 @@ export async function POST(req: Request) {
     }
     // ==========================================
 
-    const lineItems = items.map((item: any) => ({
+    // Built entirely from DB-verified products — client prices are ignored
+    const lineItems = priced.map(({ product, quantity, variantId }) => ({
       price_data: {
         currency: 'usd',
         product_data: {
-          name: item.name,
-          images: [item.image],
-          metadata: { variantId: item.variantId },
+          name: product.name,
+          ...(product.imageUrl?.startsWith('http') ? { images: [product.imageUrl] } : {}),
+          metadata: { variantId: variantId ? String(variantId) : '' },
         },
-        unit_amount: Math.round((item.price || 0) * 100),
+        unit_amount: Math.round(product.price * 100),
       },
-      quantity: item.quantity,
+      quantity,
     }));
 
     const dbUser = user ? await prisma.user.findUnique({ where: { email: user.email } }) : null;
-    const totalAmount = items.reduce((total: number, item: any) => total + ((item.price || 0) * item.quantity), 0);
+    const totalAmount = priced.reduce((total, { product, quantity }) => total + product.price * quantity, 0);
     const orderNumber = `UNR-${Math.random().toString(36).toUpperCase().substring(2, 10)}`;
 
     const order = await prisma.order.create({
@@ -65,11 +109,11 @@ export async function POST(req: Request) {
         status: 'PENDING',
         totalAmount,
         items: {
-          create: items.map((item: any) => ({
-            productId: item.productId || item.id,
-            quantity: item.quantity,
-            price: Number(item.price || 0),
-            variantId: item.variantId || null
+          create: priced.map(({ product, quantity, variantId }) => ({
+            productId: product.id,
+            quantity,
+            price: product.price,
+            variantId: variantId || null,
           })),
         },
       },

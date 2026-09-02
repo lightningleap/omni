@@ -1,0 +1,43 @@
+"use client";
+
+import React from 'react';
+import { motion } from 'framer-motion';
+
+/**
+ * Editorial category hero title.
+ *
+ * Renders titles like "Adult · Women's" at the H1 display step (Mellos Regular,
+ * fluid 44→88px, -0.03em). The audience qualifier is set in caps and the category
+ * in title case, so the two parts stay distinguishable without a second typeface
+ * — the whole title is one editorial voice. Set in the accent scale's darkest
+ * step (`text-accent-950`), so it follows the storefront it is rendered in, with
+ * a soft blur-in on load.
+ *
+ * The <h1> keeps the full title as real text (casing is presentational only),
+ * so SEO and screen-reader output are unchanged.
+ */
+const EASE = [0.22, 0.61, 0.36, 1] as const;
+
+export default function CategoryHeroTitle({ title }: { title: string }) {
+  const parts = title.split('·').map((s) => s.trim()).filter(Boolean);
+  const hasQualifier = parts.length >= 2;
+  const first = hasQualifier ? parts[0] : null;
+  const rest = hasQualifier ? parts.slice(1).join(' · ') : title;
+
+  return (
+    <motion.h1
+      initial={{ opacity: 0, y: 20, filter: 'blur(6px)' }}
+      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+      transition={{ duration: 0.8, ease: EASE }}
+      className="type-h1 text-accent-950"
+    >
+      {first && (
+        <>
+          <span className="uppercase">{first}</span>
+          <span className="mx-2 align-middle text-accent-950/40 md:mx-3">·</span>
+        </>
+      )}
+      <span>{rest}</span>
+    </motion.h1>
+  );
+}

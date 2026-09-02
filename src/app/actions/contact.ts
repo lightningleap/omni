@@ -1,26 +1,41 @@
-"use strict";
+"use server";
+
+import { sendEmail, contactNotificationEmail } from "@/lib/email";
+import { getBootstrapAdminEmails } from "@/lib/admin";
 
 /**
  * Contact Form Server Action
- * Handles contact submissions from the UI.
+ * Handles contact submissions from the UI and notifies the team via email.
  */
 export async function handleContactForm(formData: FormData) {
-  const name = formData.get("name");
-  const email = formData.get("email");
-  const orderNumber = formData.get("orderNumber");
-  const message = formData.get("message");
+  const name = String(formData.get("name") || "");
+  const email = String(formData.get("email") || "");
+  const orderNumber = String(formData.get("orderNumber") || "");
+  const message = String(formData.get("message") || "");
 
-  // Log the payload as requested
-  console.log("Contact Form Submission:", {
-    name,
-    email,
-    orderNumber,
-    message,
-    timestamp: new Date().toISOString(),
-  });
+  if (!email || !message) {
+    return { success: false, message: "Please fill in your email and message." };
+  }
 
-  // Simulate a small delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  // Where contact-form submissions land. CONTACT_INBOX wins; otherwise the
+  // first configured admin gets them so messages are never silently dropped.
+  const to = process.env.CONTACT_INBOX?.trim() || getBootstrapAdminEmails()[0];
+
+  if (to) {
+    await sendEmail({
+      to,
+      subject: `New contact form: ${name || email}`,
+      html: contactNotificationEmail({ name, email, orderNumber, message }),
+      replyTo: email,
+    });
+  } else {
+    console.warn("[CONTACT] No CONTACT_INBOX / ADMIN_EMAILS set — logging instead:", {
+      name,
+      email,
+      orderNumber,
+      message,
+    });
+  }
 
   return {
     success: true,

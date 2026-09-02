@@ -12,6 +12,7 @@ export default async function ProductsPage() {
       imageUrl: true,
       collectionId: true,
       status: true,
+      source: true,
     }
   })
 

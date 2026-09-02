@@ -1,0 +1,159 @@
+﻿Area,Feature,Status,Effort,Priority,Notes
+Design Studio,Product picker (659 types),Built,,,Live from Printify catalog
+Design Studio,"Canvas editor (layers, drag/resize/rotate)",Built,,,
+Design Studio,Image upload (PNG/JPG/WEBP),Built,,,
+Design Studio,"Text (font, size, bold, colour)",Built,,,
+Design Studio,"Shapes (rectangle, circle)",Built,,,
+Design Studio,Multi-side design (Front/Back/Sleeve/Neck),Built,,,Each side separate
+Design Studio,AI image generation,Built,,,"Free, no API key"
+Design Studio,Colour & size selection,Built,,,
+Design Studio,Garment templates on canvas,Built,,,T-shirt / tank / hoodie
+Design Studio,Live preview on product,Built,,,Approximate
+Design Studio,Real mockups on create,Built,,,Printify generates per colour
+Design Studio,Graphics / clipart library,Buildable,M,Low,Our own hosted assets
+Design Studio,Stock photos (Unsplash/Pexels),Buildable,S,Low,Free API
+Design Studio,More fonts (Google Fonts),Buildable,S,Low,
+Design Studio,Undo / redo,Buildable,M,Medium,
+Design Studio,Duplicate layer,Buildable,S,Low,
+Design Studio,Alignment guides / snapping,Buildable,M,Low,
+Design Studio,Layer opacity / lock,Buildable,S,Low,
+Design Studio,Curved / arced text,Buildable,M,Low,
+Design Studio,Image filters,Buildable,M,Low,"B&W, contrast, saturation"
+Design Studio,Background removal,Buildable,M,Medium,Big value for POD
+Design Studio,Save design as template,Buildable,M,Low,
+Design Studio,Design library (reusable artwork),Buildable,M,Low,
+Design Studio,One design -> many products,Buildable,L,Medium,Tee + hoodie + mug at once
+Design Studio,Bulk product creation,Buildable,L,Low,
+Design Studio,Better AI (paid model),Buildable,S,Low,"OpenAI/Gemini, cents per image"
+Design Studio,AI prompt presets,Buildable,S,Low,Vintage / Y2K / Minimal
+Design Studio,Printify's graphics library,Not possible,,,"Their private assets, not in API"
+Design Studio,Printify's AI,Not possible,,,Not exposed; we built our own
+Design Studio,Shutterstock / Fiverr,Not possible,,,Printify-internal
+Design Studio,Printify garment line-art templates,Not possible,,,Private assets; we drew our own
+Design Studio,Editor preview in real garment colours,Not possible,,,Catalog gives 1 photo; colours appear in mockup on create
+Product management,Multi-store sync (Adult + Kids),Built,,,"~239 products, all pages"
+Product management,Synced vs Studio separation,Built,,,Filter tabs + badges
+Product management,Profit calculator,Built,,,Retail - (cost + Stripe fees)
+Product management,Collections + draft/live gatekeeper,Built,,,
+Product management,Colour mockup gallery,Built,,,Pick main storefront image
+Product management,Bulk publish / bulk delete,Built,,,
+Product management,Per-variant pricing,Buildable,M,Medium,XL costs more
+Product management,Bulk pricing rules,Buildable,M,Low,2.2x markup on all hoodies
+Product management,Inventory / stock sync,Buildable,M,Medium,Block sold-out variants
+Product management,Print provider selection,Buildable,M,Low,Price/quality/location
+Product management,Edit an existing product's design,Buildable,L,Medium,Re-open in Studio
+Product management,Product duplication,Buildable,S,Low,
+Product management,Bulk edit (price/status/collection),Buildable,M,Low,
+Product management,SEO fields per product,Buildable,S,Low,Partly there
+Product management,Tags / categories,Buildable,M,Low,
+Product management,CSV import / export,Buildable,M,Low,
+Product management,Scheduled publishing,Buildable,M,Low,
+Product management,Shipping cost display,Buildable,S,Low,Printify shipping API
+Storefront,Home / products / collections,Built,,,
+Storefront,Cart + Stripe checkout,Built,,,
+Storefront,Guest checkout,Built,,,
+Storefront,Wishlist,Built,,,
+Storefront,Account page (order history),Built,,,Read-only
+Storefront,About / FAQ / Contact / Policies,Built,,,
+Storefront,Newsletter signup,Built,,,
+Storefront,Flash-sale banner,Built,,,
+Storefront,Sitemap / SEO basics,Built,,,
+Storefront,GA4 ecommerce tracking,Built,,,Browser + server-side
+Storefront,Product search,Buildable,M,High,+ autocomplete
+Storefront,Filters & sorting,Buildable,M,High,"Price, colour, size"
+Storefront,Reviews & ratings,Buildable,L,High,Biggest conversion lever
+Storefront,Size guide,Buildable,S,Medium,
+Storefront,Related / recommended products,Buildable,M,Medium,
+Storefront,Recently viewed,Buildable,S,Low,
+Storefront,Image zoom / colour gallery,Buildable,S,Medium,
+Storefront,Customer order detail page,Buildable,M,High,"Tracking number, carrier, link"
+Storefront,Multi-currency,Buildable,L,Low,
+Storefront,Shipping calculator at checkout,Buildable,M,Medium,Real Printify rates
+Storefront,Blog / content pages,Buildable,M,Low,SEO
+Storefront,Social share buttons,Buildable,S,Low,
+Storefront,Live chat widget,Buildable,S,Low,Third-party embed
+Payments & pricing,Stripe checkout,Built,,,
+Payments & pricing,Profit / margin protection,Built,,,
+Payments & pricing,Server-side price validation,Buildable,S,BLOCKER,SECURITY: checkout trusts browser prices
+Payments & pricing,Coupons / discount codes,Buildable,M,Medium,Only a sitewide banner today
+Payments & pricing,Apple Pay / Google Pay,Buildable,S,Medium,Stripe built-in
+Payments & pricing,Gift cards,Buildable,L,Low,
+Payments & pricing,Store credit / wallet,Buildable,L,Low,POD-friendly refund alternative
+Payments & pricing,Tax handling,Buildable,M,Medium,Stripe Tax
+Payments & pricing,Bundles / upsells,Buildable,M,Low,
+Payments & pricing,Subscriptions,Buildable,XL,Low,Merch drops
+Payments & pricing,Fraud / risk score surfaced,Buildable,S,Low,Stripe Radar
+Orders & fulfilment,Order created at checkout,Built,,,
+Orders & fulfilment,Stripe webhook -> PAID -> push to Printify,Built,,,
+Orders & fulfilment,Printify webhook -> Shipped/Delivered,Built,,,+ tracking
+Orders & fulfilment,Admin order list + search,Built,,,
+Orders & fulfilment,Force-push stuck order,Built,,,
+Orders & fulfilment,Repair order (missed webhook),Built,,,
+Orders & fulfilment,Printify webhook signature check,Buildable,S,BLOCKER,SECURITY: accepts unsigned events
+Orders & fulfilment,Admin order detail panel,Buildable,S,High,"Component exists, not wired in"
+Orders & fulfilment,Cancel order,Buildable,M,High,Stripe refund + Printify cancel
+Orders & fulfilment,Refunds (full / partial),Buildable,M,High,None exists today
+Orders & fulfilment,Real tracking sync,Buildable,S,High,Current button is a no-op stub
+Orders & fulfilment,More Stripe webhook events,Buildable,M,High,"Refunds, disputes, failures"
+Orders & fulfilment,Append-only audit log,Buildable,S,Medium,Notes overwritten today
+Orders & fulfilment,Bulk order actions,Buildable,M,Low,"Checkboxes exist, unwired"
+Orders & fulfilment,Structured shipping address,Buildable,M,Medium,Currently a text string
+Orders & fulfilment,Packing slip / invoice PDF,Buildable,M,Low,
+Orders & fulfilment,Split / partial shipments,Buildable,L,Low,Per-line-item status
+Orders & fulfilment,Multi-store order routing,Buildable,M,High,Kids orders -> Kids store
+Orders & fulfilment,Fulfilment SLA dashboard,Buildable,M,Low,Stuck-order alerts
+Returns & support,Return / refund order statuses,Buildable,S,High,Schema can't represent a return today
+Returns & support,Return / RMA model,Buildable,M,High,
+Returns & support,Customer return request flow,Buildable,M,High,From account page
+Returns & support,Defect -> reprint-or-refund flow,Buildable,M,High,POD-correct approach; nothing ships back
+Returns & support,Store credit instead of refund,Buildable,L,Low,
+Communication,Resend setup,Buildable,S,High,Free: 3k emails/month
+Communication,Order confirmation email,Buildable,S,High,Zero emails sent today
+Communication,Shipped / Delivered emails,Buildable,S,High,With tracking link
+Communication,Refund / cancellation emails,Buildable,S,Medium,
+Communication,Abandoned cart emails,Buildable,M,Medium,Real revenue lift
+Communication,Review request email,Buildable,S,Low,Post-delivery
+Communication,Welcome / newsletter emails,Buildable,M,Low,
+Communication,SMS notifications,Buildable,M,Low,Twilio
+Communication,Email template system,Buildable,M,Medium,"Branded, reusable"
+Customers & accounts,Signup / login (Supabase),Built,,,
+Customers & accounts,Admin customer list + profiles,Built,,,
+Customers & accounts,Internal notes on customers,Built,,,
+Customers & accounts,ADMIN / CUSTOMER roles,Built,,,
+Customers & accounts,Password reset flow,Buildable,S,High,
+Customers & accounts,Social login (Google),Buildable,S,Medium,
+Customers & accounts,Saved addresses,Buildable,M,Medium,
+Customers & accounts,Customer LTV / segments,Buildable,M,Low,
+Customers & accounts,Multiple admins + permissions,Buildable,M,Medium,
+Customers & accounts,Email verification,Buildable,S,Medium,
+Marketing & growth,Flash-sale banner,Built,,,
+Marketing & growth,Newsletter capture,Built,,,
+Marketing & growth,GA4 tracking (browser + server),Built,,,"LTV, session stitching"
+Marketing & growth,Coupons / discount codes,Buildable,M,Medium,
+Marketing & growth,Referral program,Buildable,L,Low,
+Marketing & growth,Affiliate / influencer codes,Buildable,L,Low,
+Marketing & growth,Abandoned cart recovery,Buildable,M,Medium,
+Marketing & growth,Email campaigns,Buildable,M,Low,
+Marketing & growth,Upsells / cross-sells,Buildable,M,Low,
+Marketing & growth,Meta / TikTok pixel,Buildable,S,Medium,
+Marketing & growth,Google Shopping feed,Buildable,M,Low,
+Analytics,Finance page,Built,,,
+Analytics,Analytics page,Built,,,
+Analytics,Unit economics / profit per product,Built,,,
+Analytics,GA4 ecommerce funnel,Built,,,
+Analytics,Best sellers / worst performers,Buildable,M,Medium,
+Analytics,Profit dashboard over time,Buildable,M,Medium,
+Analytics,In-app conversion funnel,Buildable,M,Low,
+Analytics,Cohort / retention analysis,Buildable,L,Low,
+Analytics,CSV report export,Buildable,S,Low,
+Multi-store & channels,Sync from multiple Printify stores,Built,,,Adult + Kids
+Multi-store & channels,Per-store order routing,Buildable,M,High,Required to sell both stores safely
+Multi-store & channels,Store filter in admin,Buildable,S,Medium,
+Multi-store & channels,Etsy sync control,Buildable,M,Low,Both stores are Etsy-connected
+Multi-store & channels,Multi-channel publishing,Buildable,L,Low,Website + Etsy from one place
+Platform & ops,Error monitoring (Sentry),Buildable,S,Medium,
+Platform & ops,Staging environment,Buildable,S,Medium,
+Platform & ops,Rate limiting,Buildable,S,Medium,
+Platform & ops,Automated backups,Buildable,S,Medium,Supabase
+Platform & ops,CI (typecheck + build on PR),Buildable,S,Low,
+Platform & ops,Cron: daily product auto-sync,Buildable,S,Low,

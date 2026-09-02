@@ -67,14 +67,14 @@ export default async function PolicyPage({ params }: PolicyPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-black pt-32 pb-24 px-6 md:px-12">
+    <div className="min-h-screen bg-black pt-12 pb-24 px-6 md:px-12">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-4xl md:text-5xl font-syne font-bold text-white mb-12 tracking-tight">
+        <h1 className="type-h1 mb-12 text-white">
           {policy.title}
         </h1>
         <div 
-          className="prose prose-invert prose-lg max-w-none font-inter text-gray-300 leading-relaxed
-                     prose-headings:font-syne prose-headings:text-white prose-headings:mt-12 prose-headings:mb-6
+          className="prose prose-invert prose-lg max-w-none text-gray-300 leading-relaxed
+                     prose-headings:font-sans prose-headings:text-white prose-headings:mt-12 prose-headings:mb-6
                      prose-p:mb-6 prose-strong:text-white prose-a:text-white prose-a:underline underline-offset-4
                      hover:prose-a:text-gray-400 transition-colors"
           dangerouslySetInnerHTML={{ __html: policy.body }}

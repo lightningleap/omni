@@ -4,7 +4,7 @@ import React, { useState } from "react"
 import { ArrowLeft, Save, Loader2, DollarSign, Box, Tag, Globe, Settings, AlertCircle } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { updateProductGatekeeper } from "@/app/actions/admin/products"
+import { updateProductGatekeeper, setProductImage } from "@/app/actions/admin/products"
 
 type ProductData = {
   id: string
@@ -25,16 +25,24 @@ type CollectionData = {
 
 export default function ProductEditorClient({
   product,
-  collections
+  collections,
+  mockups = []
 }: {
   product: ProductData
   collections: CollectionData[]
+  mockups?: { src: string; color: string }[]
 }) {
   const [price, setPrice] = useState(product.price)
   const [collectionId, setCollectionId] = useState(product.collectionId || "none")
   const [status, setStatus] = useState<"LIVE" | "DRAFT">(product.status || "DRAFT")
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [mainImage, setMainImage] = useState(product.imageUrl)
+
+  const pickImage = async (src: string) => {
+    setMainImage(src)
+    try { await setProductImage(product.id, src) } catch { /* non-blocking */ }
+  }
 
   // Financial Algorithm: Retail - (Cost + (Retail * 2.9% + 0.30)) = Net Profit
   const stripeFees = (price * 0.029) + 0.30
@@ -101,12 +109,27 @@ export default function ProductEditorClient({
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{product.printifyId || "LOCAL"}</span>
              </div>
              <div className="aspect-[4/3] w-full relative bg-slate-50 flex items-center justify-center p-12">
-               {product.imageUrl ? (
-                 <Image src={product.imageUrl} alt={product.name} fill className="object-contain p-8" />
+               {mainImage ? (
+                 <Image src={mainImage} alt={product.name} fill className="object-contain p-8" />
                ) : (
                  <Box size={48} className="text-slate-200" />
                )}
              </div>
+
+             {/* Colour mockups gallery */}
+             {mockups.length > 0 && (
+               <div className="px-4 pb-4 pt-2 border-t border-slate-100">
+                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Colors ({mockups.length})</span>
+                 <div className="flex gap-2 mt-2 overflow-x-auto pb-1">
+                   {mockups.map((m) => (
+                     <button key={m.src} onClick={() => pickImage(m.src)} title={m.color}
+                       className={`flex-shrink-0 w-16 h-16 rounded-lg border-2 overflow-hidden bg-slate-50 transition-all ${mainImage === m.src ? "border-indigo-500 ring-2 ring-indigo-100" : "border-slate-200 hover:border-slate-300"}`}>
+                       <Image src={m.src} alt={m.color} width={64} height={64} className="w-full h-full object-contain" />
+                     </button>
+                   ))}
+                 </div>
+               </div>
+             )}
           </div>
 
           {/* Description Card */}

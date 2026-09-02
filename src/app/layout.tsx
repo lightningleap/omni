@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Playfair_Display, Manrope } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
 import { prisma } from "@/lib/prisma";
@@ -8,22 +8,37 @@ import Footer from "@/components/Footer";
 import { Providers } from "@/components/Providers";
 import ConditionalStorefrontLayout from "@/components/ConditionalStorefrontLayout";
 import { GoogleAnalytics } from "@next/third-parties/google";
-import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
+import { getSessionUser } from "@/lib/auth";
 
 // Prevent static prerendering — Prisma requires a live DB connection
 export const dynamic = "force-dynamic";
 
-const inter = Inter({
-  variable: "--font-inter",
+// ── FONT LOADING ──────────────────────────────────────────────────────────
+// Two families ship to the browser: Manrope for the entire UI, and an editorial
+// display serif for headings. The display face is Mellos, self-hosted from
+// public/fonts via an @font-face in globals.css (licensed — not committed);
+// Playfair Display is loaded as its fallback so the editorial register survives
+// until the licence file is dropped in.
+//
+// Inter was removed: it was downloaded on every page but never applied — the
+// `font-inter` class it was meant to expose was never defined in the Tailwind
+// theme, so nothing on the site ever rendered in it.
+
+// Primary UI typeface — modern, minimal, premium.
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
+  display: "swap",
 });
 
+// Display fallback for Mellos. No `weight` array: Playfair is a variable font,
+// so one file per style covers 400–900 instead of the six static cuts that were
+// being downloaded before.
 const playfair = Playfair_Display({
   variable: "--font-playfair",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
   style: ["normal", "italic"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -59,13 +74,8 @@ export default async function RootLayout({
   }
 
   // 4. Fetch Supabase Session for the Navbar
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
-  const { data: { user } } = await supabase.auth.getUser();
+  const { user, isAdmin } = await getSessionUser();
 
-  // Determine if user is admin based on environment variable for consistent prop passing
-  const masterEmail = process.env.MASTER_ADMIN_EMAIL?.toLowerCase().trim();
-  const isAdmin = user?.email?.toLowerCase().trim() === masterEmail;
 
   const safeUser = user ? {
     id: user.id,
@@ -78,7 +88,16 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${playfair.variable} antialiased selection:bg-blue-100 selection:text-blue-900 flex flex-col min-h-screen font-sans`}>
+      <head>
+        {/* The logo is painted as a CSS mask (see BrandMark), and an element
+            whose mask has not arrived yet is drawn UNMASKED — which would put a
+            solid accent-coloured rectangle in the header for as long as the
+            fetch takes. Preloading starts that fetch at HTML parse, well before
+            the navbar paints, so the mark's first frame is already the mark.
+            It sits in the header on every page, so it is worth the hint. */}
+        <link rel="preload" as="image" href="/brand/unrwly-logo-mask.png" />
+      </head>
+      <body className={`${playfair.variable} ${manrope.variable} antialiased selection:bg-accent-200 selection:text-accent-ink flex flex-col min-h-screen font-sans`}>
         <Providers>
           {/* 4. ConditionalStorefrontLayout will now receive null instead of crashing if DB fails */}
           <ConditionalStorefrontLayout

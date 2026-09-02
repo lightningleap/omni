@@ -41,16 +41,12 @@ export async function middleware(request: NextRequest) {
   const url = new URL(request.url);
 
   // 4. ADMIN PROTECTION LOGIC
-  // If the user is trying to access any route starting with /admin
-  if (url.pathname.startsWith("/admin")) {
-    const masterEmail = process.env.MASTER_ADMIN_EMAIL?.toLowerCase().trim();
-    const userEmail = user?.email?.toLowerCase().trim();
-
-    // Check if user is logged in AND matches the current Vercel Master Admin Email
-    if (!user || userEmail !== masterEmail) {
-      // Redirect unauthorized attempts to the auth page
-      return NextResponse.redirect(new URL("/auth", request.url));
-    }
+  // Middleware runs on the Edge, where Prisma is unavailable, so it can only
+  // check that a session exists. Whether that session is actually an admin is
+  // decided in src/app/admin/layout.tsx and in requireAdmin() — both of which
+  // every admin page and action already goes through.
+  if (url.pathname.startsWith("/admin") && !user) {
+    return NextResponse.redirect(new URL("/auth", request.url));
   }
 
   // 5. ACCOUNT PROTECTION LOGIC

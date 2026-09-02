@@ -68,7 +68,7 @@ const NewsletterModal = ({ config }: { config: any }) => {
             {/* Close Button */}
             <button 
               onClick={closeModal}
-              className="absolute top-6 right-6 text-slate-300 hover:text-indigo-600 transition-colors z-10 p-2"
+              className="absolute top-6 right-6 text-slate-300 hover:text-accent-700 transition-colors z-10 p-2"
             >
               <X size={20} />
             </button>
@@ -76,26 +76,29 @@ const NewsletterModal = ({ config }: { config: any }) => {
             <div className="grid grid-cols-1 md:grid-cols-2">
               {/* Left Side: Visual/Offer - Soft Peach Theme */}
               <div className="relative h-64 md:h-auto bg-[#FFF5F2] flex flex-col items-center justify-center p-8 overflow-hidden min-h-[300px]">
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-br from-accent-600/5 to-transparent" />
                 <motion.div 
                   initial={{ rotate: -5, opacity: 0, scale: 0.8 }}
                   animate={{ rotate: 0, opacity: 1, scale: 1 }}
                   transition={{ delay: 0.2 }}
                   className="relative z-10 text-center"
                 >
-                  <span className="text-[10px] font-black tracking-[0.5em] text-indigo-600/60 uppercase mb-4 block">
+                  {/* Solid rather than /60: at 60% over the peach panel this
+                      lands at 4.46:1, a hair under AA. The size and tracking
+                      already set it below the headline. */}
+                  <span className="type-label mb-4 block text-accent-700">
                     Welcome Protocol
                   </span>
-                  <h2 className="text-7xl md:text-8xl font-black text-indigo-600 italic tracking-tighter leading-none mb-2">
+                  <h2 className="type-h1 mb-2 text-accent-700">
                     {config?.welcomeTitle || "10%"}
                   </h2>
-                  <p className="text-xl font-bold text-indigo-600 uppercase tracking-widest italic">
+                  <p className="type-label text-[14px] text-accent-700">
                     {config?.welcomeSubtitle || "Off Your Order"}
                   </p>
                 </motion.div>
                 {/* Decorative Elements */}
-                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-indigo-500/5 rounded-full blur-3xl" />
-                <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#FFF5F2] border border-indigo-100 rounded-full blur-2xl" />
+                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-accent-600/5 rounded-full blur-3xl" />
+                <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#FFF5F2] border border-accent-200 rounded-full blur-2xl" />
               </div>
 
               {/* Right Side: Form - Polaris Light */}
@@ -105,20 +108,20 @@ const NewsletterModal = ({ config }: { config: any }) => {
                     <div className="bg-green-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                       <CheckCircle2 size={32} className="text-green-500" />
                     </div>
-                    <h3 className="text-xl font-black text-slate-900 uppercase italic tracking-tighter">
+                    <h3 className="type-h3 text-slate-900">
                       Access Granted
                     </h3>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-relaxed">
+                    <p className="type-caption text-slate-400 uppercase tracking-[0.18em]">
                       Check your inbox for the protocol unlock code.
                     </p>
                   </div>
                 ) : (
                   <div className="space-y-8">
                     <div className="space-y-3">
-                      <h3 className="text-xs font-black text-indigo-600 uppercase tracking-[0.3em]">
+                      <h3 className="type-label text-accent-700">
                         Join the Inner Circle
                       </h3>
-                      <p className="text-xs text-slate-500 font-bold uppercase tracking-widest leading-relaxed">
+                      <p className="type-caption text-slate-500 uppercase tracking-[0.18em]">
                         {config?.welcomeDescription || "GET EARLY ACCESS TO DROPS AND EXCLUSIVE REWARDS."}
                       </p>
                     </div>
@@ -130,12 +133,12 @@ const NewsletterModal = ({ config }: { config: any }) => {
                           name="email"
                           placeholder="EMAIL ADDRESS"
                           required
-                          className="w-full bg-slate-50 border border-slate-200 px-6 py-5 text-slate-900 font-bold text-xs placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-600 focus:bg-white transition-all rounded-2xl uppercase tracking-widest"
+                          className="w-full bg-slate-50 border border-slate-200 px-6 py-5 text-slate-900 font-bold text-xs placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-accent-500/10 focus:border-accent-700 focus:bg-white transition-all rounded-2xl uppercase tracking-widest"
                         />
                       </div>
                       <button 
                         disabled={isPending}
-                        className="w-full h-16 bg-indigo-600 text-white font-black text-[10px] uppercase tracking-[0.3em] transition-all hover:bg-indigo-700 rounded-2xl flex items-center justify-center gap-2 group shadow-lg shadow-indigo-600/20 active:scale-[0.98]"
+                        className="w-full h-16 bg-accent-700 text-white font-black text-[10px] uppercase tracking-[0.3em] transition-all hover:bg-accent-800 rounded-2xl flex items-center justify-center gap-2 group shadow-lg shadow-accent-700/20 active:scale-[0.98]"
                       >
                         {isPending ? (
                           <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

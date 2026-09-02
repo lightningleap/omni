@@ -27,12 +27,20 @@ function SuccessContent() {
           setOrderNumber(data.orderNumber);
           setStatus("success");
           
-          // Trigger celebration
+          // Trigger celebration. The canvas library paints on a <canvas>, so it
+          // needs a resolved colour rather than a custom property — read the
+          // active storefront's accent off the document instead of hard-coding
+          // one, so Kids celebrates in its own mint and Adult in its green.
+          const accent =
+            getComputedStyle(document.documentElement)
+              .getPropertyValue('--accent-600')
+              .trim() || "#509176";
+
           confetti({
             particleCount: 150,
             spread: 70,
             origin: { y: 0.6 },
-            colors: ["#6366f1", "#10b981", "#000000"]
+            colors: [accent, "#10b981", "#000000"]
           });
         } else {
           setStatus("error");
@@ -47,12 +55,12 @@ function SuccessContent() {
   }, [sessionId]);
 
   return (
-    <div className="min-h-screen bg-[#F6F6F7] flex items-center justify-center p-6 font-sans">
+    <div className="min-h-screen flex items-center justify-center p-6 font-sans">
       <div className="max-w-md w-full bg-white border border-neutral-200 rounded-[32px] p-12 text-center shadow-xl shadow-neutral-200/50">
         {status === "loading" ? (
           <div className="flex flex-col items-center gap-4 py-8">
-            <Loader2 className="animate-spin text-indigo-600" size={48} />
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-400 italic">Verifying Payment...</p>
+            <Loader2 className="animate-spin text-accent-700" size={48} />
+            <p className="type-label text-neutral-400">Verifying Payment...</p>
           </div>
         ) : status === "error" ? (
           <div className="space-y-8">
@@ -60,12 +68,12 @@ function SuccessContent() {
               <AlertCircle className="text-rose-500" size={40} />
             </div>
             <div className="space-y-2">
-              <h1 className="text-3xl font-black text-black tracking-tighter uppercase italic">Verification Failed</h1>
-              <p className="text-neutral-500 text-sm font-medium">
+              <h1 className="type-h2 text-black">Verification Failed</h1>
+              <p className="type-body text-neutral-500">
                 We couldn't verify your payment session. If you believe this is an error, please contact support.
               </p>
             </div>
-            <Link href="/contact" className="w-full inline-block bg-black text-white font-black py-4 rounded-2xl uppercase tracking-widest text-[11px] hover:bg-neutral-800 transition-all">
+            <Link href="/contact" className="type-button w-full inline-block bg-black text-white py-4 rounded-2xl uppercase tracking-[0.18em] text-[11px] hover:bg-neutral-800 transition-all">
               Contact Support
             </Link>
           </div>
@@ -75,24 +83,24 @@ function SuccessContent() {
               <CheckCircle2 className="text-emerald-500" size={40} />
             </div>
             
-            <h1 className="text-3xl font-black text-black tracking-tighter uppercase italic mb-2">Order Confirmed</h1>
-            <p className="text-neutral-500 text-sm font-medium mb-8">
+            <h1 className="type-h2 mb-2 text-black">Order Confirmed</h1>
+            <p className="type-body mb-8 text-neutral-500">
               Your Unrwly drop is being prepared for production. 
             </p>
 
             <div className="bg-neutral-50 border border-neutral-100 rounded-2xl p-6 mb-10 text-left">
               <div className="flex justify-between items-center mb-4 pb-4 border-b border-neutral-200/50">
-                <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Order Ref</span>
+                <span className="type-caption text-neutral-400 uppercase tracking-[0.18em]">Order Ref</span>
                 <span className="text-[11px] font-mono font-bold text-black">{orderNumber}</span>
               </div>
               <div className="flex justify-between items-center mb-4">
-                <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Status</span>
-                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 flex items-center gap-1">
+                <span className="type-caption text-neutral-400 uppercase tracking-[0.18em]">Status</span>
+                <span className="type-caption flex items-center gap-1 text-emerald-600 uppercase tracking-[0.18em]">
                   <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" /> Verified
                 </span>
               </div>
               <div className="space-y-1">
-                <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Session Tracer</span>
+                <span className="type-caption text-neutral-400 uppercase tracking-[0.18em]">Session Tracer</span>
                 <p className="text-[10px] font-mono text-neutral-400 break-all">{sessionId?.substring(0, 32)}...</p>
               </div>
             </div>
@@ -115,7 +123,7 @@ function SuccessContent() {
 export default function SuccessPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#F6F6F7] flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="animate-spin text-neutral-300" size={32} />
       </div>
     }>

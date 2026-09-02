@@ -63,7 +63,7 @@ const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-xl flex flex-col pt-24 px-6 md:px-12"
+        className="fixed inset-0 z-[90] bg-black/90 backdrop-blur-xl flex flex-col pt-24 px-6 md:px-12"
       >
         <div className="max-w-4xl mx-auto w-full">
           <div className="flex items-center justify-between mb-12">
@@ -75,7 +75,7 @@ const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
                 placeholder="SEARCH PRODUCTS..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                className="w-full bg-transparent border-none text-2xl md:text-4xl font-display font-bold uppercase tracking-tight outline-none placeholder:text-neutral-800"
+                className="w-full bg-transparent border-none text-2xl md:text-4xl font-sans font-semibold uppercase tracking-tight outline-none placeholder:text-neutral-800"
               />
             </div>
             <button 
@@ -95,7 +95,7 @@ const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
               </div>
             ) : query && results.length === 0 ? (
               <div className="text-center py-20">
-                <p className="text-neutral-500 font-display text-xl uppercase tracking-widest">
+                <p className="type-body font-sans text-neutral-500 uppercase tracking-[0.18em]">
                   No results found for "{query}"
                 </p>
               </div>
@@ -120,10 +120,10 @@ const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold uppercase tracking-widest mb-1 group-hover:text-neutral-400 transition-colors">
+                      <h3 className="type-product-name mb-1 text-sm uppercase tracking-[0.06em] transition-colors group-hover:text-neutral-400">
                         {product.title}
                       </h3>
-                      <p className="text-xs text-neutral-500">
+                      <p className="type-price text-xs text-neutral-500">
                         {product.price}
                       </p>
                     </div>

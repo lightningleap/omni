@@ -1,11 +1,26 @@
+import 'dotenv/config';
 import { Client } from 'pg';
 
-const connectionString = "postgresql://postgres:sukumar1234%40A@aws-0-ap-south-1.pooler.supabase.com:5432/postgres";
+// One-off maintenance script: promotes an existing user row to ADMIN.
+// Kept because it is occasionally useful after a manual signup, but note that
+// the DB role does not by itself grant access — the email must be in
+// ADMIN_EMAILS for the app's gates to let it into /admin. See src/lib/admin.ts.
+//
+// Run with:  npx tsx admin-fix.ts
+const connectionString = process.env.DIRECT_URL || process.env.DATABASE_URL;
 
 async function promote() {
+  const email = (process.env.ADMIN_EMAILS || process.env.MASTER_ADMIN_EMAIL || '')
+    .split(',')[0]
+    .toLowerCase()
+    .trim();
+
+  if (!connectionString || !email) {
+    console.error("Set DIRECT_URL and ADMIN_EMAILS in .env first.");
+    return;
+  }
+
   const client = new Client({ connectionString });
-  // CHANGED: Matching your actual registration email
-  const email = "sukumar@lightningleap.org";
 
   try {
     await client.connect();

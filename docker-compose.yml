@@ -1,12 +1,31 @@
-version: '3.8'
+# Production-style run of the storefront image.
+#
+#   docker compose build      # needs BuildKit; Docker Desktop has it on by default
+#   docker compose up -d
+#   docker compose logs -f web
+#
+# .env is read at runtime via env_file and mounted as a build secret — it is
+# never copied into an image layer (see .dockerignore + Dockerfile).
 
 services:
   web:
-    build: .
+    build:
+      context: .
+      secrets:
+        - dotenv
+    image: unrwly:latest
+    restart: unless-stopped
     ports:
-      - "3000:3000"
-    volumes:
-      - .:/app
-      - /app/node_modules
+      # Host port is overridable: `HOST_PORT=3001 docker compose up -d`
+      # when something else already holds 3000 (a local `npm run dev`, say).
+      - "${HOST_PORT:-3000}:3000"
+    env_file:
+      - .env
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+
+secrets:
+  dotenv:
+    file: .env

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
+import crypto from "crypto"
 
 // Used by Printify to validate the webhook endpoint presence
 export async function GET() {
@@ -9,6 +10,21 @@ export async function GET() {
 
 export async function HEAD() {
   return new Response(null, { status: 200 })
+}
+
+/**
+ * Verifies Printify's HMAC-SHA256 signature over the raw request body.
+ * Printify sends `X-Pfy-Signature: sha256=<hex>` signed with the webhook secret
+ * returned when the webhook was registered.
+ */
+function verifyPrintifySignature(rawBody: string, signature: string | null, secret: string): boolean {
+  if (!signature) return false
+  const expected = "sha256=" + crypto.createHmac("sha256", secret).update(rawBody, "utf8").digest("hex")
+  const given = Buffer.from(signature)
+  const want = Buffer.from(expected)
+  // Length check first — timingSafeEqual throws on length mismatch
+  if (given.length !== want.length) return false
+  return crypto.timingSafeEqual(given, want)
 }
 
 
@@ -30,8 +46,24 @@ export async function POST(req: Request) {
       return new Response("OK", { status: 200 })
     }
 
-    // In production: verify HMAC SHA256 signature using PRINTIFY_WEBHOOK_SECRET
-    // if (!verifySignature(rawBody, signature, process.env.PRINTIFY_WEBHOOK_SECRET)) ...
+    // ==========================================================
+    // SIGNATURE VERIFICATION — this endpoint mutates order state,
+    // so a forged payload could fake "shipped"/"delivered".
+    // Anything past this point must be provably from Printify.
+    // ==========================================================
+    const secret = process.env.PRINTIFY_WEBHOOK_SECRET
+    if (secret) {
+      if (!verifyPrintifySignature(rawBody, signature, secret)) {
+        console.warn("[PRINTIFY WEBHOOK] Rejected — invalid or missing signature")
+        return new Response("Invalid signature", { status: 401 })
+      }
+    } else if (process.env.NODE_ENV === "production") {
+      // Fail closed in production rather than trusting unsigned events.
+      console.error("[PRINTIFY WEBHOOK] PRINTIFY_WEBHOOK_SECRET is not set — rejecting event")
+      return new Response("Webhook secret not configured", { status: 500 })
+    } else {
+      console.warn("[PRINTIFY WEBHOOK] No PRINTIFY_WEBHOOK_SECRET set — signature unverified (dev only)")
+    }
 
     // Gatekeeper: Only parse product publishes.
     if (body.type === "shop:product:published" || body.type === "product:published" || body.type === "product:updated") {

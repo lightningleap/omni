@@ -1,30 +1,14 @@
 "use server"
 
 import { prisma } from "@/lib/prisma"
-import { createClient } from "@/utils/supabase/server"
-import { cookies } from "next/headers"
 import { revalidatePath } from "next/cache"
 import { createPrintifyOrder, registerPrintifyWebhook } from "@/lib/printify"
 import Stripe from "stripe"
+import { requireAdmin } from "@/lib/auth";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: "2023-10-16" as any
 })
-
-/**
- * Gatekeeper: Ensures only the Master Admin defined in Vercel environment
- * variables can access these administrative functions.
- */
-const requireAdmin = async () => {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
-  const { data: { user } } = await supabase.auth.getUser();
-  const masterEmail = process.env.MASTER_ADMIN_EMAIL?.toLowerCase().trim();
-
-  if (!user || user.email?.toLowerCase().trim() !== masterEmail) {
-    throw new Error("Unauthorized. Clearance required.");
-  }
-}
 
 export async function updateOrderStatus(orderId: string, status: any, notes?: string) {
   await requireAdmin()

@@ -1,18 +1,19 @@
-import { prisma } from "@/lib/prisma";
+import { prisma, withDbRetry } from "@/lib/prisma";
 import NavbarClient from "./NavbarClient";
-import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
+import { getSessionUser } from "@/lib/auth";
 
 export async function getVisibleCollections() {
   try {
-    const collections = await prisma.collection.findMany({
-      select: {
-        id: true,
-        name: true,
-        handle: true,
-        imageUrl: true,
-      },
-    });
+    const collections = await withDbRetry(() =>
+      prisma.collection.findMany({
+        select: {
+          id: true,
+          name: true,
+          handle: true,
+          imageUrl: true,
+        },
+      }),
+    );
     return collections;
   } catch (error) {
     console.error("Error fetching collections:", error);
@@ -20,29 +21,45 @@ export async function getVisibleCollections() {
   }
 }
 
-export default async function Navbar({ user: propUser }: { user?: any }) {
-  let user = propUser;
+// Split the collections into the two storefront sections (ADULT / KIDS).
+// A collection appears under a section only if it actually has LIVE products
+// for that audience — so the KIDS menu never shows an empty category.
+export async function getCollectionsByAudience() {
+  try {
+    // The navigation renders on every page, so a one-second network blip here
+    // silently empties every category menu on the site. Retry the whole trio
+    // together: a partial result would be just as wrong as an empty one.
+    const [collections, adultGroups, kidsGroups] = await withDbRetry(() =>
+      Promise.all([
+        prisma.collection.findMany({ select: { id: true, name: true, handle: true, imageUrl: true } }),
+        prisma.product.groupBy({ by: ["collectionId"], where: { status: "LIVE", audience: "ADULT" }, _count: true }),
+        prisma.product.groupBy({ by: ["collectionId"], where: { status: "LIVE", audience: "KIDS" }, _count: true }),
+      ]),
+    );
 
-  // Fallback fetch if not provided (safety)
-  if (!user) {
-    const cookieStore = await cookies();
-    const supabase = createClient(cookieStore);
-    const { data: { user: fetchedUser } } = await supabase.auth.getUser();
-    user = fetchedUser;
+    const adultIds = new Set(adultGroups.map((g) => g.collectionId));
+    const kidsIds = new Set(kidsGroups.map((g) => g.collectionId));
+
+    const format = (c: (typeof collections)[number]) => ({ id: c.id, handle: c.handle, title: c.name, imageUrl: c.imageUrl });
+
+    return {
+      adult: collections.filter((c) => adultIds.has(c.id)).map(format),
+      kids: collections.filter((c) => kidsIds.has(c.id)).map(format),
+    };
+  } catch (error) {
+    console.error("Error grouping collections by audience:", error);
+    return { adult: [], kids: [] };
   }
+}
 
-  const collections = await getVisibleCollections();
+export default async function Navbar({ user: propUser }: { user?: any }) {
+  // The layout normally passes the session down; resolve it here only when it
+  // did not, so the role is decided in one place either way.
+  const session = propUser ? null : await getSessionUser();
+  const user = propUser ?? session?.user;
+  const isAdmin = propUser ? propUser.role === 'ADMIN' : Boolean(session?.isAdmin);
 
-  const formattedCollections = collections.map((c) => ({
-    id: c.id,
-    handle: c.handle,
-    title: c.name,
-    imageUrl: c.imageUrl,
-  }));
-
-  // Determine if user is admin based on environment variable
-  const masterEmail = process.env.MASTER_ADMIN_EMAIL?.toLowerCase().trim();
-  const isAdmin = user?.role === 'ADMIN' || user?.email?.toLowerCase().trim() === masterEmail;
+  const { adult, kids } = await getCollectionsByAudience();
 
   const safeUser = user ? {
     id: user.id || (user as any).id,
@@ -50,5 +67,5 @@ export default async function Navbar({ user: propUser }: { user?: any }) {
     role: isAdmin ? 'ADMIN' : 'CUSTOMER'
   } : null;
 
-  return <NavbarClient initialCollections={formattedCollections} user={safeUser} />;
+  return <NavbarClient adultCollections={adult} kidsCollections={kids} user={safeUser} />;
 }

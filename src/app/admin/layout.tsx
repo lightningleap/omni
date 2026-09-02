@@ -1,25 +1,17 @@
-import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import AdminSidebar from "@/components/admin/AdminSidebar";
+import { getSessionUser } from "@/lib/auth";
 
 export default async function AdminRootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
+  const { user, isAdmin } = await getSessionUser();
 
-  // Validate session with Supabase
-  const { data: { user } } = await supabase.auth.getUser();
-
-  const masterEmail = process.env.MASTER_ADMIN_EMAIL?.toLowerCase().trim();
-  const currentUserEmail = user?.email?.toLowerCase().trim();
-
-  // STAGE 6: Silent Gate Protocol
-  // If no user exists or email doesn't match the Vercel Master Admin, block access.
-  if (!user || currentUserEmail !== masterEmail) {
+  // Silent gate: anyone who is not a configured admin is bounced to sign-in
+  // rather than shown a 403, so the panel's existence stays unadvertised.
+  if (!user || !isAdmin) {
     redirect("/auth");
   }
 

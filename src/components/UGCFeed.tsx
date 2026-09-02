@@ -21,7 +21,7 @@ const UGCFeed = () => {
       <div className="px-6 md:px-12 lg:px-24 mb-12">
         <div className="flex flex-col md:flex-row items-end justify-between gap-6">
           <div className="space-y-4">
-            <span className="text-[10px] uppercase tracking-[0.4em] text-blue-600 font-bold">Community</span>
+            <span className="text-[10px] uppercase tracking-[0.4em] text-accent-700 font-bold">Community</span>
             <h2 className="text-4xl md:text-6xl font-bold text-gray-900 tracking-tighter uppercase leading-none">
               AS SEEN ON YOU
             </h2>
@@ -30,7 +30,7 @@ const UGCFeed = () => {
             href={`https://instagram.com/${storeName.toLowerCase()}`}
             target="_blank" 
             rel="noopener noreferrer"
-            className="text-xs font-bold text-gray-900 uppercase tracking-widest hover:text-blue-600 transition-colors flex items-center gap-2 group"
+            className="text-xs font-bold text-gray-900 uppercase tracking-widest hover:text-accent-700 transition-colors flex items-center gap-2 group"
           >
             @{storeName.toUpperCase()}
             <motion.div 
