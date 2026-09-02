@@ -1,7 +1,6 @@
 import { handleUpload, type HandleUploadBody } from '@vercel/blob/client';
 import { NextResponse } from 'next/server';
-import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
+import { requireAdmin } from "@/lib/auth";
 
 export async function POST(request: Request): Promise<NextResponse> {
   const body = (await request.json()) as HandleUploadBody;
@@ -11,15 +10,8 @@ export async function POST(request: Request): Promise<NextResponse> {
       body,
       request,
       onBeforeGenerateToken: async (pathname) => {
-        const cookieStore = await cookies();
-        const supabase = createClient(cookieStore);
-        const { data: { user } } = await supabase.auth.getUser();
-
-        const masterEmail = process.env.MASTER_ADMIN_EMAIL?.toLowerCase().trim();
-
-        if (!user || user.email?.toLowerCase().trim() !== masterEmail) {
-          throw new Error('Unauthenticated or missing administrative clearance.');
-        }
+        // Throwing here refuses to mint the upload token.
+        const user = await requireAdmin();
 
         return {
           allowedContentTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4'],

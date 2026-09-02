@@ -23,7 +23,7 @@ const CrossSellCarousel = ({ products, user }: { products: any[], user?: any }) 
   return (
     <section className="bg-white px-4 md:px-12 py-16" style={{ borderTop: '1px solid #eaeaec' }}>
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-[16px] font-bold text-[#282C3F] mb-6 uppercase tracking-wide">Similar Products</h2>
+        <h2 className="type-h3 mb-6 text-[#282C3F]">Similar Products</h2>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           {products.map((product, index) => (
             <ProductCard key={product._id || product.slug} product={product} index={index} user={user} />
@@ -217,7 +217,7 @@ export default function ProductClient({ product, recommendations = [], user }: P
 
   return (
     <div className="min-h-screen bg-white text-[#334155] font-sans selection:bg-[#0F172A] selection:text-white">
-      <div className="hidden md:block max-w-7xl mx-auto px-12 pt-32 pb-4" style={{paddingTop: '128px'}}>
+      <div className="hidden md:block max-w-7xl mx-auto px-12 pt-12 pb-4">
         <nav className="flex items-center gap-2 text-xs text-neutral-500 font-medium">
           <Link href="/" className="hover:text-black">Home</Link>
           <ChevronRight size={10} />
@@ -284,19 +284,21 @@ export default function ProductClient({ product, recommendations = [], user }: P
         <div className="lg:col-span-5 px-6 md:px-0 lg:sticky lg:top-28 lg:self-start" style={{maxHeight: 'calc(100vh - 128px)', overflowY: 'auto'}}>
           <div className="flex flex-col gap-6">
             <div className="space-y-2">
-              <p className="text-lg font-extrabold text-[#282C3F] uppercase tracking-widest leading-tight">UNRWLY</p>
-              <h1 className="text-xl md:text-2xl text-[#94969f] tracking-tight leading-tight uppercase font-medium">{product.name}</h1>
+              <p className="type-label text-[#282C3F]">UNRWLY</p>
+              {/* Product name is product information, not editorial display type:
+                  `font-sans` keeps it on Manrope against the global h1 default. */}
+              <h1 className="type-product-name font-sans text-xl leading-tight text-[#94969f] uppercase md:text-2xl">{product.name}</h1>
             </div>
 
             <hr className="border-neutral-100" />
 
             <div className="space-y-1">
               <div className="flex items-baseline gap-3">
-                <span className="text-4xl font-black text-[#0F172A] tracking-tighter">{activePriceDisplay}</span>
+                <span className="type-price text-4xl text-[#0F172A]">{activePriceDisplay}</span>
                 <span className="text-lg text-slate-400 line-through font-medium">MRP ${strikethroughPrice}</span>
-                <span className="text-lg font-black uppercase" style={{color: '#D97757'}}>({discountPercent}% OFF)</span>
+                <span className="type-price text-lg uppercase" style={{color: '#D97757'}}>({discountPercent}% OFF)</span>
               </div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-600">inclusive of all taxes</p>
+              <p className="type-caption text-[11px] uppercase tracking-[0.18em] text-emerald-600">inclusive of all taxes</p>
             </div>
 
             <div className="space-y-6 pt-4">
@@ -356,7 +358,7 @@ export default function ProductClient({ product, recommendations = [], user }: P
             <div className="hidden md:grid grid-cols-2 gap-3 mt-8">
               <button
                 onClick={handleAddToCart}
-                className="py-4 font-black uppercase tracking-[0.15em] text-sm flex items-center justify-center gap-3 active:scale-95 transition-all bg-[#121212] text-white hover:bg-[#3730A3]"
+                className="py-4 font-black uppercase tracking-[0.15em] text-sm flex items-center justify-center gap-3 active:scale-95 transition-all bg-[#121212] text-white hover:bg-accent-800"
               >
                 <ShoppingBag size={16} /> Add to Bag
               </button>
@@ -402,7 +404,7 @@ export default function ProductClient({ product, recommendations = [], user }: P
         </button>
         <button
           onClick={handleAddToCart}
-          className="flex-[1.5] flex items-center justify-center gap-2 py-4 text-sm font-black uppercase tracking-widest active:scale-95 transition-transform bg-[#121212] text-white hover:bg-[#3730A3]"
+          className="flex-[1.5] flex items-center justify-center gap-2 py-4 text-sm font-black uppercase tracking-widest active:scale-95 transition-transform bg-[#121212] text-white hover:bg-accent-800"
         >
           <ShoppingBag size={18} /> Add to Bag
         </button>
@@ -412,7 +414,7 @@ export default function ProductClient({ product, recommendations = [], user }: P
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
             <div className="space-y-6">
-              <h3 className="text-xs font-black uppercase tracking-[0.3em] text-black flex items-center gap-3">
+              <h3 className="type-label flex items-center gap-3 text-black">
                 <div className="w-1.5 h-1.5 rounded-full bg-black" />
                 Product Features
               </h3>
@@ -422,7 +424,7 @@ export default function ProductClient({ product, recommendations = [], user }: P
               />
             </div>
             <div className="space-y-6">
-              <h3 className="text-xs font-black uppercase tracking-[0.3em] text-black flex items-center gap-3">
+              <h3 className="type-label flex items-center gap-3 text-black">
                 <div className="w-1.5 h-1.5 rounded-full bg-black" />
                 Care Instructions
               </h3>
@@ -432,7 +434,7 @@ export default function ProductClient({ product, recommendations = [], user }: P
               />
             </div>
             <div className="space-y-6">
-              <h3 className="text-xs font-black uppercase tracking-[0.3em] text-black flex items-center gap-3">
+              <h3 className="type-label flex items-center gap-3 text-black">
                 <div className="w-1.5 h-1.5 rounded-full bg-black" />
                 The Details
               </h3>

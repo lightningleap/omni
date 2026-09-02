@@ -9,6 +9,8 @@ export interface PrintifyProduct {
   rawPrice: number;
   slug: string;
   category?: string;
+  /** The Printify shop this product was pulled from — decides ADULT vs KIDS. */
+  shopId?: string;
 }
 
 /**
@@ -23,16 +25,64 @@ export function getPrintifyShopIds(): string[] {
 }
 
 /**
- * Fetches ALL products across every configured shop, paginating through each.
- * Maps them for local synchronization.
+ * Which Printify shops stock the children's range.
+ *
+ *   PRINTIFY_KIDS_SHOP_IDS=27560160
+ *
+ * The storefront splits its whole navigation on ADULT vs KIDS, but Printify has
+ * no such concept — the only signal is which store a product lives in. Without
+ * this mapping every synced product falls back to the schema default (ADULT),
+ * which is how children's tees end up listed under Adult.
  */
-export async function fetchPrintifyProducts(): Promise<PrintifyProduct[] | null> {
+export function getKidsShopIds(): string[] {
+  const raw = process.env.PRINTIFY_KIDS_SHOP_IDS || "";
+  return raw.split(",").map((s) => s.trim()).filter(Boolean);
+}
+
+/** The audience a product inherits from the shop it was pulled from. */
+export function audienceForShop(shopId: string | undefined): "ADULT" | "KIDS" {
+  return shopId && getKidsShopIds().includes(shopId) ? "KIDS" : "ADULT";
+}
+
+/**
+ * Picks the mockup Printify itself treats as the product's primary image.
+ *
+ * `images[0]` is NOT reliably that image — the array is ordered by mockup
+ * generation, so the first entry is often an incidental camera angle (and on
+ * some products a stale one whose CDN object has since been replaced). Printify
+ * flags the real one with `is_default`, falling back to whichever mockup is
+ * selected for publishing.
+ */
+function pickPrimaryPrintifyImage(images: any[]): string {
+  if (!Array.isArray(images) || images.length === 0) return "";
+  const chosen =
+    images.find((i) => i?.is_default) ??
+    images.find((i) => i?.is_selected_for_publishing) ??
+    images[0];
+  return chosen?.src || "";
+}
+
+/**
+ * Fetches ALL products across every configured shop, paginating through each.
+ *
+ * `complete` reports whether every page of every shop was read. A rate-limited
+ * or failed page stops that shop's pagination and yields a partial catalogue,
+ * which is fine for read-only callers (sitemap, related products) but must
+ * never be treated as "the full truth" by the sync — see
+ * syncStorefrontWithPrintify, which would otherwise draft the entire store the
+ * first time Printify returns a 429.
+ */
+export async function fetchPrintifyCatalog(): Promise<{
+  products: PrintifyProduct[] | null;
+  complete: boolean;
+}> {
   const token = process.env.PRINTIFY_API_TOKEN || process.env.PRINTIFY_TOKEN;
   const shopIds = getPrintifyShopIds();
-  if (!token || shopIds.length === 0) return null;
+  if (!token || shopIds.length === 0) return { products: null, complete: false };
 
   const headers = { "Authorization": `Bearer ${token}`, "User-Agent": "Unrwly/1.0" };
   const all: PrintifyProduct[] = [];
+  let complete = true;
 
   try {
     for (const shopId of shopIds) {
@@ -43,7 +93,11 @@ export async function fetchPrintifyProducts(): Promise<PrintifyProduct[] | null>
           `https://api.printify.com/v1/shops/${shopId}/products.json?page=${page}`,
           { headers }
         );
-        if (!res.ok) break;
+        if (!res.ok) {
+          console.error(`fetchPrintifyCatalog: shop ${shopId} page ${page} -> ${res.status}`);
+          complete = false;
+          break;
+        }
         const data = await res.json();
         lastPage = data.last_page || 1;
         for (const p of data.data || []) {
@@ -52,43 +106,69 @@ export async function fetchPrintifyProducts(): Promise<PrintifyProduct[] | null>
             name: p.title,
             description: p.description,
             descriptionHtml: p.description,
-            image: p.images?.[0]?.src || "",
+            image: pickPrimaryPrintifyImage(p.images),
             rawPrice: (p.variants?.[0]?.price || 0) / 100,
             slug: p.id,
+            shopId,
           });
         }
         page++;
       } while (page <= lastPage && page <= 20); // safety cap: 20 pages/shop
+      if (lastPage > 20) complete = false;
     }
-    return all;
+    return { products: all, complete };
   } catch (err) {
-    console.error("fetchPrintifyProducts Error:", err);
-    return all.length ? all : null;
+    console.error("fetchPrintifyCatalog Error:", err);
+    return { products: all.length ? all : null, complete: false };
   }
 }
 
 /**
+ * Back-compat wrapper for read-only callers that only need the list.
+ */
+export async function fetchPrintifyProducts(): Promise<PrintifyProduct[] | null> {
+  const { products } = await fetchPrintifyCatalog();
+  return products;
+}
+
+/**
  * Fetches single product details from Printify.
+ *
+ * Searches every configured shop, not just PRINTIFY_SHOP_ID. The storefront is
+ * stocked from two Printify stores — Adult and Kids — and a product id is only
+ * valid in the store that owns it: asking the wrong one returns 400. Looking in
+ * the primary store alone meant every Kids product detail page 404'd, because
+ * the page treats "Printify has no such product" as "this product does not
+ * exist". The primary shop is tried first, so the common case still costs one
+ * request.
  */
 export async function fetchPrintifyProductById(productId: string) {
-  const shopId = process.env.PRINTIFY_SHOP_ID;
   const token = process.env.PRINTIFY_API_TOKEN || process.env.PRINTIFY_TOKEN;
+  if (!token) return null;
 
-  if (!shopId || !token) return null;
+  const primary = process.env.PRINTIFY_SHOP_ID;
+  const shopIds = getPrintifyShopIds();
+  const ordered = primary
+    ? [primary, ...shopIds.filter((id) => id !== primary)]
+    : shopIds;
 
-  try {
-    const res = await fetch(`https://api.printify.com/v1/shops/${shopId}/products/${productId}.json`, {
-      headers: { "Authorization": `Bearer ${token}` }
-    });
+  if (ordered.length === 0) return null;
 
-    if (!res.ok) return null;
+  for (const shopId of ordered) {
+    try {
+      const res = await fetch(
+        `https://api.printify.com/v1/shops/${shopId}/products/${productId}.json`,
+        { headers: { "Authorization": `Bearer ${token}` } }
+      );
 
-    const data = await res.json();
-    return data;
-  } catch (err) {
-    console.error("fetchPrintifyProductById Error:", err);
-    return null;
+      if (res.ok) return await res.json();
+      // 400/404 just means "not this shop's product" — keep looking.
+    } catch (err) {
+      console.error(`fetchPrintifyProductById(${productId}) shop ${shopId}:`, err);
+    }
   }
+
+  return null;
 }
 
 /**
@@ -594,8 +674,8 @@ export async function createDesignedPrintifyProduct(params: {
  */
 export async function syncStorefrontWithPrintify() {
   try {
-    const liveProducts = await fetchPrintifyProducts();
-    
+    const { products: liveProducts, complete } = await fetchPrintifyCatalog();
+
     if (liveProducts === null) {
       return { success: false, error: "PRINTIFY_AUTH_FAILED" };
     }
@@ -640,14 +720,45 @@ export async function syncStorefrontWithPrintify() {
           cost: p.rawPrice,
           imageUrl: p.image || "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80",
           status: "DRAFT",
+          // Set once, on first sync, from the shop the product came out of.
+          // Deliberately absent from the `update` branch above: once a product
+          // exists, whatever an admin chose in the panel is the truth, and a
+          // re-sync must not overwrite it.
+          audience: audienceForShop(p.shopId),
         }
       });
       syncCount++;
     }
 
+    // A product deleted from Printify can no longer be fulfilled, and its
+    // mockup URL dies with it — images.printify.com answers 400 "Product not
+    // found", and the retired S3 mockup bucket answers 403. Left LIVE, those
+    // rows render as broken images on the storefront and would take orders
+    // that Printify then refuses. Demote them to DRAFT so they drop out of the
+    // storefront queries, which all filter on status: 'LIVE'.
+    //
+    // Only safe on a complete catalogue read: a partial one (rate limit, a
+    // shop erroring mid-pagination) would draft the entire store.
+    let draftedCount = 0;
+    if (complete && liveProducts.length > 0) {
+      const { count } = await prisma.product.updateMany({
+        where: {
+          status: "LIVE",
+          printifyId: { notIn: liveProducts.map((p) => p._id) },
+        },
+        data: { status: "DRAFT" },
+      });
+      draftedCount = count;
+      if (count > 0) {
+        console.log(`[SYNC] Drafted ${count} product(s) no longer present in Printify.`);
+      }
+    }
+
     return { 
       success: true, 
       count: syncCount, 
+      draftedCount,
+      partial: !complete,
       isFullRestore 
     };
   } catch (err) {

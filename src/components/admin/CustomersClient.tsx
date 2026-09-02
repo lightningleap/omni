@@ -1,11 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { Search, ChevronDown, User, UserCheck, MapPin, Loader2, DollarSign, Users, Star } from "lucide-react";
-import { StatusBadge } from "@/components/admin/StatusBadge";
-import { updateUserRole } from "@/app/actions/admin/customers";
-import { Role } from "@prisma/client";
+import { Search, DollarSign, Users, Star, Lock } from "lucide-react";
 import CustomerProfileDrawer from "./CustomerProfileDrawer";
+import { setUserRole } from "@/app/actions/admin/customers";
+import { Role } from "@prisma/client";
 
 type CustomerData = {
   id: string;
@@ -14,13 +13,33 @@ type CustomerData = {
   totalSpent: number;
   ordersCount: number;
   role: Role;
+  /** Pinned as an admin by ADMIN_EMAILS — cannot be changed from here. */
+  pinned: boolean;
+  /** The signed-in admin's own row — cannot demote themselves. */
+  isSelf: boolean;
 };
 
 export default function CustomersClient({ initialCustomers }: { initialCustomers: CustomerData[] }) {
   const [search, setSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [loadingIds, setLoadingIds] = useState<Set<string>>(new Set());
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [savingId, setSavingId] = useState<string | null>(null);
+  const [roleError, setRoleError] = useState<string | null>(null);
+
+  const changeRole = async (userId: string, role: Role) => {
+    setSavingId(userId);
+    setRoleError(null);
+    try {
+      const result = await setUserRole(userId, role);
+      // The server refuses changes that would lock the store out of its own
+      // panel; show why rather than failing silently.
+      if (!result.success) setRoleError(result.message ?? "Could not change that role.");
+    } catch {
+      setRoleError("Could not change that role.");
+    } finally {
+      setSavingId(null);
+    }
+  };
   
   // Calculations for Stat Cards
   const totalCustomers = initialCustomers.length;
@@ -141,12 +160,34 @@ export default function CustomersClient({ initialCustomers }: { initialCustomers
                        </div>
                     </td>
                     <td className="px-4 py-4">
-                       {customer.role === "VIP" ? (
-                          <span className="bg-[#FFF5D1] text-[#4F4700] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#FBE9B3] uppercase tracking-wider">
-                            VIP
+                       {customer.pinned || customer.isSelf ? (
+                          <span
+                            title={customer.pinned
+                              ? "Pinned as an admin in ADMIN_EMAILS — change it there"
+                              : "You cannot change your own role"}
+                            className="bg-rose-50 text-rose-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-rose-100 uppercase tracking-wider inline-flex items-center gap-1"
+                          >
+                            <Lock className="w-2.5 h-2.5" />
+                            {customer.role}
                           </span>
                        ) : (
-                          <span className="text-xs text-slate-500 font-medium capitalize">{customer.role.toLowerCase()}</span>
+                          <select
+                            value={customer.role}
+                            disabled={savingId === customer.id}
+                            onClick={(e) => e.stopPropagation()}
+                            onChange={(e) => changeRole(customer.id, e.target.value as Role)}
+                            className={`text-[11px] font-bold rounded-full border px-2 py-1 cursor-pointer disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                              customer.role === "ADMIN"
+                                ? "bg-rose-50 text-rose-700 border-rose-100"
+                                : customer.role === "VIP"
+                                ? "bg-[#FFF5D1] text-[#4F4700] border-[#FBE9B3]"
+                                : "bg-white text-slate-600 border-slate-200"
+                            }`}
+                          >
+                            <option value="CUSTOMER">Customer</option>
+                            <option value="VIP">VIP</option>
+                            <option value="ADMIN">Admin</option>
+                          </select>
                        )}
                     </td>
                     <td className="px-4 py-4 text-sm text-slate-600 font-medium">
@@ -164,6 +205,7 @@ export default function CustomersClient({ initialCustomers }: { initialCustomers
         
         <div className="p-4 border-t border-slate-100 bg-slate-50/30 flex justify-between items-center text-xs text-slate-500 font-medium">
            <span>Showing {filteredCustomers.length} customers</span>
+           {roleError && <span className="text-rose-600 font-semibold">{roleError}</span>}
         </div>
       </div>
 

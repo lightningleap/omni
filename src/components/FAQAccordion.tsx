@@ -29,7 +29,7 @@ export default function FAQAccordion({ items }: FAQAccordionProps) {
             className="w-full flex items-center justify-between p-8 text-left hover:bg-slate-50/50 transition-colors"
           >
             <div className="flex items-center gap-6">
-              {faq.icon && <span className="text-indigo-600">{faq.icon}</span>}
+              {faq.icon && <span className="text-accent-700">{faq.icon}</span>}
               <span className="text-xs uppercase tracking-[0.3em] font-bold text-slate-900">{faq.question}</span>
             </div>
             <motion.div

@@ -1,9 +1,8 @@
 "use server"
 
 import { prisma } from "@/lib/prisma"
-import { createClient } from "@/utils/supabase/server"
-import { cookies } from "next/headers"
 import { revalidatePath } from "next/cache"
+import { requireAdmin } from "@/lib/auth";
 
 /**
  * Robust Network Resilience Wrapper
@@ -19,24 +18,6 @@ async function withRetry<T>(fn: () => Promise<T>, retries = 2, delay = 1000): Pr
     }
     throw error;
   }
-}
-
-/**
- * Supabase Admin Gatekeeper
- * Verifies the user against the MASTER_ADMIN_EMAIL set in Vercel
- */
-const requireAdmin = async () => {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
-  const { data: { user } } = await supabase.auth.getUser();
-
-  const masterEmail = process.env.MASTER_ADMIN_EMAIL?.toLowerCase().trim();
-  const userEmail = user?.email?.toLowerCase().trim();
-
-  if (!user || userEmail !== masterEmail) {
-    throw new Error("Unauthorized. Missing priority clearance.");
-  }
-  return user;
 }
 
 export async function updateMerchSettings(data: {

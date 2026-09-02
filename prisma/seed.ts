@@ -11,8 +11,20 @@ const prisma = new PrismaClient({ adapter });
 
 async function main() {
   // --- CONFIGURATION ---
-  const BOSS_EMAIL = 'sukumar@lightningleap.org'; // REPLACE WITH REAL BOSS EMAIL
-  const TEMP_PASSWORD = 'sukumar1234@A'; // CHANGE THIS AFTER FIRST LOGIN
+  // Read from the environment so no credential ever lives in the repository.
+  // The email must also be listed in ADMIN_EMAILS, otherwise the app's gates
+  // will still refuse it — the DB row alone does not grant admin access.
+  const BOSS_EMAIL = (process.env.ADMIN_EMAILS || process.env.MASTER_ADMIN_EMAIL || '')
+    .split(',')[0]
+    .toLowerCase()
+    .trim();
+  const TEMP_PASSWORD = process.env.SEED_ADMIN_PASSWORD;
+
+  if (!BOSS_EMAIL || !TEMP_PASSWORD) {
+    throw new Error(
+      'Set ADMIN_EMAILS (or MASTER_ADMIN_EMAIL) and SEED_ADMIN_PASSWORD in .env before seeding.'
+    );
+  }
   // ---------------------
 
   console.log('🌱 Starting Admin Promotion Seeding...');

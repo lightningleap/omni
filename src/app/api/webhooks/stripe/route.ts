@@ -17,7 +17,13 @@ export async function POST(req: Request) {
 
   let event;
 
-  if (endpointSecret && signature) {
+  // Once a signing secret is configured the signature is mandatory: this
+  // endpoint marks orders paid, submits them to Printify and emails the
+  // customer, so an unverified body is an order-fulfilment forgery.
+  if (endpointSecret) {
+    if (!signature) {
+      return NextResponse.json({ error: "Missing stripe-signature header" }, { status: 400 })
+    }
     try {
       event = stripe.webhooks.constructEvent(payloadStr, signature, endpointSecret)
     } catch (err: any) {
@@ -25,6 +31,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Webhook Error" }, { status: 400 })
     }
   } else {
+    console.warn("[STRIPE WEBHOOK] STRIPE_WEBHOOK_SECRET is not set — accepting unverified payloads. Do not run this way outside local development.")
     event = JSON.parse(payloadStr)
   }
 

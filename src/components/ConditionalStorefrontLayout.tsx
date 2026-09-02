@@ -4,6 +4,7 @@ import React from "react"
 import { usePathname } from "next/navigation"
 import GlobalCountdown from "@/components/GlobalCountdown"
 import NewsletterModal from "@/components/NewsletterModal"
+import BrandBackground from "@/components/BrandBackground"
 
 type LayoutProps = {
   children: React.ReactNode
@@ -23,6 +24,9 @@ export default function ConditionalStorefrontLayout({ children, config, navbar, 
 
   return (
     <>
+      {/* Global brand canvas — warm base + subtle doodles, fixed behind all pages */}
+      <BrandBackground />
+
       {/* PILLAR 1: Marketing & FOMO Engine */}
       <GlobalCountdown
         isActive={config?.flashSaleActive ?? false}

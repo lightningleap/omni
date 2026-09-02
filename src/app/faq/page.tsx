@@ -27,15 +27,15 @@ const faqs = [
 
 export default function FAQPage() {
   return (
-    <main className="min-h-screen bg-white text-[#334155] pt-32 pb-24 selection:bg-[#0F172A] selection:text-white font-sans">
+    <main className="min-h-screen text-[#334155] pt-12 pb-24 selection:bg-[#0F172A] selection:text-white font-sans">
       <section className="max-w-7xl mx-auto px-6 md:px-12 mb-24">
         <div className="flex flex-col gap-4 border-l border-slate-100 pl-8 py-12">
-          <span className="text-[10px] font-bold text-brand-terracotta uppercase tracking-[0.5em]">Support Center</span>
-          <h1 className="text-6xl md:text-8xl font-bold tracking-tighter leading-[0.9] italic font-display uppercase">
+          <span className="type-label text-brand-terracotta">Support Center</span>
+          <h1 className="type-h1">
             Operational <br /> 
             <span className="text-slate-400">Protocol.</span>
           </h1>
-          <p className="text-xs uppercase tracking-[0.3em] text-slate-500 font-bold">
+          <p className="type-body text-slate-500">
             Everything you need to know about the Unrwly ecosystem.
           </p>
         </div>

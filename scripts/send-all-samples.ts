@@ -5,7 +5,16 @@ import {
   contactNotificationEmail,
 } from "../src/lib/email"
 
-const to = "sumbultaniya@gmail.com"
+// Where the three sample emails go. Override per run:
+//   SAMPLE_EMAIL_TO=you@example.com npx tsx scripts/send-all-samples.ts
+const to =
+  process.env.SAMPLE_EMAIL_TO?.trim() ||
+  process.env.CONTACT_INBOX?.trim() ||
+  (process.env.ADMIN_EMAILS || process.env.MASTER_ADMIN_EMAIL || "").split(",")[0].trim()
+
+if (!to) {
+  throw new Error("Set SAMPLE_EMAIL_TO, CONTACT_INBOX or ADMIN_EMAILS before sending samples.")
+}
 
 async function main() {
   const r1 = await sendEmail({

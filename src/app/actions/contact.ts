@@ -1,6 +1,7 @@
 "use server";
 
 import { sendEmail, contactNotificationEmail } from "@/lib/email";
+import { getBootstrapAdminEmails } from "@/lib/admin";
 
 /**
  * Contact Form Server Action
@@ -16,7 +17,9 @@ export async function handleContactForm(formData: FormData) {
     return { success: false, message: "Please fill in your email and message." };
   }
 
-  const to = process.env.CONTACT_INBOX || process.env.MASTER_ADMIN_EMAIL;
+  // Where contact-form submissions land. CONTACT_INBOX wins; otherwise the
+  // first configured admin gets them so messages are never silently dropped.
+  const to = process.env.CONTACT_INBOX?.trim() || getBootstrapAdminEmails()[0];
 
   if (to) {
     await sendEmail({
@@ -26,7 +29,7 @@ export async function handleContactForm(formData: FormData) {
       replyTo: email,
     });
   } else {
-    console.warn("[CONTACT] No CONTACT_INBOX/MASTER_ADMIN_EMAIL set — logging instead:", {
+    console.warn("[CONTACT] No CONTACT_INBOX / ADMIN_EMAILS set — logging instead:", {
       name,
       email,
       orderNumber,

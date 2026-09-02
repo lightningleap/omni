@@ -57,7 +57,7 @@ function AuthContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F6F6F7] flex items-center justify-center p-6 pt-40 md:pt-48 font-sans selection:bg-indigo-100">
+    <div className="min-h-screen bg-[#F6F6F7] flex items-center justify-center p-6 pt-20 md:pt-28 font-sans selection:bg-accent-100">
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -66,8 +66,8 @@ function AuthContent() {
       >
         {/* Branding */}
         <motion.div variants={itemVariants} className="text-center mb-10 space-y-2">
-          <h1 className="text-5xl font-black tracking-tighter uppercase italic text-black">Unrwly</h1>
-          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-neutral-400">
+          <h1 className="type-h2 text-black">Unrwly</h1>
+          <p className="type-label text-neutral-400">
             {isLogin ? 'Command Center Access' : 'Identity Initialization'}
           </p>
         </motion.div>
@@ -81,7 +81,7 @@ function AuthContent() {
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="mb-8 p-4 bg-indigo-50 border border-indigo-100 text-indigo-600 text-[10px] font-black uppercase tracking-widest text-center flex items-center justify-center gap-2"
+              className="type-caption mb-8 flex items-center justify-center gap-2 border border-accent-200 bg-accent-50 p-4 text-center text-accent-700 uppercase tracking-[0.18em]"
             >
               <AlertCircle size={14} /> {message}
             </motion.div>
@@ -91,7 +91,7 @@ function AuthContent() {
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="mb-8 p-4 bg-rose-50 border border-rose-100 text-rose-500 text-[10px] font-black uppercase tracking-widest text-center italic"
+              className="type-caption mb-8 border border-rose-100 bg-rose-50 p-4 text-center text-rose-500 uppercase tracking-[0.18em]"
             >
               {error}
             </motion.div>
@@ -104,13 +104,13 @@ function AuthContent() {
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-neutral-500 ml-1">Full Identity Name</label>
                   <div className="relative group">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300 group-focus-within:text-indigo-600 transition-colors" size={18} />
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300 group-focus-within:text-accent-700 transition-colors" size={18} />
                     <input
                       name="name"
                       type="text"
                       placeholder="Your Name"
                       required={!isLogin}
-                      className="w-full bg-white border border-neutral-200 rounded-2xl py-4 pl-12 pr-4 text-base font-bold text-black focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all placeholder:text-neutral-300"
+                      className="w-full bg-white border border-neutral-200 rounded-2xl py-4 pl-12 pr-4 text-base font-bold text-black focus:outline-none focus:ring-4 focus:ring-accent-500/10 focus:border-accent-700 transition-all placeholder:text-neutral-300"
                     />
                   </div>
                 </div>
@@ -119,13 +119,13 @@ function AuthContent() {
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-neutral-500 ml-1">Email Identity</label>
                 <div className="relative group">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300 group-focus-within:text-indigo-600 transition-colors" size={18} />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300 group-focus-within:text-accent-700 transition-colors" size={18} />
                   <input
                     name="email"
                     type="email"
                     placeholder="name@unrwly.com"
                     required
-                    className="w-full bg-white border border-neutral-200 rounded-2xl py-4 pl-12 pr-4 text-base font-bold text-black focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all placeholder:text-neutral-300"
+                    className="w-full bg-white border border-neutral-200 rounded-2xl py-4 pl-12 pr-4 text-base font-bold text-black focus:outline-none focus:ring-4 focus:ring-accent-500/10 focus:border-accent-700 transition-all placeholder:text-neutral-300"
                   />
                 </div>
               </div>
@@ -133,13 +133,13 @@ function AuthContent() {
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-neutral-500 ml-1">Security Key</label>
                 <div className="relative group">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300 group-focus-within:text-indigo-600 transition-colors" size={18} />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300 group-focus-within:text-accent-700 transition-colors" size={18} />
                   <input
                     name="password"
                     type="password"
                     placeholder="••••••••"
                     required
-                    className="w-full bg-white border border-neutral-200 rounded-2xl py-4 pl-12 pr-4 text-base font-bold text-black focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all placeholder:text-neutral-300"
+                    className="w-full bg-white border border-neutral-200 rounded-2xl py-4 pl-12 pr-4 text-base font-bold text-black focus:outline-none focus:ring-4 focus:ring-accent-500/10 focus:border-accent-700 transition-all placeholder:text-neutral-300"
                   />
                 </div>
               </div>

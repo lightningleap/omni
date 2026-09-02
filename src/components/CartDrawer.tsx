@@ -120,10 +120,10 @@ const CartDrawer: React.FC = () => {
                   >
                     <ShoppingBag size={32} className="text-neutral-300" />
                   </motion.div>
-                  <h3 className="text-lg font-medium mb-2 text-black italic font-display">Your cart is currently empty.</h3>
+                  <h3 className="type-body mb-2 font-sans font-medium text-black">Your cart is currently empty.</h3>
                   <button
                     onClick={() => setDrawerOpen(false)}
-                    className="mt-6 flex items-center gap-2 text-black text-xs uppercase tracking-[0.2em] hover:text-blue-600 transition-colors font-bold"
+                    className="mt-6 flex items-center gap-2 text-black text-xs uppercase tracking-[0.2em] hover:text-accent-700 transition-colors font-bold"
                   >
                     Continue Browsing <ArrowRight size={14} />
                   </button>

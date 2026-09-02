@@ -2,10 +2,9 @@ import React from 'react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import ProductClient from '@/components/ProductClient';
-import { fetchPrintifyProductById, fetchPrintifyProducts } from '@/lib/printify';
+import { fetchPrintifyProductById } from '@/lib/printify';
 import { prisma } from '@/lib/prisma';
-import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
+import { getSessionUser } from "@/lib/auth";
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
@@ -55,13 +54,8 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
  */
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
-  const { data: { user } } = await supabase.auth.getUser();
+  const { user, isAdmin } = await getSessionUser();
 
-  // Determine if user is admin based on environment variable
-  const masterEmail = process.env.MASTER_ADMIN_EMAIL?.toLowerCase().trim();
-  const isAdmin = user?.email?.toLowerCase().trim() === masterEmail;
 
   const safeUser = user ? {
     id: user.id,
@@ -102,11 +96,32 @@ export default async function ProductPage({ params }: ProductPageProps) {
     rawPrice: dbProduct.price,
     category: dbProduct.collection?.name || printifyProduct.category
   };
-  // 4. Get recommendations (can use cached Printify list or DB)
-  const allProducts = await fetchPrintifyProducts() || [];
-  const recommendations = allProducts
-    .filter(p => p.slug !== slug)
-    .slice(0, 4);
+  // 4. Recommendations come from our own database, not from Printify.
+  //
+  // This used to call fetchPrintifyProducts(), which walks every page of every
+  // Printify shop — 287 products over two shops, measured at ~36s — purely to
+  // keep four of them. On Vercel that outruns the function timeout, so the
+  // product page failed for shoppers even though the data was fine. The same
+  // four rows come out of Postgres in milliseconds, and the database is already
+  // the source of truth for what is visible in the storefront.
+  const recommendations = (await prisma.product.findMany({
+    where: {
+      status: 'LIVE',
+      audience: dbProduct.audience,
+      NOT: { printifyId: slug },
+    },
+    include: { collection: { select: { name: true } } },
+    orderBy: { createdAt: 'desc' },
+    take: 4,
+  })).map((p) => ({
+    _id: p.id,
+    name: p.name,
+    slug: String(p.printifyId),
+    image: p.imageUrl,
+    price: `$${(p.price || 0).toFixed(2)}`,
+    rawPrice: p.price || 0,
+    category: p.collection?.name ?? 'UNRWLY',
+  }));
 
   return (
     <ProductClient 

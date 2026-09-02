@@ -1,0 +1,40 @@
+# Secrets — never bake these into an image layer.
+# The build reads .env through a BuildKit secret mount instead (see Dockerfile),
+# and the container reads it at runtime via `env_file` / `--env-file`.
+.env
+.env.*
+!.env.example
+
+# Build + dependency output — rebuilt inside the image
+node_modules
+.next
+out
+build
+tsconfig.tsbuildinfo
+*.log
+
+# VCS + editor
+.git
+.gitignore
+.claude
+.vscode
+.idea
+.DS_Store
+
+# Docs and one-off scripts that the running app never reads
+*.md
+*.csv
+*.docx
+*.html
+!scripts/email-preview.html
+drafted-orphans-rollback.json
+admin-fix.ts
+check_count.ts
+test-db.js
+run.txt
+*.png
+
+# Docker's own files
+Dockerfile
+.dockerignore
+docker-compose*.yml

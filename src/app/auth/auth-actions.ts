@@ -3,6 +3,7 @@
 import { createClient } from '@/utils/supabase/server';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { getSessionUser } from '@/lib/auth';
 
 export async function signInAction(formData: FormData) {
   const email = formData.get('email') as string;
@@ -24,19 +25,15 @@ export async function signInAction(formData: FormData) {
     return redirect(`/auth?error=${encodeURIComponent(error.message)}`);
   }
 
-  // Handle Role-Based Routing to prevent loops
-  const masterEmail = process.env.MASTER_ADMIN_EMAIL?.toLowerCase().trim();
-  const userEmail = email.toLowerCase().trim();
+  // Route by the role the app itself resolves (database row, or the break-glass
+  // list). The copy stored in Supabase metadata is only a mirror for display —
+  // no gate reads it — but keeping it fresh stops the account page from showing
+  // a stale clearance after someone is promoted or demoted.
+  const { role } = await getSessionUser();
 
-  if (userEmail === masterEmail) {
-    await supabase.auth.updateUser({
-      data: { role: 'ADMIN' }
-    });
-    return redirect('/admin/products');
-  }
+  await supabase.auth.updateUser({ data: { role } });
 
-  // Standard users go to their account page instead of admin
-  return redirect('/account');
+  return redirect(role === 'ADMIN' ? '/admin/products' : '/account');
 }
 
 export async function signUpAction(formData: FormData) {
@@ -57,7 +54,9 @@ export async function signUpAction(formData: FormData) {
     options: {
       data: {
         full_name: name,
-        role: email.toLowerCase().trim() === process.env.MASTER_ADMIN_EMAIL?.toLowerCase().trim() ? 'ADMIN' : 'CUSTOMER'
+        // New accounts are always customers. Promotion happens afterwards, from
+        // the admin panel — signing up can never grant admin rights.
+        role: 'CUSTOMER'
       }
     }
   });
@@ -67,13 +66,8 @@ export async function signUpAction(formData: FormData) {
   }
 
   // With email confirmation disabled, the user is auto-signed in.
-  // Route admin to dashboard, customers to their account.
-  const masterEmail = process.env.MASTER_ADMIN_EMAIL?.toLowerCase().trim();
-  if (email.toLowerCase().trim() === masterEmail) {
-    return redirect('/admin/products');
-  }
-
-  return redirect('/account');
+  const { isAdmin } = await getSessionUser();
+  return redirect(isAdmin ? '/admin/products' : '/account');
 }
 
 export async function signOutAction() {

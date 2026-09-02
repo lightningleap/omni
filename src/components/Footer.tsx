@@ -1,22 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { Twitter, Instagram, Facebook, Youtube, Send, ArrowRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import BrandMark from "./BrandMark";
+import SocialLinks from "./SocialLinks";
 
+/**
+ * The site footer.
+ *
+ * The social row is now `SocialLinks`, the same component the Etsy trust strip
+ * and the Meet UNRWLY page use, reading the same per-mode list from
+ * `data/brand/presence.ts` — so Adult shows the Adult Etsy and Pinterest, Kids
+ * shows its own pair, and Instagram and Facebook (single shared accounts) appear
+ * in both. Flipping the toggle re-renders the row in place: no navigation, no
+ * refresh, and no second footer.
+ *
+ * The row used to include links to twitter.com, instagram.com and youtube.com —
+ * the sites' own front pages, not UNRWLY profiles. Those are gone: pointing a
+ * customer at Twitter's homepage is not a social presence, and with the icons now
+ * given real prominence a dead link is worse than a missing one.
+ */
 const Footer = () => {
   const storeName = process.env.NEXT_PUBLIC_STORE_NAME || 'Unrwly';
-  const [collections, setCollections] = useState<any[]>([]);
-
-  useEffect(() => {
-    // TEMPORARY dummy data
-    const dummyCollections = [
-      { id: '1', handle: 'apparel', title: 'Apparel' },
-      { id: '2', handle: 'accessories', title: 'Accessories' },
-      { id: '3', handle: 'drinkware', title: 'Drinkware' }
-    ];
-    setCollections(dummyCollections);
-  }, []);
 
   return (
     <footer className="bg-white border-t border-gray-100 pt-24 pb-12 px-6 md:px-12 lg:px-24">
@@ -25,49 +29,47 @@ const Footer = () => {
           
           {/* Column 1: Brand */}
           <div className="space-y-8">
-            <Link href="/" className="inline-block">
-              <span className="text-4xl font-black tracking-tighter text-[#1A1A1A] uppercase italic">
-                {storeName}
-              </span>
+            {/* Same mark as the header and the mobile drawer — see BrandMark. */}
+            <Link href="/" aria-label={`${storeName} — home`} className="inline-block text-[#1A1A1A]">
+              <BrandMark size="lg" />
             </Link>
-            <p className="text-[#334155] font-sans text-sm leading-relaxed max-w-[320px]">
-              Premium quality essentials for the unruly generation. Designed with purpose, crafted with care. {storeName} is your destination for modern, production-on-demand living.
+            <p className="type-body text-[#334155] max-w-[320px]">
+              {storeName} is a small, artist-owned studio. Every design is drawn by hand,
+              printed to order on premium material.
             </p>
-            <div className="flex items-center gap-6">
-              <Link href="https://twitter.com" className="text-slate-400 hover:text-[#1A1A1A] transition-colors">
-                <Twitter size={20} />
-              </Link>
-              <Link href="https://instagram.com" className="text-slate-400 hover:text-[#1A1A1A] transition-colors">
-                <Instagram size={20} />
-              </Link>
-              <Link href="https://youtube.com" className="text-slate-400 hover:text-[#1A1A1A] transition-colors">
-                <Youtube size={20} />
-              </Link>
+            <div className="space-y-3">
+              <p className="type-label text-neutral-500">Follow UNRWLY</p>
+              {/* -ml-2.5 pulls the first icon's 40px hit box back so the glyph
+                  itself lines up with the paragraph above it. */}
+              <SocialLinks variant="subtle" className="-ml-2.5 gap-0.5" />
             </div>
           </div>
 
           {/* Column 2: Support */}
           <div className="space-y-8">
-            <h3 className="text-[10px] font-black text-[#0F172A] uppercase tracking-[0.4em]">Service Hub</h3>
             <ul className="space-y-5">
-              <li><Link href="/faq" className="text-slate-500 hover:text-[#1A1A1A] transition-colors font-sans text-xs font-bold uppercase tracking-widest">Help Center</Link></li>
-              <li><Link href="/account" className="text-slate-500 hover:text-[#1A1A1A] transition-colors font-sans text-xs font-bold uppercase tracking-widest">Logistics Tracking</Link></li>
-              <li><Link href="/contact" className="text-slate-500 hover:text-[#1A1A1A] transition-colors font-sans text-xs font-bold uppercase tracking-widest">Connect with Us</Link></li>
-              <li><Link href="/policies/refund-policy" className="text-slate-500 hover:text-[#1A1A1A] transition-colors font-sans text-xs font-bold uppercase tracking-widest">Returns & Manifests</Link></li>
+              {/* Same label as the header link — "About", one destination. */}
+              <li><Link href="/meet-unrwly" className="type-caption text-slate-500 uppercase tracking-[0.18em] transition-colors hover:text-[#1A1A1A]">About</Link></li>
+              <li><Link href="/faq" className="type-caption text-slate-500 uppercase tracking-[0.18em] transition-colors hover:text-[#1A1A1A]">FAQ</Link></li>
+              <li><Link href="/contact" className="type-caption text-slate-500 uppercase tracking-[0.18em] transition-colors hover:text-[#1A1A1A]">Connect with Us</Link></li>
+              <li><Link href="/policies/refund-policy" className="type-caption text-slate-500 uppercase tracking-[0.18em] transition-colors hover:text-[#1A1A1A]">Returns & Store Policies</Link></li>
+              {/* Last in the list. Points at the FAQ, which has no AI entry yet —
+                  the honest destination for that link until that answer is written. */}
+              <li><Link href="/faq" className="type-caption text-slate-500 uppercase tracking-[0.18em] transition-colors hover:text-[#1A1A1A]">How We Use AI</Link></li>
             </ul>
           </div>
         </div>
 
         {/* Bottom Bar */}
         <div className="mt-24 pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-8">
-          <p className="text-gray-400 font-sans text-[10px] uppercase tracking-[0.2em]">
+          <p className="type-caption text-[11px] text-gray-400 uppercase tracking-[0.18em]">
             &copy; {new Date().getFullYear()} {storeName}. ALL RIGHTS RESERVED.
           </p>
           <div className="flex flex-wrap justify-center gap-x-8 gap-y-4">
-            <Link href="/policies/privacy-policy" className="text-gray-400 hover:text-black transition-colors font-sans text-[10px] uppercase tracking-widest">Privacy Policy</Link>
-            <Link href="/policies/terms-of-service" className="text-gray-400 hover:text-black transition-colors font-sans text-[10px] uppercase tracking-widest">Terms of Service</Link>
-            <Link href="/policies/shipping-policy" className="text-gray-400 hover:text-black transition-colors font-sans text-[10px] uppercase tracking-widest">Shipping Policy</Link>
-            <Link href="/policies/refund-policy" className="text-gray-400 hover:text-black transition-colors font-sans text-[10px] uppercase tracking-widest">Refund Policy</Link>
+            <Link href="/policies/privacy-policy" className="text-gray-400 hover:text-black transition-colors type-caption text-[11px] uppercase tracking-[0.18em]">Privacy Policy</Link>
+            <Link href="/policies/terms-of-service" className="text-gray-400 hover:text-black transition-colors type-caption text-[11px] uppercase tracking-[0.18em]">Terms of Service</Link>
+            <Link href="/policies/shipping-policy" className="text-gray-400 hover:text-black transition-colors type-caption text-[11px] uppercase tracking-[0.18em]">Shipping Policy</Link>
+            <Link href="/policies/refund-policy" className="text-gray-400 hover:text-black transition-colors type-caption text-[11px] uppercase tracking-[0.18em]">Refund Policy</Link>
           </div>
         </div>
       </div>

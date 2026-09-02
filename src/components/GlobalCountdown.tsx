@@ -54,7 +54,7 @@ const GlobalCountdown = ({ endsAt, message, isActive }: GlobalCountdownProps) =>
               <Zap size={14} className="text-[#D97757] fill-[#D97757]/20" />
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#D97757]/60">Studio Drop</span>
             </div>
-            <h2 className="text-xl font-serif italic font-black tracking-tighter text-[#D97757] lowercase leading-[1.1]">
+            <h2 className="font-display text-xl font-normal tracking-[-0.01em] text-[#D97757] leading-[1.1]">
               {message}
             </h2>
           </div>

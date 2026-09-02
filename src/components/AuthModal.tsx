@@ -68,7 +68,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
             <div className="space-y-6">
               <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter uppercase italic font-display">
+                <h2 className="type-h3">
                   {mode === 'login' ? 'Welcome Back' : 'Join The Unrwly'}
                 </h2>
                 <p className="text-neutral-500 text-xs tracking-widest uppercase">

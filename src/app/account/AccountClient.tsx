@@ -33,18 +33,18 @@ const AccountClient = ({ user }: AccountClientProps) => {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#F6F6F7] flex flex-col items-center justify-center p-6 space-y-8">
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 space-y-8">
         <div className="space-y-4 text-center">
-          <h2 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter text-black">
+          <h2 className="type-h2 text-black">
             Access Denied
           </h2>
-          <p className="text-neutral-400 text-[10px] tracking-[0.3em] uppercase font-black">
+          <p className="type-label text-neutral-400">
             Identity Not Verified
           </p>
         </div>
         <Link
           href="/auth"
-          className="px-12 py-4 bg-black text-white text-[10px] uppercase tracking-[0.4em] font-black hover:bg-neutral-800 transition-all rounded-2xl shadow-lg"
+          className="type-button rounded-2xl bg-black px-12 py-4 text-[11px] uppercase tracking-[0.28em] text-white shadow-lg transition-all hover:bg-neutral-800"
         >
           Verify Identity
         </Link>
@@ -62,7 +62,7 @@ const AccountClient = ({ user }: AccountClientProps) => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F6F6F7] pt-40 pb-20 px-6 md:px-12 text-black font-sans">
+    <div className="min-h-screen pt-20 pb-20 px-6 md:px-12 text-black font-sans">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
@@ -76,10 +76,10 @@ const AccountClient = ({ user }: AccountClientProps) => {
                 <User size={32} />
               </div>
               <div className="space-y-1">
-                <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase italic text-black leading-none">
+                <h1 className="type-h1 text-black">
                   {userFirstName} <br className="md:hidden" /> {userLastName}
                 </h1>
-                <p className="text-neutral-400 text-[10px] tracking-[0.4em] uppercase font-bold">
+                <p className="type-label text-neutral-400">
                   Member Profile • {user.email}
                 </p>
               </div>
@@ -88,7 +88,7 @@ const AccountClient = ({ user }: AccountClientProps) => {
 
           <button
             onClick={handleSignOut}
-            className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] bg-white border border-neutral-200 px-8 py-4 rounded-2xl hover:bg-neutral-50 transition-all shadow-sm group text-black"
+            className="type-button flex items-center gap-3 text-[11px] uppercase tracking-[0.18em] bg-white border border-neutral-200 px-8 py-4 rounded-2xl hover:bg-neutral-50 transition-all shadow-sm group text-black"
           >
             <LogOut size={14} className="group-hover:-translate-x-1 transition-transform" />
             Terminate Session
@@ -101,7 +101,7 @@ const AccountClient = ({ user }: AccountClientProps) => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`pb-4 text-[11px] uppercase tracking-[0.3em] font-black flex items-center gap-2 transition-all border-b-2 whitespace-nowrap ${
+              className={`type-button pb-4 text-[11px] uppercase tracking-[0.18em] flex items-center gap-2 transition-all border-b-2 whitespace-nowrap ${
                 activeTab === tab.id
                   ? "text-black border-black"
                   : "text-neutral-400 border-transparent hover:text-black"
@@ -154,7 +154,7 @@ const AccountClient = ({ user }: AccountClientProps) => {
                                 <div className="flex flex-col gap-2">
                                   <span className="text-black">${Number(order.totalAmount).toFixed(2)}</span>
                                   {order.trackingNumber && (
-                                    <div className="flex items-center gap-2 text-indigo-600">
+                                    <div className="flex items-center gap-2 text-accent-700">
                                       <span className="text-[8px] font-black underline underline-offset-4 uppercase tracking-widest">Tracking Active</span>
                                     </div>
                                   )}
@@ -162,8 +162,8 @@ const AccountClient = ({ user }: AccountClientProps) => {
                               </td>
                               <td className="py-8 text-right">
                                 <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-[9px] font-black tracking-widest ${
-                                  order.status === 'PAID' ? 'bg-indigo-50 text-indigo-600 border-indigo-100' :
-                                  order.status === 'SHIPPED' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                                  order.status === 'PAID' ? 'bg-accent-50 text-accent-700 border-accent-200' :
+                                  order.status === 'SHIPPED' ? 'bg-accent-50 text-accent-700 border-accent-200' :
                                   order.status === 'DELIVERED' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
                                   'bg-neutral-50 text-neutral-400 border-neutral-100'
                                 }`}>
@@ -182,10 +182,10 @@ const AccountClient = ({ user }: AccountClientProps) => {
                       <ShoppingBag size={40} />
                     </div>
                     <div className="text-center space-y-2">
-                       <p className="text-black font-black uppercase italic tracking-[0.2em] text-lg">Your collection is currently empty.</p>
-                       <p className="text-neutral-400 text-[10px] uppercase tracking-widest font-bold">Initiate your first acquisition today.</p>
+                       <p className="type-body font-semibold uppercase tracking-[0.18em] text-black">Your collection is currently empty.</p>
+                       <p className="type-caption text-neutral-400 uppercase tracking-[0.18em]">Initiate your first acquisition today.</p>
                     </div>
-                    <Link href="/collections" className="mt-4 px-10 py-4 bg-black text-white text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-800 transition-all shadow-lg active:scale-95">
+                    <Link href="/collections" className="type-button mt-4 rounded-2xl bg-black px-10 py-4 text-[11px] uppercase tracking-[0.18em] text-white shadow-lg transition-all hover:bg-neutral-800 active:scale-95">
                        Acquire Products
                     </Link>
                   </div>
@@ -212,10 +212,10 @@ const AccountClient = ({ user }: AccountClientProps) => {
                       <Heart size={40} />
                     </div>
                     <div className="text-center space-y-2">
-                       <p className="text-black font-black uppercase italic tracking-[0.2em] text-lg">Wishlist is currently offline.</p>
-                       <p className="text-neutral-400 text-[10px] uppercase tracking-widest font-bold">Bookmark your favorite pieces to see them here.</p>
+                       <p className="type-body font-semibold uppercase tracking-[0.18em] text-black">Wishlist is currently offline.</p>
+                       <p className="type-caption text-neutral-400 uppercase tracking-[0.18em]">Bookmark your favorite pieces to see them here.</p>
                     </div>
-                    <Link href="/collections" className="mt-4 px-10 py-4 bg-black text-white text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-800 transition-all shadow-lg active:scale-95">
+                    <Link href="/collections" className="type-button mt-4 rounded-2xl bg-black px-10 py-4 text-[11px] uppercase tracking-[0.18em] text-white shadow-lg transition-all hover:bg-neutral-800 active:scale-95">
                        Browse Catalog
                     </Link>
                   </div>
@@ -233,7 +233,7 @@ const AccountClient = ({ user }: AccountClientProps) => {
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                   <div className="space-y-8">
-                    <h3 className="text-xl font-black italic uppercase text-black border-b border-neutral-100 pb-4 tracking-tighter">Identity Details</h3>
+                    <h3 className="type-h3 border-b border-neutral-100 pb-4 text-black">Identity Details</h3>
                     <div className="space-y-6">
                       <Detail label="Verified Name" value={user.name || 'Anonymous'} />
                       <Detail label="Access Email" value={user.email || ''} />
@@ -241,10 +241,10 @@ const AccountClient = ({ user }: AccountClientProps) => {
                     </div>
                   </div>
                   <div className="space-y-8">
-                    <h3 className="text-xl font-black italic uppercase text-black border-b border-neutral-100 pb-4 tracking-tighter">Node Activity</h3>
+                    <h3 className="type-h3 border-b border-neutral-100 pb-4 text-black">Node Activity</h3>
                     <div className="space-y-2">
-                      <p className="text-neutral-400 text-[10px] uppercase tracking-widest font-bold italic">Total Spent</p>
-                      <p className="text-xl font-black italic text-black tracking-tighter">
+                      <p className="type-caption text-neutral-400 uppercase tracking-[0.18em]">Total Spent</p>
+                      <p className="type-price text-xl text-black">
                         ${Number(user.totalSpent || 0).toFixed(2)}
                       </p>
                     </div>
@@ -262,10 +262,10 @@ const AccountClient = ({ user }: AccountClientProps) => {
           transition={{ delay: 0.5 }}
           className="mt-20 p-12 bg-white border border-neutral-200 rounded-[40px] text-center space-y-6 shadow-sm"
         >
-          <p className="text-[10px] text-neutral-400 uppercase tracking-[0.5em] font-black">
+          <p className="type-label text-neutral-400">
             Logistical Resolution Center
           </p>
-          <Link href="/faq" className="inline-block text-sm font-black border-b-2 border-black pb-1 hover:text-neutral-500 hover:border-neutral-200 transition-all uppercase tracking-[0.2em] italic">
+          <Link href="/faq" className="type-button inline-block border-b-2 border-black pb-1 text-sm uppercase tracking-[0.18em] transition-all hover:border-neutral-200 hover:text-neutral-500">
             Access Support Handshake
           </Link>
         </motion.div>
@@ -276,8 +276,8 @@ const AccountClient = ({ user }: AccountClientProps) => {
 
 const Detail = ({ label, value }: { label: string; value: string }) => (
   <div className="space-y-2">
-    <p className="text-[10px] text-neutral-400 uppercase tracking-widest font-black">{label}</p>
-    <p className="text-sm text-black font-black uppercase italic tracking-widest leading-none">{value || 'Not provided'}</p>
+    <p className="type-caption text-neutral-400 uppercase tracking-[0.18em]">{label}</p>
+    <p className="type-caption text-sm font-semibold uppercase tracking-[0.18em] leading-none text-black">{value || 'Not provided'}</p>
   </div>
 );
 
