@@ -1,11 +1,16 @@
-# Production-style run of the storefront image.
+# Production run of the storefront: the app image behind Caddy, which
+# terminates TLS and proxies to it. One command brings both up.
 #
-#   docker compose build      # needs BuildKit; Docker Desktop has it on by default
+#   docker compose build      # needs BuildKit; Docker Engine >= 23 has it on
 #   docker compose up -d
 #   docker compose logs -f web
 #
 # .env is read at runtime via env_file and mounted as a build secret — it is
 # never copied into an image layer (see .dockerignore + Dockerfile).
+#
+# Local-only run without TLS: `docker compose up -d web` and open
+# http://localhost:3000. The app port is bound to the loopback interface so it
+# is never reachable from outside the host; only Caddy publishes 80/443.
 
 services:
   web:
@@ -18,13 +23,41 @@ services:
     ports:
       # Host port is overridable: `HOST_PORT=3001 docker compose up -d`
       # when something else already holds 3000 (a local `npm run dev`, say).
-      - "${HOST_PORT:-3000}:3000"
+      - "127.0.0.1:${HOST_PORT:-3000}:3000"
     env_file:
       - .env
     environment:
       - NODE_ENV=production
       - PORT=3000
       - HOSTNAME=0.0.0.0
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    env_file:
+      - .env
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  # Certificates and ACME account keys. Losing this volume only means a fresh
+  # certificate request, but keep it so restarts do not hit rate limits.
+  caddy_data:
+  caddy_config:
 
 secrets:
   dotenv:

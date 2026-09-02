@@ -1,2 +1,0 @@
-npm run dev
-public access token shopify: a9bc007b904655f60654388a58154e93

@@ -56,8 +56,11 @@ Login routing (same `/auth` page): admin email → `/admin/products`, any other 
 ---
 
 ## 3. Deploy
-- [ ] Deploy to Vercel + add all env values
-- [ ] Point domain, set app URL
+- [ ] Deploy — Vercel, or self-host on a DigitalOcean droplet with `docker compose` (README → SELF-HOSTING)
+- [ ] Add all env values; set `NEXT_PUBLIC_APP_URL` before building
+- [ ] Point domain — A records for root and www → droplet IP (Whois.com), `SITE_DOMAIN` in `.env`
+- [ ] Run `prisma migrate deploy` once against `DIRECT_URL`
+- [ ] Add the domain to Supabase Auth → URL Configuration (redirect URLs)
 - [ ] Create live Stripe webhook — event `checkout.session.completed`, copy signing secret
 - [ ] Register Printify shipment webhook
 - [ ] Create admin account — sign up at `/auth` with `MASTER_ADMIN_EMAIL`
