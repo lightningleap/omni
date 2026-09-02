@@ -61,6 +61,29 @@ Two things keep it closed:
 
 Deploying to a new server is then `prisma migrate deploy`.
 
+### SELF-HOSTING (DigitalOcean droplet)
+
+Vercel builds this repo natively. Anywhere else, the `Dockerfile` and
+`docker-compose.yml` run the same app behind Caddy, which terminates TLS and
+proxies to it. Once per server:
+
+1. Ubuntu 24.04 droplet, 2 GB RAM or more — `next build` runs out of memory
+   on 1 GB. Open 22, 80, 443 in ufw. Install Docker Engine + the compose plugin.
+2. Clone the repo, `cp .env.example .env`, fill in production values. Set
+   `NEXT_PUBLIC_APP_URL` and `SITE_DOMAIN` before building — the first is
+   baked into the client bundle, the second is what Caddy requests a
+   certificate for.
+3. Point A records for the root and `www` at the droplet. Caddy cannot get a
+   certificate until DNS resolves.
+4. `npx prisma migrate deploy` once, against `DIRECT_URL`.
+5. `docker compose build && docker compose up -d`.
+6. Repoint the Stripe and Printify webhooks at `https://<domain>/api/webhooks/…`
+   and add the domain to Supabase Auth → URL Configuration.
+
+Redeploy is `git pull && docker compose build && docker compose up -d`.
+`GET /api/health` returns 200 when the app can reach the database and 503
+otherwise; Caddy and the container healthcheck both poll it.
+
 ### ENVIRONMENT VARIABLES
 
 See [`.env.example`](.env.example) for the full list. The ones that matter most:

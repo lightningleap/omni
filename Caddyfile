@@ -1,0 +1,18 @@
+# Reverse proxy + automatic TLS for the storefront. Runs as the `caddy` service
+# in docker-compose.yml and forwards to the `web` container on port 3000.
+#
+# SITE_DOMAIN comes from .env (e.g. unrwly.com). Caddy obtains and renews the
+# Let's Encrypt certificate itself; both the root and www hosts are served,
+# with www redirected to the root.
+
+{$SITE_DOMAIN} {
+	encode zstd gzip
+	reverse_proxy web:3000 {
+		health_uri /api/health
+		health_interval 30s
+	}
+}
+
+www.{$SITE_DOMAIN} {
+	redir https://{$SITE_DOMAIN}{uri} permanent
+}

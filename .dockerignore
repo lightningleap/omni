@@ -38,3 +38,6 @@ run.txt
 Dockerfile
 .dockerignore
 docker-compose*.yml
+
+# Mounted into the caddy container, not part of the app image
+Caddyfile
