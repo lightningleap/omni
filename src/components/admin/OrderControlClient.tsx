@@ -44,20 +44,20 @@ export default function OrderControlClient({ initialOrders }: { initialOrders: O
           <h2 className="text-3xl font-extrabold tracking-tight text-neutral-900 italic">Logistics Control</h2>
           <p className="text-sm text-neutral-500 font-medium">Monitor network order flow, status transitions and fulfillment.</p>
         </div>
-        <div className="bg-indigo-50 text-indigo-600 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-indigo-100">
+        <div className="bg-accent-50 text-accent-700 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-accent-100">
           Sync Protocol Active
         </div>
       </div>
 
       {/* Search Protocol */}
       <div className="relative group">
-        <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-400 group-focus-within:text-indigo-600 transition-colors" size={20} />
+        <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-neutral-400 group-focus-within:text-accent-700 transition-colors" size={20} />
         <input
           type="text"
           placeholder="Search logistics for order ID or customer email..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full bg-white border border-neutral-200/60 rounded-3xl text-sm font-semibold px-14 py-5 text-neutral-900 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all shadow-sm"
+          className="w-full bg-white border border-neutral-200/60 rounded-3xl text-sm font-semibold px-14 py-5 text-neutral-900 focus:outline-none focus:ring-4 focus:ring-accent-500/10 focus:border-accent-800 transition-all shadow-sm"
         />
       </div>
 
@@ -82,7 +82,7 @@ export default function OrderControlClient({ initialOrders }: { initialOrders: O
                   className="hover:bg-neutral-50/50 transition-colors cursor-pointer group"
                 >
                   <td className="p-6">
-                    <span className="text-[10px] uppercase tracking-[0.2em] font-black text-indigo-600 bg-indigo-50 px-2 py-1 rounded-md">
+                    <span className="text-[10px] uppercase tracking-[0.2em] font-black text-accent-700 bg-accent-50 px-2 py-1 rounded-md">
                       #{order.id.split('-')[0]}
                     </span>
                   </td>

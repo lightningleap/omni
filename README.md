@@ -38,6 +38,29 @@ it runs on the Edge and cannot reach the database — so the authoritative check
 happens in [`src/app/admin/layout.tsx`](src/app/admin/layout.tsx) and in every
 admin action.
 
+### DATABASE MIGRATIONS
+
+Schema changes go through `prisma migrate dev`, never `prisma db push`.
+
+Between April and September 2026 they went through `db push`, which writes no
+history: the migrations folder still described the March schema while
+production had eleven columns, two enums and a table it had never heard of. A
+deploy to a fresh server would have built the wrong database.
+`20260902120000_baseline_current_schema` closes that gap, and production is
+marked as having applied it.
+
+Two things keep it closed:
+
+- `.gitattributes` pins `prisma/migrations/**` to LF. Prisma checksums a
+  migration by its bytes, so a line-ending rewrite alone is enough to make
+  `prisma migrate deploy` refuse to run against a database that already applied
+  it — which is exactly what happened once.
+- `SHADOW_DATABASE_URL` (see `prisma.config.ts`) points at a throwaway local
+  Postgres that `migrate dev` and `migrate diff` replay history into. Never
+  point it at production; Prisma resets whatever database it names.
+
+Deploying to a new server is then `prisma migrate deploy`.
+
 ### ENVIRONMENT VARIABLES
 
 See [`.env.example`](.env.example) for the full list. The ones that matter most:

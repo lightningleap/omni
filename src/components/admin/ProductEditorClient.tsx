@@ -123,7 +123,7 @@ export default function ProductEditorClient({
                  <div className="flex gap-2 mt-2 overflow-x-auto pb-1">
                    {mockups.map((m) => (
                      <button key={m.src} onClick={() => pickImage(m.src)} title={m.color}
-                       className={`flex-shrink-0 w-16 h-16 rounded-lg border-2 overflow-hidden bg-slate-50 transition-all ${mainImage === m.src ? "border-indigo-500 ring-2 ring-indigo-100" : "border-slate-200 hover:border-slate-300"}`}>
+                       className={`flex-shrink-0 w-16 h-16 rounded-lg border-2 overflow-hidden bg-slate-50 transition-all ${mainImage === m.src ? "border-accent-700 ring-2 ring-accent-100" : "border-slate-200 hover:border-slate-300"}`}>
                        <Image src={m.src} alt={m.color} width={64} height={64} className="w-full h-full object-contain" />
                      </button>
                    ))}
@@ -203,7 +203,7 @@ export default function ProductEditorClient({
                 <select 
                    value={collectionId}
                    onChange={e => setCollectionId(e.target.value)}
-                   className="w-full bg-white border border-slate-200 rounded-md text-sm font-semibold text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500"
+                   className="w-full bg-white border border-slate-200 rounded-md text-sm font-semibold text-slate-900 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-accent-500/10 focus:border-accent-700"
                 >
                    <option value="none">Choose Collection</option>
                    {collections.map(c => (
@@ -228,12 +228,12 @@ export default function ProductEditorClient({
                       <span className="text-[10px] font-bold text-slate-300 uppercase">USD</span>
                    </div>
                    <div className="relative group">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm group-focus-within:text-indigo-600">$</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm group-focus-within:text-accent-700">$</span>
                       <input 
                          type="number" 
                          value={price}
                          onChange={e => setPrice(parseFloat(e.target.value) || 0)}
-                         className="w-full bg-white border border-slate-200 rounded-md text-sm font-bold text-slate-900 pl-8 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-mono"
+                         className="w-full bg-white border border-slate-200 rounded-md text-sm font-bold text-slate-900 pl-8 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-accent-500/10 focus:border-accent-700 transition-all font-mono"
                       />
                    </div>
                 </div>

@@ -211,6 +211,37 @@
   --accent-shade-rgb: 6 49 42;
 }
 
+/* ── ADMIN PANEL ───────────────────────────────────────────────────────────
+   The management studio pins the Adult scale, whatever the storefront toggle
+   last selected.
+
+   `data-storefront-mode` is stamped on <html>, so without this the admin panel
+   would turn Kids-mint the moment someone browsed the Kids store — the whole
+   back office re-colouring as a side effect of a shopper-facing toggle. The
+   admin is not a storefront and has no audience to express, so it holds one
+   identity. Same tokens, same roles: components keep writing `bg-accent-800`,
+   `text-accent-700`, and only the values behind them stop moving. */
+[data-admin-surface] {
+  --accent-50:  #F2F8F5;
+  --accent-100: #E6F1EC;
+  --accent-200: #D0E2DB;
+  --accent-300: #B5D1C5;
+  --accent-400: #93BEAD;
+  --accent-500: #70A992;
+  --accent-600: #509176;
+  --accent-700: #3E715C;
+  --accent-800: #2F5646;
+  --accent-900: #75AC95;
+  --accent-950: #162C23;
+
+  --accent-ink: var(--accent-700);
+  --accent-on: #FFFFFF;
+  --accent-on-strong: #FFFFFF;
+
+  --accent-ring-rgb: 33 65 51;
+  --accent-shade-rgb: 22 44 35;
+}
+
 /* ── RESET ────────────────────────────────────────── */
 *, *::before, *::after {
   box-sizing: border-box;

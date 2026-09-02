@@ -82,8 +82,8 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderDa
            <h1 className="text-2xl font-bold text-slate-900">Orders</h1>
            <div className="flex items-center gap-2 px-3 py-1 bg-slate-100 border border-slate-200 rounded-full">
               <span className="relative flex h-2 w-2">
-                {isSyncing && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>}
-                <span className={`relative inline-flex rounded-full h-2 w-2 ${isSyncing ? 'bg-indigo-500' : 'bg-emerald-500'}`}></span>
+                {isSyncing && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-600 opacity-75"></span>}
+                <span className={`relative inline-flex rounded-full h-2 w-2 ${isSyncing ? 'bg-accent-700' : 'bg-emerald-500'}`}></span>
               </span>
               <span className="text-[10px] font-bold text-slate-500 uppercase">
                 {isSyncing ? 'Syncing...' : `Updated ${lastSyncTime.toLocaleTimeString()}`}
@@ -114,7 +114,7 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderDa
               placeholder="Search orders"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 text-sm pl-10 pr-4 py-2.5 rounded-lg focus:ring-2 focus:ring-indigo-500/20 outline-none"
+              className="w-full bg-slate-50 border border-slate-200 text-sm pl-10 pr-4 py-2.5 rounded-lg focus:ring-2 focus:ring-accent-500/20 outline-none"
             />
           </div>
         </div>
@@ -125,7 +125,7 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderDa
               <tr className="bg-slate-50/50 text-[11px] font-bold text-slate-500 uppercase border-b border-slate-100">
                 <th className="px-6 py-4 w-12">
                    <div
-                    className={`w-4 h-4 border rounded cursor-pointer ${selectedIds.size === filteredOrders.length ? 'bg-indigo-600 border-indigo-600' : 'bg-white border-slate-300'}`}
+                    className={`w-4 h-4 border rounded cursor-pointer ${selectedIds.size === filteredOrders.length ? 'bg-accent-800 border-accent-800' : 'bg-white border-slate-300'}`}
                     onClick={toggleAll}
                   />
                 </th>
@@ -143,7 +143,7 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderDa
                   className="group hover:bg-slate-50 cursor-pointer"
                 >
                   <td className="px-6 py-4" onClick={(e) => toggleOne(order.id, e)}>
-                     <div className={`w-4 h-4 border rounded ${selectedIds.has(order.id) ? 'bg-indigo-600 border-indigo-600' : 'bg-white border-slate-300'}`} />
+                     <div className={`w-4 h-4 border rounded ${selectedIds.has(order.id) ? 'bg-accent-800 border-accent-800' : 'bg-white border-slate-300'}`} />
                   </td>
                   <td className="px-4 py-4 text-sm font-bold text-slate-900">#{order.id.substring(0, 5)}</td>
                   <td className="px-4 py-4 text-sm">{order.user?.email || "Guest"}</td>
@@ -179,7 +179,7 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderDa
                     const res = await forcePushToPrintify(selectedOrder.id);
                     alert((res as any).success ? "Order Pushed" : (res as any).error);
                   }}
-                  className="w-full py-4 bg-indigo-600 text-white font-bold rounded-lg"
+                  className="w-full py-4 bg-accent-800 text-white font-bold rounded-lg"
                 >
                   Force Push to Printify
                 </button>

@@ -211,7 +211,7 @@ export default function ProductCreatorClient() {
 
         <div className="flex items-center justify-center gap-3">
           <button onClick={() => router.push(`/admin/products/${result.productId}`)}
-            className="px-6 py-3 bg-indigo-600 text-white rounded-2xl text-sm font-black uppercase tracking-widest hover:bg-indigo-700 transition-all">
+            className="px-6 py-3 bg-accent-800 text-white rounded-2xl text-sm font-black uppercase tracking-widest hover:bg-accent-950 transition-all">
             Open in Products
           </button>
           <button onClick={() => {
@@ -234,7 +234,7 @@ export default function ProductCreatorClient() {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
           <input value={search} onChange={(e) => setSearch(e.target.value)}
             placeholder="Search product types (t-shirt, mug, hoodie...)"
-            className="w-full bg-white border border-slate-200 text-sm text-slate-900 pl-12 pr-4 py-3.5 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-50 placeholder:text-slate-400 font-medium" />
+            className="w-full bg-white border border-slate-200 text-sm text-slate-900 pl-12 pr-4 py-3.5 rounded-2xl focus:outline-none focus:ring-4 focus:ring-accent-50 placeholder:text-slate-400 font-medium" />
         </div>
 
         {loadingBps && (
@@ -251,7 +251,7 @@ export default function ProductCreatorClient() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
           {filtered.map((b) => (
             <button key={b.id} onClick={() => pickBlueprint(b)}
-              className="group text-left bg-white border border-slate-200 rounded-2xl overflow-hidden hover:border-indigo-400 hover:shadow-lg transition-all">
+              className="group text-left bg-white border border-slate-200 rounded-2xl overflow-hidden hover:border-accent-600 hover:shadow-lg transition-all">
               <div className="aspect-square relative bg-slate-50 flex items-center justify-center">
                 {b.image ? <Image src={b.image} alt={b.title} fill className="object-contain p-4" /> : <Sparkles className="text-slate-200" size={32} />}
               </div>
@@ -364,7 +364,7 @@ export default function ProductCreatorClient() {
                   <div className="flex items-center justify-between">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Colors</label>
                     <button onClick={() => setSelColors(new Set(selColors.size === colors.length ? [] : colors))}
-                      className="text-[10px] font-bold text-indigo-500 uppercase tracking-wider hover:text-indigo-700">
+                      className="text-[10px] font-bold text-accent-700 uppercase tracking-wider hover:text-accent-800">
                       {selColors.size === colors.length ? "Clear" : "All"}
                     </button>
                   </div>
@@ -373,7 +373,7 @@ export default function ProductCreatorClient() {
                       const on = selColors.has(c)
                       return (
                         <button key={c} title={c} onClick={() => toggle(selColors, c, setSelColors)}
-                          className={`flex items-center gap-1.5 pl-1.5 pr-2.5 py-1 rounded-full border text-xs font-semibold transition-all ${on ? "border-indigo-500 bg-indigo-50 text-slate-900" : "border-slate-200 text-slate-500 hover:border-slate-300"}`}>
+                          className={`flex items-center gap-1.5 pl-1.5 pr-2.5 py-1 rounded-full border text-xs font-semibold transition-all ${on ? "border-accent-700 bg-accent-50 text-slate-900" : "border-slate-200 text-slate-500 hover:border-slate-300"}`}>
                           <span className="w-4 h-4 rounded-full border border-black/10" style={{ background: swatch(c) }} />
                           {c}
                         </button>
@@ -388,7 +388,7 @@ export default function ProductCreatorClient() {
                   <div className="flex items-center justify-between">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Sizes</label>
                     <button onClick={() => setSelSizes(new Set(selSizes.size === sizes.length ? [] : sizes))}
-                      className="text-[10px] font-bold text-indigo-500 uppercase tracking-wider hover:text-indigo-700">
+                      className="text-[10px] font-bold text-accent-700 uppercase tracking-wider hover:text-accent-800">
                       {selSizes.size === sizes.length ? "Clear" : "All"}
                     </button>
                   </div>
@@ -413,26 +413,26 @@ export default function ProductCreatorClient() {
             <div className="space-y-1.5">
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Name</label>
               <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Vintage Sunset Tee"
-                className="w-full bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500" />
+                className="w-full bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-accent-500/10 focus:border-accent-700" />
             </div>
             <div className="space-y-1.5">
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Description</label>
               <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="Short product description..."
-                className="w-full bg-white border border-slate-200 rounded-xl text-sm text-slate-700 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 resize-none" />
+                className="w-full bg-white border border-slate-200 rounded-xl text-sm text-slate-700 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-accent-500/10 focus:border-accent-700 resize-none" />
             </div>
             <div className="space-y-1.5">
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Retail Price (USD)</label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
                 <input type="number" value={price} onChange={(e) => setPrice(parseFloat(e.target.value) || 0)}
-                  className="w-full bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-900 pl-8 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500 font-mono" />
+                  className="w-full bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-900 pl-8 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-accent-500/10 focus:border-accent-700 font-mono" />
               </div>
               <p className="text-[10px] text-slate-400 font-medium">Est. Stripe fees {formatUSD(stripeFees)} · base cost set after creation</p>
             </div>
           </div>
 
           <button onClick={handleCreate} disabled={creating || totalLayers === 0 || !title.trim() || (variants.length > 0 && selectedVariantIds.length === 0)}
-            className="w-full py-4 bg-indigo-600 text-white rounded-2xl text-sm font-black uppercase tracking-widest hover:bg-indigo-700 transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed">
+            className="w-full py-4 bg-accent-800 text-white rounded-2xl text-sm font-black uppercase tracking-widest hover:bg-accent-950 transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed">
             {creating ? <Loader2 size={18} className="animate-spin" /> : <Check size={18} />}
             {creating ? "Creating on Printify..." : "Create Product"}
           </button>
@@ -462,7 +462,7 @@ function Header({ step, onBack, backLabel }: { step: number; onBack?: () => void
           </Link>
         )}
         <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-          <Sparkles size={22} className="text-indigo-500" /> Design Studio
+          <Sparkles size={22} className="text-accent-700" /> Design Studio
         </h1>
         <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">
           {step === 1 ? "Step 1 — Choose a product" : "Step 2 — Design it"}

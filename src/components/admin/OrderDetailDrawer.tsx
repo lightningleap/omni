@@ -120,19 +120,19 @@ export default function OrderDetailDrawer({ order, onClose }: { order: any; onCl
                   <motion.div 
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-5 bg-indigo-500/10 border border-indigo-500/30 rounded-xl space-y-4"
+                    className="p-5 bg-accent-700/10 border border-accent-700/30 rounded-xl space-y-4"
                   >
-                    <div className="flex bg-indigo-500/20 p-2 rounded-lg items-center gap-2 w-fit">
-                      <Lock size={12} className="text-indigo-400" />
-                      <span className="text-[9px] font-black uppercase tracking-widest text-indigo-400">Security Recovery Active</span>
+                    <div className="flex bg-accent-700/20 p-2 rounded-lg items-center gap-2 w-fit">
+                      <Lock size={12} className="text-accent-600" />
+                      <span className="text-[9px] font-black uppercase tracking-widest text-accent-600">Security Recovery Active</span>
                     </div>
-                    <p className="text-[9px] text-indigo-300 leading-relaxed uppercase tracking-widest font-bold">
+                    <p className="text-[9px] text-accent-400 leading-relaxed uppercase tracking-widest font-bold">
                       Order is stuck in PENDING. Use the recovery protocol to verify payment via Stripe and trigger fulfillment.
                     </p>
                     <button
                       onClick={handleRepair}
                       disabled={isRepairing}
-                      className="w-full py-3 bg-indigo-600 text-[10px] text-white font-black uppercase tracking-[0.3em] hover:bg-indigo-500 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-lg shadow-indigo-600/20"
+                      className="w-full py-3 bg-accent-800 text-[10px] text-white font-black uppercase tracking-[0.3em] hover:bg-accent-700 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-lg shadow-accent-800/20"
                     >
                       {isRepairing ? <Loader2 size={14} className="animate-spin" /> : <RefreshCcw size={14} />}
                       Force Administrative Repair

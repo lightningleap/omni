@@ -1,0 +1,5 @@
+# Prisma checksums a migration by its bytes, so a line-ending rewrite is enough
+# to make `prisma migrate deploy` refuse to run against a database that already
+# applied it. Pin these files to LF regardless of the checkout platform.
+*.sql text eol=lf
+prisma/migrations/** text eol=lf

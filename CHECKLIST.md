@@ -33,7 +33,9 @@ Login routing (same `/auth` page): admin email → `/admin/products`, any other 
 - [x] Real Printify account connected — UNRWLY Adult + Kids
 - [x] Multi-store product sync — ~239 products across both stores, all pages
 - [x] Synced vs Studio separation — filter tabs (All / My Designs / Synced) + badges
-- [x] Bug fixes — DB pooling, image hosts, Safari upload, base64 storage (no Vercel Blob)
+- [x] Bug fixes — DB pooling, image hosts, Safari upload
+- [x] Storage — Design Studio artwork goes to Printify as base64 (no host needed);
+      admin image uploads go to Supabase Storage (`merch` bucket). Vercel Blob removed.
 
 ### Already in place (pre-existing)
 - [x] Storefront — home, products, collections, about, faq, contact, policies, wishlist

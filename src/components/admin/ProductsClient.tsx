@@ -184,7 +184,7 @@ export default function ProductsClient({
           </button>
           <Link
             href="/admin/products/new"
-            className="px-6 py-2.5 bg-indigo-600 border border-indigo-600 rounded-xl text-xs font-black uppercase tracking-widest text-white hover:bg-indigo-700 transition-all flex items-center gap-2"
+            className="px-6 py-2.5 bg-accent-800 border border-accent-800 rounded-xl text-xs font-black uppercase tracking-widest text-white hover:bg-accent-950 transition-all flex items-center gap-2"
           >
             <Plus size={14} /> Create Product
           </Link>
@@ -201,7 +201,7 @@ export default function ProductsClient({
             ["SYNCED", `Synced (${syncedCount})`],
           ] as const).map(([key, lbl]) => (
             <button key={key} onClick={() => setSourceFilter(key)}
-              className={`px-4 py-2.5 text-xs font-black uppercase tracking-widest border-b-2 -mb-px transition-colors ${sourceFilter === key ? "border-indigo-600 text-indigo-600" : "border-transparent text-slate-400 hover:text-slate-700"}`}>
+              className={`px-4 py-2.5 text-xs font-black uppercase tracking-widest border-b-2 -mb-px transition-colors ${sourceFilter === key ? "border-accent-800 text-accent-700" : "border-transparent text-slate-400 hover:text-slate-700"}`}>
               {lbl}
             </button>
           ))}
@@ -215,7 +215,7 @@ export default function ProductsClient({
                 placeholder="Search resources by name..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 text-sm text-slate-900 pl-12 pr-4 py-3.5 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-50 transition-all placeholder:text-slate-400 font-medium"
+                className="w-full bg-slate-50 border border-slate-200 text-sm text-slate-900 pl-12 pr-4 py-3.5 rounded-2xl focus:outline-none focus:ring-4 focus:ring-accent-50 transition-all placeholder:text-slate-400 font-medium"
               />
            </div>
            
@@ -256,7 +256,7 @@ export default function ProductsClient({
                 return (
                   <tr 
                     key={product.id} 
-                    className={`group transition-all duration-300 ${isSelected ? 'bg-indigo-50/40 translate-x-1' : 'hover:bg-slate-50'}`}
+                    className={`group transition-all duration-300 ${isSelected ? 'bg-accent-50/40 translate-x-1' : 'hover:bg-slate-50'}`}
                   >
                     <td className="px-6 py-5 text-center" onClick={(e) => toggleOne(product.id, e)}>
                        <div className={`w-5 h-5 border-2 rounded-md cursor-pointer mx-auto flex items-center justify-center transition-all ${isSelected ? 'bg-[#4f46e5] border-[#4f46e5]' : 'bg-white border-slate-200 hover:border-slate-300'}`}>
@@ -279,7 +279,7 @@ export default function ProductsClient({
                           <span className="text-[13px] font-black text-slate-900 transition-colors capitalize flex items-center gap-2">
                             {product.name}
                             {product.source === "STUDIO" && (
-                              <span className="text-[8px] font-black uppercase tracking-wider text-indigo-600 bg-indigo-50 border border-indigo-100 px-1.5 py-0.5 rounded">Studio</span>
+                              <span className="text-[8px] font-black uppercase tracking-wider text-accent-700 bg-accent-50 border border-accent-100 px-1.5 py-0.5 rounded">Studio</span>
                             )}
                           </span>
                           <span className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.1em]">ID: {product.id.substring(0, 8)}</span>
@@ -312,7 +312,7 @@ export default function ProductsClient({
                                  handleInlineUpdate(product.id, newPrice, product.collectionId || "none", product.status);
                                }
                             }}
-                            className="bg-transparent border-none text-right text-[13px] font-black text-slate-900 w-20 px-2 py-1 rounded-lg focus:ring-4 focus:ring-indigo-50 focus:bg-white transition-all"
+                            className="bg-transparent border-none text-right text-[13px] font-black text-slate-900 w-20 px-2 py-1 rounded-lg focus:ring-4 focus:ring-accent-50 focus:bg-white transition-all"
                           />
                        </div>
                     </td>
@@ -337,7 +337,7 @@ export default function ProductsClient({
                     </td>
                     <td className="px-4 py-5 w-10 text-center">
                        {isSaving ? (
-                         <Loader2 size={14} className="text-indigo-500 animate-spin" />
+                         <Loader2 size={14} className="text-accent-700 animate-spin" />
                        ) : isSaved ? (
                          <CheckCircle2 size={14} className="text-emerald-500 animate-in zoom-in duration-300" />
                        ) : null}
@@ -380,7 +380,7 @@ export default function ProductsClient({
               <button 
                 onClick={handleBulkPublish}
                 disabled={bulkLoading}
-                className="text-[11px] font-black text-[#4f46e5] uppercase tracking-widest px-4 hover:bg-indigo-50 py-2 rounded-lg transition-all"
+                className="text-[11px] font-black text-[#4f46e5] uppercase tracking-widest px-4 hover:bg-accent-50 py-2 rounded-lg transition-all"
               >
                 Assign
               </button>
