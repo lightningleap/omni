@@ -107,3 +107,49 @@ export function contactNotificationEmail(opts: {
     <p><b>Message:</b><br/>${opts.message.replace(/\n/g, "<br/>")}</p>
   `)
 }
+
+/**
+ * Sent when an existing admin invites someone into the admin panel.
+ *
+ * The link is single-use and time-limited — it comes from Supabase, which
+ * signs it and expires it. Say so plainly, because an unexplained "click here
+ * to get admin access" email is exactly what a phishing attempt looks like.
+ */
+export function adminInviteEmail(opts: {
+  inviteUrl: string
+  invitedBy?: string | null
+  isExistingAccount?: boolean
+}) {
+  const from = opts.invitedBy ? ` by ${opts.invitedBy}` : ""
+
+  if (opts.isExistingAccount) {
+    return wrap(`
+      <p style="font-size:15px;line-height:1.6">
+        You've been given admin access to the UNRWLY dashboard${from}.
+      </p>
+      <p style="font-size:15px;line-height:1.6">
+        Nothing to set up — sign in with the password you already use, and you'll
+        land in the dashboard.
+      </p>
+      <p style="margin:28px 0">
+        <a href="${opts.inviteUrl}" style="background:#2F5646;color:#fff;text-decoration:none;padding:12px 22px;border-radius:6px;font-size:14px;display:inline-block">Open the dashboard</a>
+      </p>
+    `)
+  }
+
+  return wrap(`
+    <p style="font-size:15px;line-height:1.6">
+      You've been invited${from} to the UNRWLY admin dashboard.
+    </p>
+    <p style="font-size:15px;line-height:1.6">
+      Use the link below to choose a password. It works once and expires in 24 hours.
+    </p>
+    <p style="margin:28px 0">
+      <a href="${opts.inviteUrl}" style="background:#2F5646;color:#fff;text-decoration:none;padding:12px 22px;border-radius:6px;font-size:14px;display:inline-block">Set your password</a>
+    </p>
+    <p style="font-size:13px;line-height:1.6;color:#666">
+      If you weren't expecting this, ignore the email — the link does nothing
+      until it's opened, and no account is usable without setting a password.
+    </p>
+  `)
+}
