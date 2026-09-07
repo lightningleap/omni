@@ -60,7 +60,7 @@ const SPEED = 0.6;
 export default function CategoryCircleGrid({ collections }: { collections: Collection[] }) {
   const items = collections.slice(0, 18);
   const trackRef = useRef<HTMLDivElement>(null);
-  const dragRef = useRef({ down: false, startX: 0, startScroll: 0, moved: false });
+  const dragRef = useRef({ down: false, startX: 0, startScroll: 0, moved: false, captured: false });
 
   // Why the row pauses is tracked per reason rather than as one flag. A single
   // `paused` boolean has to be un-set by whichever handler happens to fire last,
@@ -142,9 +142,12 @@ export default function CategoryCircleGrid({ collections }: { collections: Colle
     if (e.pointerType !== 'mouse') return;
     const el = trackRef.current;
     if (!el) return;
-    dragRef.current = { down: true, startX: e.clientX, startScroll: el.scrollLeft, moved: false };
+    dragRef.current = { down: true, startX: e.clientX, startScroll: el.scrollLeft, moved: false, captured: false };
     dragPausedRef.current = true;
-    el.setPointerCapture?.(e.pointerId);
+    // Capture is claimed in onDragMove, once this is actually a drag — NOT here.
+    // Capturing on pointerdown redirects every later pointer event to this
+    // element, and the browser then fires `click` on it too, so the <a> inside
+    // never received one and the circles simply did not navigate.
   };
   const onDragMove = (e: ReactPointerEvent) => {
     const d = dragRef.current;
@@ -152,7 +155,19 @@ export default function CategoryCircleGrid({ collections }: { collections: Colle
     const el = trackRef.current;
     if (!el) return;
     const dx = e.clientX - d.startX;
-    if (Math.abs(dx) > 4) d.moved = true;
+    // Past the threshold this is a drag, so take the pointer now: the row keeps
+    // tracking the cursor even if it leaves the track, and the click that would
+    // have followed is the one onClickCapture is there to swallow.
+    if (!d.captured && Math.abs(dx) > 10) {
+      el.setPointerCapture?.(e.pointerId);
+      d.captured = true;
+    }
+    // 4px was too tight to separate a drag from a click: pressing and
+    // releasing on a trackpad drifts further than that routinely, so ordinary
+    // clicks were being classed as drags and swallowed by onClickCapture — the
+    // circles simply did not navigate. 10px is the usual threshold, and still
+    // well below any movement a person means as a drag.
+    if (Math.abs(dx) > 10) d.moved = true;
     const period = periodRef.current;
     let target = d.startScroll - dx;
     if (period > 0) {
@@ -163,7 +178,8 @@ export default function CategoryCircleGrid({ collections }: { collections: Colle
     el.scrollLeft = target;
   };
   const onDragEnd = (e: ReactPointerEvent) => {
-    if (dragRef.current.down) trackRef.current?.releasePointerCapture?.(e.pointerId);
+    if (dragRef.current.captured) trackRef.current?.releasePointerCapture?.(e.pointerId);
+    dragRef.current.captured = false;
     dragRef.current.down = false;
     // Hand the row back: if the pointer is still over it, hover keeps it paused
     // and releases on the way out. Without this the carousel never restarted.

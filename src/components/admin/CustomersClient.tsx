@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { Search, DollarSign, Users, Star, Lock } from "lucide-react";
+import { Search, DollarSign, Users, Star, Lock, Mail, Loader2 } from "lucide-react";
 import CustomerProfileDrawer from "./CustomerProfileDrawer";
 import { setUserRole } from "@/app/actions/admin/customers";
+import { inviteAdmin } from "@/app/actions/admin/invites";
 import { Role } from "@prisma/client";
 
 type CustomerData = {
@@ -25,6 +26,29 @@ export default function CustomersClient({ initialCustomers }: { initialCustomers
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [roleError, setRoleError] = useState<string | null>(null);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [isInviting, setIsInviting] = useState(false);
+  const [inviteNote, setInviteNote] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const sendInvite = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inviteEmail.trim()) return;
+
+    setIsInviting(true);
+    setInviteNote(null);
+    try {
+      const body = new FormData();
+      body.append("email", inviteEmail.trim());
+      const result = await inviteAdmin(body);
+
+      setInviteNote({ ok: result.success, text: result.message });
+      if (result.success) setInviteEmail("");
+    } catch {
+      setInviteNote({ ok: false, text: "The invite could not be sent." });
+    } finally {
+      setIsInviting(false);
+    }
+  };
 
   const changeRole = async (userId: string, role: Role) => {
     setSavingId(userId);
@@ -72,9 +96,37 @@ export default function CustomersClient({ initialCustomers }: { initialCustomers
   return (
     <div className="space-y-8 font-sans max-w-[1400px] mx-auto">
       {/* PAGE HEADER */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-wrap justify-between items-start gap-4">
         <h1 className="text-2xl font-bold text-slate-900">Customers</h1>
-        <div className="flex gap-3">
+
+        {/* Invite an admin by email. The person does not need an account first —
+            if they have none, the email carries a link that creates one. */}
+        <div className="flex flex-col items-end gap-1.5">
+          <form onSubmit={sendInvite} className="flex items-center gap-2">
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+              <input
+                type="email"
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+                placeholder="teammate@email.com"
+                className="w-64 bg-white border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-accent-500/30 focus:border-accent-700 transition"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={isInviting || !inviteEmail.trim()}
+              className="bg-accent-800 text-white text-[11px] font-bold uppercase tracking-widest px-4 py-2.5 rounded-lg hover:bg-accent-950 disabled:opacity-40 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-2"
+            >
+              {isInviting && <Loader2 size={12} className="animate-spin" />}
+              {isInviting ? "Sending" : "Invite admin"}
+            </button>
+          </form>
+          {inviteNote && (
+            <p className={`text-xs font-medium max-w-md text-right ${inviteNote.ok ? "text-accent-700" : "text-rose-600"}`}>
+              {inviteNote.text}
+            </p>
+          )}
         </div>
       </div>
 

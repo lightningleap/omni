@@ -7,7 +7,6 @@ import { Heart, ShoppingBag, Star, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/store/useCartStore';
 import { useWishlistStore } from '@/store/useWishlistStore';
-import { useRouter } from 'next/navigation';
 import { sendGAEvent } from '@next/third-parties/google'; // Added import
 import { resolveColorSwatches } from '@/data/colorSwatches';
 
@@ -173,7 +172,6 @@ const ProductCard = ({
   index = 0,
   showRemove = false,
   onRemove,
-  user,
   variants,
   sizes,
   tag,
@@ -214,7 +212,6 @@ const ProductCard = ({
 
   const cartItem = cartItems.find(i => i.productId === product._id);
   const inCartCount = cartItem?.quantity || 0;
-  const router = useRouter();
 
   // ── Variant / size options ──────────────────────────────────────────────
   // Use real variants when provided; otherwise derive a front/back pair from the
@@ -298,13 +295,17 @@ const ProductCard = ({
     (isHovered && product.secondaryImage ? product.secondaryImage : product.image) ||
     FALLBACK_IMG;
 
-  const handleGatekeep = () => {
-    if (!user) {
-      router.push('/auth?message=Unrwly Membership Required. Please sign in to shop.');
-      return true;
-    }
-    return false;
-  };
+  /**
+   * Shopping does not require an account.
+   *
+   * Adding to the bag used to bounce a signed-out visitor to /auth, so nothing
+   * ever reached the cart and the button looked broken — which is exactly what
+   * it looked like to the client. The checkout API already accepts guests
+   * (`userId` is nullable on Order and the Stripe session falls back to the
+   * email collected at payment), so the gate was blocking a flow the backend
+   * supported all along. Sign-in is asked for at checkout, where it buys the
+   * customer something: an order history.
+   */
 
   const activeRawPrice = useMemo(() => {
     if (product.rawPrice) return product.rawPrice;
@@ -316,7 +317,6 @@ const ProductCard = ({
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (handleGatekeep()) return;
 
     // --- GA4 EVENT TRACKING: Quick Add ---
     sendGAEvent('event', 'add_to_cart', {
@@ -453,7 +453,6 @@ const ProductCard = ({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                if (handleGatekeep()) return;
                 toggleWishlist({
                   id: product._id,
                   name: product.name,

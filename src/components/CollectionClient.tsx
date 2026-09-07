@@ -1,12 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, Suspense } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useSearchParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { X, ChevronDown } from 'lucide-react';
+import React, { Suspense } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import ProductCard from './ProductCard';
-import FilterSidebar from './FilterSidebar';
 import CategoryDoodleBackground from './CategoryDoodleBackground';
 import CategoryHeroTitle from './CategoryHeroTitle';
 
@@ -20,21 +16,17 @@ interface CollectionClientProps {
 
 /* ── Inner component that uses useSearchParams ─────── */
 const CollectionInner = ({ initialProducts, title, user }: CollectionClientProps) => {
-  const searchParams = useSearchParams();
-  const searchQuery = searchParams.get('q') || '';
-
-  const filteredProducts = useMemo(() => {
-    let result = [...initialProducts];
-
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(p =>
-        p.name.toLowerCase().includes(q)
-      );
-    }
-
-    return result;
-  }, [initialProducts, searchQuery]);
+  /**
+   * The server has already run the search — across name, description and
+   * collection — so what arrives here is the result, not a pool to narrow.
+   *
+   * This used to re-filter the list on the NAME alone, which silently threw
+   * away every match found any other way: a search for "cat" returned 44
+   * products from the database and rendered none of them, because none happened
+   * to carry the word in their title. Filtering twice, with the narrower rule
+   * second, can only ever lose rows.
+   */
+  const filteredProducts = initialProducts;
 
   return (
     <main className="min-h-screen pt-12 pb-32 px-6 md:px-12">

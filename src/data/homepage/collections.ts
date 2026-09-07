@@ -36,7 +36,8 @@ export const COLLECTIONS: Record<string, CollectionCardItem> = {
     title: 'Sale',
     description: 'Studio favourites at a friendlier price, while they last.',
     meta: 'Limited time',
-    href: '/collections/sale',
+    // No `sale` row exists either — see the note on `bestsellers`.
+    href: '/collections/all',
     ariaLabel: 'Shop the sale',
     ctaLabel: 'Shop Sale',
     image: 'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=1000&q=80',
@@ -51,7 +52,10 @@ export const COLLECTIONS: Record<string, CollectionCardItem> = {
     // apart for a screen reader.
     title: 'Most loved',
     description: 'The designs our customers keep coming back for.',
-    href: '/collections/bestsellers',
+    // NOTE: there is no `bestsellers` collection in the catalogue, and linking
+    // to one produced a "Collection Coming Soon" dead end. Until a curated row
+    // exists, this opens the full catalogue.
+    href: '/collections/all',
     ariaLabel: 'Shop bestsellers',
     ctaLabel: 'Shop',
     image: 'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=1000&q=80',
@@ -79,7 +83,8 @@ export const COLLECTIONS: Record<string, CollectionCardItem> = {
     // is not also printed underneath.
     title: 'Fresh this month',
     description: 'New artwork drawn for the season we are actually in.',
-    href: '/collections/seasonal',
+    // Same as `bestsellers`: no `seasonal` row exists yet.
+    href: '/collections/all',
     ariaLabel: 'Shop the seasonal collection',
     ctaLabel: 'Shop',
     image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1000&q=80',
