@@ -131,8 +131,13 @@ export interface CollectionCircleItem {
   name: string;
   /** Collection handle — the rail links to `/collections/<handle>`. */
   handle: string;
-  /** Thumbnail cropped into the circle. */
-  imageUrl: string;
+  /**
+   * Thumbnail cropped into the circle. Optional: when it is absent the server
+   * supplies one from the collection's own products (see `getCategoryImages`
+   * in app/page.tsx), which is better than a stock photo of someone else's
+   * merchandise.
+   */
+  imageUrl?: string;
 }
 
 /** A header navigation entry. */

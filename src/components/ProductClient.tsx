@@ -8,7 +8,6 @@ import Link from 'next/link';
 import ProductCard from '@/components/ProductCard';
 import { useCartStore } from '@/store/useCartStore';
 import { useWishlistStore } from '@/store/useWishlistStore';
-import { useRouter } from 'next/navigation';
 import { sendGAEvent } from '@next/third-parties/google'; // Added import
 
 const COLOR_MAP: Record<string, string> = {
@@ -46,15 +45,18 @@ export default function ProductClient({ product, recommendations = [], user }: P
 
   const toggleWishlist = useWishlistStore((state) => state.toggleItem);
   const isInWishlist = useWishlistStore((state) => state.items.some(i => i.id === product._id));
-  const router = useRouter();
 
-  const handleGatekeep = () => {
-    if (!user) {
-      router.push('/auth?message=Unrwly Membership Required. Please sign in to shop.');
-      return true;
-    }
-    return false;
-  };
+  /**
+   * Shopping does not require an account.
+   *
+   * Adding to the bag used to bounce a signed-out visitor to /auth, so nothing
+   * ever reached the cart and the button looked broken — which is exactly what
+   * it looked like to the client. The checkout API already accepts guests
+   * (`userId` is nullable on Order and the Stripe session falls back to the
+   * email collected at payment), so the gate was blocking a flow the backend
+   * supported all along. Sign-in is asked for at checkout, where it buys the
+   * customer something: an order history.
+   */
 
   const activePriceDisplay = product.price;
   const activePriceNumber = useMemo(() => {
@@ -80,7 +82,6 @@ export default function ProductClient({ product, recommendations = [], user }: P
   // -------------------------------------
 
   const handleToggleWishlist = () => {
-    if (handleGatekeep()) return;
 
     // --- GA4 EVENT TRACKING: add_to_wishlist ---
     if (!isInWishlist) {
@@ -135,7 +136,6 @@ export default function ProductClient({ product, recommendations = [], user }: P
   const discountPercent = 33;
 
   const handleAddToCart = () => {
-    if (handleGatekeep()) return;
 
     // --- GA4 EVENT TRACKING: Detailed add_to_cart ---
     sendGAEvent('event', 'add_to_cart', {

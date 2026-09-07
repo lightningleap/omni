@@ -210,12 +210,58 @@ function getBrandBanners(): BrandBannerMap {
  *
  * Runs at most once per ISR window (60s), not per request.
  */
-function getCategoryImages(): Record<string, string> {
+async function getCategoryImages(): Promise<Record<string, string>> {
   const bases = (Object.keys(HOMEPAGE_CONTENT) as HomepageMode[]).flatMap((mode) =>
     HOMEPAGE_CONTENT[mode].browseCollections.items.map((item) => `${mode}-${item.id}`)
   );
 
-  return findStudioImages('categories', bases);
+  const fromFiles = findStudioImages('categories', bases);
+
+  // Whatever the studio hasn't supplied a file for, fall back to a product that
+  // is actually in that collection. The circles used to carry Unsplash stock —
+  // a stranger's mug standing in for ours — which is the kind of placeholder
+  // that survives all the way to launch because nothing ever errors on it.
+  try {
+    const covers = await prisma.collection.findMany({
+      select: {
+        handle: true,
+        imageUrl: true,
+        products: {
+          where: { status: 'LIVE' },
+          select: { imageUrl: true, audience: true },
+          orderBy: { createdAt: 'desc' },
+        },
+      },
+    });
+
+    const byHandle = new Map(covers.map((c) => [c.handle, c]));
+
+    for (const mode of Object.keys(HOMEPAGE_CONTENT) as HomepageMode[]) {
+      const wanted = mode === 'kids' ? 'KIDS' : 'ADULT';
+
+      for (const item of HOMEPAGE_CONTENT[mode].browseCollections.items) {
+        const key = `${mode}-${item.id}`;
+        if (fromFiles[key]) continue;
+
+        const row = byHandle.get(item.handle);
+        const cover =
+          row?.imageUrl ||
+          row?.products.find((p) => p.audience === wanted)?.imageUrl ||
+          // "All" has no Collection row of its own; any live product will do.
+          (item.handle === 'all'
+            ? covers.flatMap((c) => c.products).find((p) => p.audience === wanted)?.imageUrl
+            : undefined);
+
+        if (cover) fromFiles[key] = cover;
+      }
+    }
+  } catch (error) {
+    // A circle without a thumbnail still navigates; the grid has its own
+    // fallback. Never take the homepage down over decoration.
+    console.error('Failed to load collection thumbnails:', error);
+  }
+
+  return fromFiles;
 }
 
 /**
@@ -397,7 +443,7 @@ export default async function Home() {
 
   const { adultProducts, kidsProducts, config } = await getHomepageData();
   const brandBanners = getBrandBanners();
-  const categoryImages = getCategoryImages();
+  const categoryImages = await getCategoryImages();
   // The studio photograph beside the welcome copy. Save one as
   // `public/brand/studio.jpg` and it replaces the section's placeholder — same
   // drop-in contract as the brand banners and the category thumbnails.
