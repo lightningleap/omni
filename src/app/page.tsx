@@ -494,7 +494,7 @@ export default async function Home() {
             <div className="w-16 h-16 bg-black/[0.04] rounded-full flex items-center justify-center mx-auto mb-6">
               <Star size={24} className="text-neutral-400" />
             </div>
-            <h2 className="type-h2 text-[#1A1A1A]">Collection Drop Coming Soon</h2>
+            <h2 className="type-h2 text-ink">Collection Drop Coming Soon</h2>
             <p className="type-body text-neutral-500">
               We are curating the next UNRWLY drop. Head to Admin to sync products from Printify.
             </p>

@@ -66,7 +66,7 @@ export default function SectionHeader({
     (actionLabel && actionLink ? (
       <Link
         href={actionLink}
-        className="type-button group/act inline-flex h-12 shrink-0 items-center gap-2 rounded-full border border-neutral-300 px-6 text-[13px] uppercase tracking-[0.08em] text-[#1A1A1A] transition-[background-color,border-color] duration-[250ms] ease-out hover:border-neutral-400 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
+        className="type-button group/act inline-flex h-12 shrink-0 items-center gap-2 rounded-full border border-neutral-300 px-6 text-[13px] uppercase tracking-[0.08em] text-ink transition-[background-color,border-color] duration-[250ms] ease-out hover:border-neutral-400 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
       >
         {actionLabel}
         <ArrowRight size={15} strokeWidth={2} className="transition-transform duration-[250ms] ease-out group-hover/act:translate-x-1" />
@@ -93,7 +93,7 @@ export default function SectionHeader({
           </span>
         )}
         {title && (
-          <h2 style={{ color: '#1A1A1A' }} className="type-section-title">
+          <h2 style={{ color: 'var(--color-ink)' }} className="type-section-title">
             {title}
           </h2>
         )}

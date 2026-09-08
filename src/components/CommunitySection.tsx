@@ -63,7 +63,7 @@ const GALLERY: Record<HomepageMode, string[]> = {
 // Slightly larger than the other rails' cards on purpose. For a studio this
 // size, the work being worn is the strongest proof the shop is real, so the feed
 // carries a little more weight than a footnote.
-const CARD = 'shrink-0 snap-start w-[260px] md:w-[300px] aspect-[4/5] rounded-[4px] overflow-hidden';
+const CARD = 'shrink-0 snap-start w-[260px] md:w-[300px] aspect-[4/5] rounded-card overflow-hidden';
 
 function MediaCard({ src, alt, priority }: { src: string; alt: string; priority: boolean }) {
   return (

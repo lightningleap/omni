@@ -70,11 +70,11 @@ export default function SocialLinks({
     // 54px tall, matching the site's primary buttons — comfortably past the 44px
     // touch-target floor, and it reads as a button rather than as an ornament.
     labelled:
-      'flex h-[54px] items-center justify-center gap-2.5 rounded-full border border-[#EAE6DF] bg-white px-6 text-[13px] uppercase tracking-[0.1em] text-[#1A1A1A] shadow-[0_2px_10px_-6px_rgba(20,20,25,0.20)] transition-[background-color,color,border-color,transform,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:border-accent hover:bg-accent hover:text-accent-on hover:shadow-[0_12px_24px_-12px_rgb(var(--accent-ring-rgb)/0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/45 focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:hover:translate-y-0',
+      'flex h-[54px] items-center justify-center gap-2.5 rounded-full border border-[#EAE6DF] bg-white px-6 text-[13px] uppercase tracking-[0.1em] text-ink shadow-[0_2px_10px_-6px_rgba(20,20,25,0.20)] transition-[background-color,color,border-color,transform,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:border-accent hover:bg-accent hover:text-accent-on hover:shadow-[0_12px_24px_-12px_rgb(var(--accent-ring-rgb)/0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/45 focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:hover:translate-y-0',
     prominent:
       'flex h-12 w-12 items-center justify-center rounded-full border border-[#EAE6DF] bg-white text-accent-800 shadow-[0_2px_10px_-6px_rgba(20,20,25,0.20)] transition-[background-color,color,transform,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:bg-accent hover:text-accent-on hover:shadow-[0_12px_24px_-12px_rgb(var(--accent-ring-rgb)/0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/45 focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:hover:translate-y-0',
     subtle:
-      'flex h-10 w-10 items-center justify-center rounded-full text-slate-400 transition-colors duration-200 hover:bg-black/[0.04] hover:text-[#1A1A1A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40',
+      'flex h-10 w-10 items-center justify-center rounded-full text-slate-400 transition-colors duration-200 hover:bg-ink/[0.04] hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40',
   };
 
   const labelled = variant === 'labelled';

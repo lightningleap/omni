@@ -27,7 +27,7 @@ const faqs = [
 
 export default function FAQPage() {
   return (
-    <main className="min-h-screen text-[#334155] pt-12 pb-24 selection:bg-[#0F172A] selection:text-white font-sans">
+    <main className="min-h-screen text-neutral-500 pt-12 pb-24 selection:bg-ink selection:text-white font-sans">
       <section className="max-w-7xl mx-auto px-6 md:px-12 mb-24">
         <div className="flex flex-col gap-4 border-l border-slate-100 pl-8 py-12">
           <span className="type-label text-brand-terracotta">Support Center</span>

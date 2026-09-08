@@ -34,9 +34,9 @@ export default function FollowUnrwlySection() {
     <ModeFade mode={mode}>
       <section aria-label="Follow UNRWLY" className="pb-4 pt-2 md:pb-6 md:pt-4">
         <div className="mx-auto max-w-[1440px] px-4 md:px-12">
-          <div className="flex flex-col gap-7 rounded-[8px] border border-[#EAE6DF] bg-[#FCFCFA] px-6 py-10 md:flex-row md:items-center md:justify-between md:gap-12 md:px-12">
+          <div className="flex flex-col gap-7 rounded-panel border border-[#EAE6DF] bg-[#FCFCFA] px-6 py-10 md:flex-row md:items-center md:justify-between md:gap-12 md:px-12">
             <div>
-              <h2 style={{ color: '#1A1A1A' }} className="type-section-title">
+              <h2 style={{ color: 'var(--color-ink)' }} className="type-section-title">
                 {follow.title}
               </h2>
               <p className="type-section-subtitle mt-3 max-w-[42ch] text-neutral-500">

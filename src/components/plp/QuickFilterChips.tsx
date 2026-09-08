@@ -42,7 +42,7 @@ export default function QuickFilterChips({
               className={`type-button h-9 shrink-0 rounded-full border px-4 text-[12px] tracking-[0.06em] transition-[background-color,border-color,color] duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2 ${
                 active
                   ? 'border-accent bg-accent text-accent-on'
-                  : 'border-neutral-300 bg-white text-[#1A1A1A] hover:border-neutral-400 hover:bg-neutral-50'
+                  : 'border-neutral-300 bg-white text-ink hover:border-neutral-400 hover:bg-neutral-50'
               }`}
             >
               {chip.label}

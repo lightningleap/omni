@@ -212,19 +212,24 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
               collection route the mark shows the storefront the page is actually
               rendering — the same rule the toggle beside it follows.
 
-              The hover plate is Adult-only. Half of the Kids lockup is the
-              accent and follows the theme, but the "KIDS" script is ink black
-              and does not: on the accent-800 ground (#0A5C4E in Kids) it would
-              disappear. The lift and the scale still run, so the target still
-              answers to the pointer. */}
+              Both storefronts hover identically: a 2% scale, and nothing
+              else. Adult used to also paint an accent-800 plate behind the mark
+              and flip it to white, which Kids could not do — half the Kids
+              lockup is ink black and would have vanished on that ground. The
+              result was one logo that grew a dark box under the pointer and one
+              that did not, on the same navbar. The plate is gone rather than
+              added to Kids: a wordmark is not a button, and the lift alone is
+              enough to say the target is live.
+
+              `px-3 py-2 -ml-3` stays. It has no appearance now that the
+              background is gone, but it is the hit area, and the negative
+              margin is what keeps the mark optically flush with the page grid. */}
           <Link
             href="/"
             aria-label="UNRWLY — home"
-            className={`group flex shrink-0 items-center -ml-3 rounded-[16px] px-3 py-2 text-[#1A1A1A] transition-all duration-200 ease-out hover:scale-[1.02] ${
-              storeMode === 'kids' ? '' : 'hover:bg-accent-800 hover:text-white'
-            }`}
+            className="group flex shrink-0 items-center -ml-3 rounded-modal px-3 py-2 text-ink transition-transform duration-200 ease-out hover:scale-[1.02] motion-reduce:transition-none motion-reduce:hover:scale-100"
           >
-            <BrandMark size="sm" mode={storeMode} dotClassName="transition-colors duration-200 group-hover:bg-[#E8956B]" />
+            <BrandMark size="sm" mode={storeMode} />
           </Link>
 
           {/* ADULT / KIDS STORE SWITCH — sits immediately right of the logo */}
@@ -244,7 +249,12 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
           <Link
             href="/meet-unrwly"
             className={`type-nav hidden shrink-0 whitespace-nowrap rounded-full px-3 py-2 text-[13px] uppercase tracking-[0.1em] transition-colors duration-200 ease-out hover:bg-accent-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 lg:inline-flex ${
-              pathname === '/meet-unrwly' ? 'text-accent-800' : 'text-accent-950'
+              // Current page = the hover treatment, held. It was a bare
+              // `text-accent-800` tint, so hovering About while ON About made
+              // the pill visibly change — the page you are on should not look
+              // like something you have yet to reach. Same classes as `hover:`
+              // above, deliberately, so the two can never drift apart.
+              pathname === '/meet-unrwly' ? 'bg-accent-800 text-white' : 'text-accent-950'
             }`}
             aria-current={pathname === '/meet-unrwly' ? 'page' : undefined}
           >
@@ -328,7 +338,7 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
             {/* Mobile Toggle */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden flex h-11 w-11 items-center justify-center rounded-[16px] text-accent-950 transition-all duration-200 ease-out hover:bg-accent-800 hover:text-white hover:scale-[1.02]"
+              className="lg:hidden flex h-11 w-11 items-center justify-center rounded-modal text-accent-950 transition-all duration-200 ease-out hover:bg-accent-800 hover:text-white hover:scale-[1.02]"
             >
               <Menu size={24} strokeWidth={1.8} />
             </button>
@@ -351,7 +361,7 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
                 href="/"
                 aria-label="UNRWLY — home"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center text-[#1A1A1A]"
+                className="flex items-center text-ink"
               >
                 <BrandMark size="md" mode={storeMode} />
               </Link>
@@ -376,7 +386,13 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
               <Link
                 href="/meet-unrwly"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="type-nav text-3xl uppercase text-[#1A1A1A] transition-all hover:text-accent-800"
+                aria-current={pathname === '/meet-unrwly' ? 'page' : undefined}
+                // Same rule as the desktop strip: on About, hold this link's own
+                // hover colour. It had no current-page state at all, so the
+                // drawer gave no clue which page you were on.
+                className={`type-nav text-3xl uppercase transition-all hover:text-accent-800 ${
+                  pathname === '/meet-unrwly' ? 'text-accent-800' : 'text-ink'
+                }`}
               >
                 About
               </Link>
@@ -389,7 +405,7 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
                     key={link.label}
                     href={link.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="type-nav text-3xl uppercase text-[#1A1A1A] transition-all hover:text-accent-800"
+                    className="type-nav text-3xl uppercase text-ink transition-all hover:text-accent-800"
                   >
                     {link.label}
                   </Link>
@@ -405,7 +421,7 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
                       key={col.id}
                       href={`/collections/${col.handle}?audience=${storeMode}`}
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="type-nav text-3xl uppercase text-[#1A1A1A] transition-all hover:text-accent-800"
+                      className="type-nav text-3xl uppercase text-ink transition-all hover:text-accent-800"
                     >
                       {col.title || col.name}
                     </Link>
@@ -415,7 +431,7 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
               <Link
                 href={`/collections/all?audience=${storeMode}`}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="type-nav text-3xl uppercase text-[#1A1A1A] transition-all hover:text-accent-800"
+                className="type-nav text-3xl uppercase text-ink transition-all hover:text-accent-800"
               >
                 New Drops
               </Link>

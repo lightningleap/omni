@@ -55,7 +55,7 @@ export default function EtsyLegacySection() {
     <ModeFade mode={mode}>
       <section aria-label="UNRWLY on Etsy" className="py-16 md:py-20">
         <div className="mx-auto max-w-[1440px] px-4 md:px-12">
-          <div className="rounded-[8px] border border-[#EAE6DF] bg-[#FCFCFA] px-6 py-12 md:px-12 md:py-16">
+          <div className="rounded-panel border border-[#EAE6DF] bg-[#FCFCFA] px-6 py-12 md:px-12 md:py-16">
             {/* Tops aligned, not centred. The right column used to be a short
                 statistics grid, which floated badly against a wall of text and
                 so was centred; the review block that replaced it is the taller
@@ -86,11 +86,11 @@ export default function EtsyLegacySection() {
                   {legacy.label}
                 </p>
 
-                <h2 style={{ color: '#1A1A1A' }} className="type-section-title mt-4">
+                <h2 style={{ color: 'var(--color-ink)' }} className="type-section-title mt-4">
                   {legacy.title}
                 </h2>
 
-                <p className="type-body mt-5 max-w-[620px] text-[15px] text-[#334155] md:text-base">
+                <p className="type-body mt-5 max-w-[620px] text-[15px] text-neutral-500 md:text-base">
                   {legacy.body}
                 </p>
 

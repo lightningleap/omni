@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from 'react';
+import PlpBackLink from './PlpBackLink';
 import PlpBreadcrumb from './PlpBreadcrumb';
+import CategoryNavigation from '@/components/CategoryNavigation';
 import PlpHeader from './PlpHeader';
 import PlpToolbar from './PlpToolbar';
 import PlpFilterPanel from './PlpFilterPanel';
-import QuickFilterChips from './QuickFilterChips';
+
 import ActiveFilterChips from './ActiveFilterChips';
 import ShopByColorRail from './ShopByColorRail';
 import PlpProductGrid from './PlpProductGrid';
@@ -28,9 +30,16 @@ import type { FilterState, PlpProduct, ShopCategory } from '@/types/plp';
  * run through this exact file — the only difference between an Adult PLP and a
  * Kids one is which config was looked up.
  *
- * Section order matches the brief: breadcrumb → title + count → sticky
- * filter/sort bar → quick chips → (Kids) Shop by Colour → active chips → grid →
- * load more. The footer comes from the root layout, as on every other page.
+ * Section order: back link → breadcrumb → title + count → department rail →
+ * sticky filter/sort bar → (Kids) Shop by Colour → active chips → grid → load
+ * more. The footer comes from the root layout, as on every other page.
+ *
+ * ── THE PAGE IS ONE COLUMN ──────────────────────────────────────────────────
+ * It used to be a flex row: a 260px filter sidebar beside a `flex-1` results
+ * column. Every child below the toolbar was nested inside that column, and the
+ * grid never saw the container's full width. The filters are a drawer now, so
+ * there is no row left to be in — everything is a direct child of the same
+ * 1440px container, and the grid measures itself against the page.
  */
 export default function PlpClient({
   category,
@@ -78,8 +87,10 @@ export default function PlpClient({
   const qualifier = category.breadcrumb.at(-1)?.label === 'Kids' ? 'Kids' : undefined;
 
   return (
-    <main className="min-h-screen px-4 pt-12 pb-32 md:px-12">
+    <main className="min-h-screen px-4 pt-8 pb-32 md:px-12">
       <div className="mx-auto max-w-[1440px]">
+        <PlpBackLink parent={category.breadcrumb.at(-1)} />
+
         <PlpBreadcrumb trail={category.breadcrumb} current={category.label} />
 
         <PlpHeader
@@ -89,8 +100,9 @@ export default function PlpClient({
           count={total}
         />
 
+        <CategoryNavigation audience={category.audience} />
+
         <PlpToolbar
-          total={total}
           activeCount={activeChips.length}
           sorts={config.sorts}
           sort={state.sort}
@@ -98,72 +110,67 @@ export default function PlpClient({
           onOpenFilters={() => setDrawerOpen(true)}
         />
 
-        {/* Sidebar + results. The sidebar is `hidden` below lg and becomes a
-            drawer, so this row collapses to a single column on its own. */}
-        <div className="flex items-start gap-0 lg:gap-10">
-          <PlpFilterPanel
-            config={config}
+        {/* The panel renders nothing inline — it is a drawer at every width, so
+            it takes no space in the flow and the grid below gets the container's
+            full width instead of sharing a flex row with a 260px column. */}
+        <PlpFilterPanel
+          config={config}
+          counts={counts}
+          isFacetActive={isFacetActive}
+          toggleFacet={toggleFacet}
+          minPrice={state.minPrice}
+          maxPrice={state.maxPrice}
+          setPriceRange={setPriceRange}
+          isFiltered={isFiltered}
+          clearAll={clearAll}
+          isOpen={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          quickChips={config.quickChips}
+          isQuickChipActive={isPatchActive}
+          onToggleQuickChip={toggleQuickChip}
+        />
+
+        {/* ── Kids: Shop by Colour ──
+            Kept on the page rather than moved into the drawer: it is a visual
+            browse rail with swatches, not a facet list, and it is one of the
+            things that makes the Kids storefront feel like itself. */}
+        {isKids && config.colorRail && (
+          <ShopByColorRail
+            colors={config.colorRail}
             counts={counts}
-            isFacetActive={isFacetActive}
-            toggleFacet={toggleFacet}
-            minPrice={state.minPrice}
-            maxPrice={state.maxPrice}
-            setPriceRange={setPriceRange}
-            isFiltered={isFiltered}
-            clearAll={clearAll}
-            isOpen={drawerOpen}
-            onClose={() => setDrawerOpen(false)}
+            isActive={(value) => isFacetActive('colors', value)}
+            onToggle={(value) => toggleFacet('colors', value)}
           />
+        )}
 
-          {/* min-w-0 lets this column shrink inside the flex row instead of
-              being inflated by the grid's content — without it the sidebar
-              would be squeezed off the page on narrow desktops. */}
-          <div className="min-w-0 flex-1">
-            <div className="mb-6 flex flex-wrap items-center gap-2">
-              <div className="min-w-0 flex-1">
-                <QuickFilterChips
-                  chips={config.quickChips}
-                  isActive={isPatchActive}
-                  onToggle={toggleQuickChip}
-                />
-              </div>
-              {FUTURE_FEATURES.giftFinder && <GiftFinderEntry />}
+        {isKids && FUTURE_FEATURES.sizeAgePredictor && <SizeAgePredictor />}
+        {isKids && FUTURE_FEATURES.familyMatchingBundle && <FamilyMatchingBundle />}
+
+        {/* Only what the shopper actually chose stays on the page. An empty
+            filter state now shows no chip row at all, so the grid starts
+            directly under the toolbar. */}
+        {activeChips.length > 0 && (
+          <div className="mb-6 flex flex-wrap items-center gap-2">
+            <div className="min-w-0 flex-1">
+              <ActiveFilterChips chips={activeChips} onClearAll={clearAll} />
             </div>
-
-            {/* ── Kids: Shop by Colour ── */}
-            {isKids && config.colorRail && (
-              <ShopByColorRail
-                colors={config.colorRail}
-                counts={counts}
-                isActive={(value) => isFacetActive('colors', value)}
-                onToggle={(value) => toggleFacet('colors', value)}
-              />
-            )}
-
-            {isKids && FUTURE_FEATURES.sizeAgePredictor && <SizeAgePredictor />}
-            {isKids && FUTURE_FEATURES.familyMatchingBundle && <FamilyMatchingBundle />}
-
-            {activeChips.length > 0 && (
-              <div className="mb-8">
-                <ActiveFilterChips chips={activeChips} onClearAll={clearAll} />
-              </div>
-            )}
-
-            <PlpProductGrid
-              products={visibleProducts}
-              user={user}
-              stagger={!interacted}
-              onClearAll={clearAll}
-              isFiltered={isFiltered}
-              // The trail's last stop is this category's parent — Shop, or Kids
-              // for the age and gender pages — so a scoped page with no stock
-              // still offers a way onward.
-              fallback={category.breadcrumb.at(-1)}
-            />
-
-            {FUTURE_FEATURES.recentlyViewed && <RecentlyViewed products={[]} user={user} />}
+            {FUTURE_FEATURES.giftFinder && <GiftFinderEntry />}
           </div>
-        </div>
+        )}
+
+        <PlpProductGrid
+          products={visibleProducts}
+          user={user}
+          stagger={!interacted}
+          onClearAll={clearAll}
+          isFiltered={isFiltered}
+          // The trail's last stop is this category's parent — Shop, or Kids
+          // for the age and gender pages — so a scoped page with no stock
+          // still offers a way onward.
+          fallback={category.breadcrumb.at(-1)}
+        />
+
+        {FUTURE_FEATURES.recentlyViewed && <RecentlyViewed products={[]} user={user} />}
       </div>
     </main>
   );

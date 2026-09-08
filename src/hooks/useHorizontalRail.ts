@@ -65,7 +65,23 @@ export function useHorizontalRail({
   itemCount = 0,
 }: UseHorizontalRailOptions = {}): HorizontalRail {
   const trackRef = useRef<HTMLDivElement>(null);
-  const dragRef = useRef({ down: false, startX: 0, startScroll: 0, moved: false });
+  /**
+   * How far the pointer must travel before this counts as a DRAG rather than a
+   * click. 4px was catching ordinary clicks — a mouse routinely moves five or
+   * six pixels between press and release, and every one of those was being
+   * treated as a drag and having its click cancelled. 10px is past normal click
+   * jitter and still far short of a deliberate drag.
+   */
+  const DRAG_THRESHOLD = 10;
+
+  const dragRef = useRef({
+    down: false,
+    startX: 0,
+    startScroll: 0,
+    moved: false,
+    /** Whether the pointer is currently captured — see `onPointerMove`. */
+    captured: false,
+  });
   const [overflows, setOverflows] = useState(false);
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(false);
@@ -93,8 +109,30 @@ export function useHorizontalRail({
     if (e.pointerType !== 'mouse') return;
     const el = trackRef.current;
     if (!el) return;
-    dragRef.current = { down: true, startX: e.clientX, startScroll: el.scrollLeft, moved: false };
-    el.setPointerCapture?.(e.pointerId);
+    /**
+     * Note what happened, and CAPTURE NOTHING YET.
+     *
+     * This used to call `setPointerCapture` here, on every press. Capturing
+     * retargets the pointer stream to the track, and the click that follows is
+     * dispatched at the nearest common ancestor of the pointerdown and
+     * pointerup targets — which, once both are the track, is the track itself
+     * and no longer the card. The link inside never received the click, so
+     * homepage cards did not open and the wishlist and add-to-bag buttons
+     * inside them did not fire. The shop grid was unaffected because it is a
+     * plain grid and never mounts this hook.
+     *
+     * Capture is genuinely useful once a drag is under way — it keeps the row
+     * moving when the pointer leaves the track — so it is acquired in
+     * `onPointerMove` at the moment the drag threshold is crossed, and never
+     * before, which leaves an ordinary click completely untouched.
+     */
+    dragRef.current = {
+      down: true,
+      startX: e.clientX,
+      startScroll: el.scrollLeft,
+      moved: false,
+      captured: false,
+    };
   };
   const onPointerMove = (e: ReactPointerEvent) => {
     const d = dragRef.current;
@@ -102,11 +140,27 @@ export function useHorizontalRail({
     const el = trackRef.current;
     if (!el) return;
     const dx = e.clientX - d.startX;
-    if (Math.abs(dx) > 4) d.moved = true;
+
+    // Below the threshold this is still a click in progress: do not scroll, do
+    // not capture, and do not mark it as moved.
+    if (!d.moved) {
+      if (Math.abs(dx) <= DRAG_THRESHOLD) return;
+      d.moved = true;
+      // A real drag has begun — capture now, so the row keeps following the
+      // pointer even when it leaves the track.
+      el.setPointerCapture?.(e.pointerId);
+      d.captured = true;
+    }
+
     el.scrollLeft = d.startScroll - dx;
   };
   const endDrag = (e: ReactPointerEvent) => {
-    if (dragRef.current.down) trackRef.current?.releasePointerCapture?.(e.pointerId);
+    // Release only what was actually captured. Releasing a pointer that was
+    // never captured throws in some browsers.
+    if (dragRef.current.captured) {
+      trackRef.current?.releasePointerCapture?.(e.pointerId);
+      dragRef.current.captured = false;
+    }
     dragRef.current.down = false;
   };
   // Swallow the click that fires right after a drag so cards don't navigate.

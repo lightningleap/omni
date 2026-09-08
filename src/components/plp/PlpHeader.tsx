@@ -24,14 +24,14 @@ export default function PlpHeader({
   count: number;
 }) {
   return (
-    <header className="mb-10">
+    <header className="mb-7">
       <CategoryHeroTitle title={qualifier ? `${qualifier} · ${title}` : title} />
 
       {description && (
-        <p className="type-body mt-4 max-w-[520px] text-neutral-500">{description}</p>
+        <p className="type-body mt-3 max-w-[520px] text-neutral-500">{description}</p>
       )}
 
-      <div className="mt-3 flex items-center">
+      <div className="mt-4 flex items-center">
         <span className="inline-flex items-center gap-2 rounded-full border border-accent-950/10 bg-white/70 px-4 py-1.5 shadow-[0_2px_10px_rgb(var(--accent-shade-rgb)/0.05)] backdrop-blur-sm">
           <span className="text-[15px] font-semibold tracking-tight text-accent-950">{count}</span>
           <span className="type-caption text-[11px] uppercase tracking-[0.18em] text-neutral-400">

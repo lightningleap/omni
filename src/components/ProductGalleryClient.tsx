@@ -14,7 +14,7 @@ const ProductGalleryClient = ({ products }: ProductGalleryClientProps) => {
   const { addItem } = useCart();
 
   return (
-    <section className="py-24 px-6 md:px-12 bg-black">
+    <section className="py-24 px-6 md:px-12 bg-ink">
       <div className="flex justify-between items-end mb-16">
         <div>
           <h2 className="type-label mb-2 text-neutral-500">New Arrivals</h2>
@@ -52,7 +52,7 @@ const ProductGalleryClient = ({ products }: ProductGalleryClientProps) => {
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                   />
                 )}
-                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute inset-0 bg-ink/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </motion.div>
             </Link>
 
@@ -62,7 +62,7 @@ const ProductGalleryClient = ({ products }: ProductGalleryClientProps) => {
                   e.preventDefault();
                   addItem(product.variantId);
                 }}
-                className="absolute -top-16 left-4 right-4 py-3 bg-white text-black text-xs uppercase font-bold tracking-widest opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 z-10"
+                className="absolute -top-16 left-4 right-4 py-3 bg-white text-ink text-xs uppercase font-bold tracking-widest opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 z-10"
               >
                 Quick Add
               </button>

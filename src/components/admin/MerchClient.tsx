@@ -35,7 +35,7 @@ type DiscoveryItem = {
 }
 
 const SECTIONS = [
-  { id: "BUDGET", label: "Budget Friendly Picks", icon: Zap, color: "#4f46e5", description: "Curate under ₹599 collections" },
+  { id: "BUDGET", label: "Budget Friendly Picks", icon: Zap, color: "#3E715C", description: "Curate under ₹599 collections" },
   { id: "OMG", label: "OMG Deals", icon: Star, color: "#f59e0b", description: "Highlight premium discounted deals" },
   { id: "CATEGORY", label: "Shop By Category", icon: LayoutGrid, color: "#10b981", description: "Manage homepage category grid" }
 ];
@@ -216,18 +216,18 @@ export default function MerchClient({
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] pb-24 text-slate-900 px-4 md:px-8">
+    <div className="min-h-screen bg-[#f8fafc] pb-24 text-ink px-4 md:px-8">
       <div className="max-w-7xl mx-auto mt-8 space-y-12">
         {/* Header - Integrated */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
           <div className="space-y-1">
-            <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight italic">Content Management</h1>
-            <p className="text-sm text-slate-500 font-medium tracking-wide">Curate your storefront experience and visual narrative.</p>
+            <h1 className="text-[24px] font-semibold text-ink tracking-[-0.02em]">Content Management</h1>
+            <p className="text-sm text-neutral-500 font-medium tracking-wide">Curate your storefront experience and visual narrative.</p>
           </div>
           <button 
             onClick={handleSaveConfig}
             disabled={isSavingConfig}
-            className="w-full md:w-auto px-8 py-3.5 bg-accent-800 text-white text-sm font-bold rounded-2xl hover:bg-accent-950 transition-all flex items-center justify-center gap-3"
+            className="w-full md:w-auto px-8 py-3.5 bg-accent-800 text-white text-sm font-bold rounded-panel hover:bg-accent-950 transition-all flex items-center justify-center gap-3"
           >
             {isSavingConfig ? <Loader2 className="animate-spin" size={18} /> : <Check size={18} />} 
             Save Global Assets
@@ -242,23 +242,23 @@ export default function MerchClient({
                 updateSection(section.id);
                 setIsMenuOpen(false);
               }}
-              className={`relative overflow-hidden group p-8 rounded-3xl border-2 transition-all text-left ${
+              className={`relative overflow-hidden group p-8 rounded-panel border transition-all text-left ${
                 activeSection === section.id 
-                ? 'bg-white border-accent-800 ring-4 ring-accent-50 shadow-sm' 
-                : 'bg-white border-slate-200 hover:border-slate-300'
+                ? 'bg-white border-accent-800 ring-4 ring-accent-50 ' 
+                : 'bg-white border-[#E8E6E1] hover:border-neutral-300'
               }`}
             >
               <div className="flex justify-between items-start">
-                <div className={`p-4 rounded-2xl ${activeSection === section.id ? 'bg-accent-800 text-white' : 'bg-slate-100 text-slate-600'}`}>
+                <div className={`p-4 rounded-panel ${activeSection === section.id ? 'bg-accent-800 text-white' : 'bg-neutral-100 text-neutral-500'}`}>
                   <section.icon size={28} />
                 </div>
-                {activeSection === section.id && <div className="bg-accent-50 text-accent-800 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest">Active Scope</div>}
+                {activeSection === section.id && <div className="bg-accent-50 text-accent-800 px-3 py-1 rounded-card text-[9px] font-semibold uppercase tracking-widest">Active Scope</div>}
               </div>
               <div className="mt-8 space-y-2">
-                <h3 className={`text-2xl font-black transition-colors leading-none ${activeSection === section.id ? 'text-slate-900' : 'text-slate-400'}`}>
+                <h3 className={`text-2xl font-semibold transition-colors leading-none ${activeSection === section.id ? 'text-ink' : 'text-neutral-400'}`}>
                   {section.label}
                 </h3>
-                <p className="text-xs text-slate-400 font-bold uppercase tracking-tight">{section.description}</p>
+                <p className="text-xs text-neutral-400 font-bold uppercase tracking-tight">{section.description}</p>
               </div>
             </button>
           ))}
@@ -268,31 +268,31 @@ export default function MerchClient({
         <section className="space-y-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="space-y-1">
-              <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
+              <h2 className="text-[24px] font-semibold tracking-[-0.02em] text-ink flex items-center gap-3">
                 {activeSection === "BUDGET" ? "Budget Friendly picks" : activeSection === "OMG" ? "OMG Deals" : "Shop By Category"}
-                <span className="text-slate-300 font-light px-2 border-l border-slate-200">Current Distribution</span>
+                <span className="text-neutral-300 font-light px-2 border-l border-[#E8E6E1]">Current Distribution</span>
               </h2>
-              <p className="text-sm text-slate-500 font-medium">Collections currently appearing in the {activeSection} carousel.</p>
+              <p className="text-sm text-neutral-500 font-medium">Collections currently appearing in the {activeSection} carousel.</p>
             </div>
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="w-full md:w-auto px-8 py-3 bg-accent-800 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-accent-950 transition-all"
+              className="w-full md:w-auto px-8 py-3 bg-accent-800 text-white rounded-panel font-bold flex items-center justify-center gap-2 hover:bg-accent-950 transition-all"
             >
               <Plus size={20} /> Select Collection from Menu
             </button>
           </div>
 
           {isMenuOpen && (
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xl animate-in fade-in slide-in-from-top-4">
+            <div className="bg-white border border-[#E8E6E1] rounded-panel p-6 animate-in fade-in slide-in-from-top-4">
               <div className="flex flex-col space-y-6">
                 <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />
                   <input 
                     type="text"
                     placeholder="Search all collections catalog..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-accent-500 focus:bg-white outline-none transition-all font-medium"
+                    className="w-full pl-12 pr-4 py-4 bg-[#FBFAF8] border border-[#E8E6E1] rounded-panel text-sm focus:ring-2 focus:ring-accent-500 focus:bg-white outline-none transition-all font-medium"
                   />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -301,16 +301,16 @@ export default function MerchClient({
                       key={coll.id}
                       onClick={() => handleAddDiscovery(coll.id)}
                       disabled={isAddingDiscovery === coll.id}
-                      className="group p-4 bg-white border border-slate-200 rounded-xl hover:border-accent-800 hover:ring-2 hover:ring-accent-50 transition-all text-left"
+                      className="group p-4 bg-white border border-[#E8E6E1] rounded-panel hover:border-accent-800 hover:ring-2 hover:ring-accent-50 transition-all text-left"
                     >
                       <div className="flex justify-between items-center">
-                        <span className="text-sm font-bold text-slate-700 group-hover:text-accent-700 transition-colors uppercase truncate">{coll.name}</span>
-                        {isAddingDiscovery === coll.id ? <Loader2 size={14} className="animate-spin text-accent-700" /> : <Plus size={14} className="text-slate-300 group-hover:text-accent-700" />}
+                        <span className="text-sm font-bold text-ink group-hover:text-accent-700 transition-colors uppercase truncate">{coll.name}</span>
+                        {isAddingDiscovery === coll.id ? <Loader2 size={14} className="animate-spin text-accent-700" /> : <Plus size={14} className="text-neutral-300 group-hover:text-accent-700" />}
                       </div>
                     </button>
                   ))}
                   {searchTerm && filteredCollections.length === 0 && (
-                    <p className="col-span-full py-4 text-center text-slate-400 font-medium italic">No collections found in catalog</p>
+                    <p className="col-span-full py-4 text-center text-neutral-400 font-medium italic">No collections found in catalog</p>
                   )}
                 </div>
               </div>
@@ -319,16 +319,16 @@ export default function MerchClient({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {activeItems.map((item) => (
-              <div key={item.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+              <div key={item.id} className="bg-white rounded-panel border border-[#E8E6E1] transition-shadow overflow-hidden group">
                 <div className="p-6 flex gap-6">
-                  <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-xl border border-slate-100 relative overflow-hidden bg-slate-50 flex-shrink-0">
+                  <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-panel border border-[#EFEDE8] relative overflow-hidden bg-[#FBFAF8] flex-shrink-0">
                     <Image src={item.customImageUrl || item.collection.imageUrl || ""} alt={item.collection.name} fill className="object-cover" />
                   </div>
                   <div className="flex-1 space-y-4">
                     <div className="flex justify-between items-start">
                       <div className="space-y-1">
-                        <h3 className="text-lg font-extrabold text-slate-900 tracking-tight uppercase italic">{item.collection.name}</h3>
-                        <div className="inline-block bg-accent-50 text-accent-800 text-[10px] font-black px-2 py-1 rounded-md tracking-widest uppercase">
+                        <h3 className="text-lg font-semibold text-ink tracking-tight uppercase italic">{item.collection.name}</h3>
+                        <div className="inline-block bg-accent-50 text-accent-800 text-[10px] font-semibold px-2 py-1 rounded-card tracking-widest uppercase">
                           {item.customDescription || "Set description"}
                         </div>
                       </div>
@@ -341,13 +341,13 @@ export default function MerchClient({
                               description: item.customDescription || "" 
                             });
                           }}
-                          className="p-2 text-slate-400 hover:text-accent-700 hover:bg-accent-50 rounded-lg transition-all"
+                          className="p-2 text-neutral-400 hover:text-accent-700 hover:bg-accent-50 rounded-card transition-all"
                         >
                           <Edit3 size={18} />
                         </button>
                         <button 
                           onClick={() => handleRemoveDiscovery(item.id)}
-                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                          className="p-2 text-neutral-400 hover:text-brand-terracotta hover:bg-[#FBF3F0] rounded-card transition-all"
                         >
                           <Trash2 size={18} />
                         </button>
@@ -355,12 +355,12 @@ export default function MerchClient({
                     </div>
 
                     {editingItemId === item.id && (
-                      <div className="space-y-8 pt-6 border-t border-slate-100 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                      <div className="space-y-8 pt-6 border-t border-[#EFEDE8] animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="grid grid-cols-1 gap-6">
                           <div className="space-y-3">
-                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Storefront Asset Media (1080x1350px Optimized)</label>
+                            <label className="text-[10px] font-semibold text-neutral-500 uppercase tracking-widest">Storefront Asset Media (1080x1350px Optimized)</label>
                             
-                            <label className="cursor-pointer group flex items-center justify-center gap-4 w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl py-12 hover:border-accent-700 hover:bg-accent-50/30 transition-all duration-300">
+                            <label className="cursor-pointer group flex items-center justify-center gap-4 w-full bg-[#FBFAF8] border border-dashed border-[#E8E6E1] rounded-panel py-12 hover:border-accent-700 hover:bg-accent-50/30 transition-all duration-300">
                               {isUploading ? (
                                 <div className="flex flex-col items-center gap-2">
                                   <Loader2 className="animate-spin text-accent-700" size={32} />
@@ -368,7 +368,7 @@ export default function MerchClient({
                                 </div>
                               ) : editForm.imageUrl ? (
                                 <div className="flex flex-col items-center gap-2">
-                                  <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-slate-200 shadow-sm mb-2 group-preview">
+                                  <div className="relative w-20 h-20 rounded-card overflow-hidden border border-[#E8E6E1] mb-2 group-preview">
                                     <Image src={editForm.imageUrl} alt="Preview" fill className="object-cover" />
                                     <button 
                                       onClick={(e) => {
@@ -376,7 +376,7 @@ export default function MerchClient({
                                         e.stopPropagation();
                                         setEditForm({ ...editForm, imageUrl: "" });
                                       }}
-                                      className="absolute -top-1 -right-1 bg-red-500 text-white p-1 rounded-full shadow-lg hover:bg-red-600 transition-colors z-20"
+                                      className="absolute -top-1 -right-1 bg-brand-terracotta text-white p-1 rounded-full hover:opacity-90 transition-colors z-20"
                                     >
                                       <X size={12} />
                                     </button>
@@ -384,14 +384,14 @@ export default function MerchClient({
                                       <ImageIcon size={20} className="text-white" />
                                     </div>
                                   </div>
-                                  <span className="text-[10px] font-black text-accent-700 uppercase tracking-[0.2em]">Change Asset</span>
+                                  <span className="text-[10px] font-semibold text-accent-700 uppercase tracking-[0.2em]">Change Asset</span>
                                 </div>
                               ) : (
                                 <div className="flex flex-col items-center gap-2">
-                                  <div className="p-4 bg-white rounded-full shadow-sm group-hover:scale-110 transition-transform">
-                                    <Upload className="text-slate-400 group-hover:text-accent-700" size={24} />
+                                  <div className="p-4 bg-white rounded-full group-hover:scale-110 transition-transform">
+                                    <Upload className="text-neutral-400 group-hover:text-accent-700" size={24} />
                                   </div>
-                                  <span className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] group-hover:text-accent-700">Select File from Device</span>
+                                  <span className="text-xs font-semibold text-neutral-500 uppercase tracking-[0.2em] group-hover:text-accent-700">Select File from Device</span>
                                 </div>
                               )}
                               <input 
@@ -405,13 +405,13 @@ export default function MerchClient({
                           </div>
                           
                           <div className="space-y-1.5">
-                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Card Legend Description (E.G. UNDER ₹599)</label>
+                            <label className="text-[10px] font-semibold text-neutral-500 uppercase tracking-widest">Card Legend Description (E.G. UNDER ₹599)</label>
                             <input 
                               type="text"
                               value={editForm.description}
                               onChange={(e) => setEditForm({...editForm, description: e.target.value})}
                               placeholder="E.G. UNDER ₹599"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-4 text-sm font-bold focus:ring-2 focus:ring-accent-500 outline-none transition-all"
+                              className="w-full bg-[#FBFAF8] border border-[#E8E6E1] rounded-panel px-4 py-3.5 text-sm font-bold focus:ring-2 focus:ring-accent-500 outline-none transition-all"
                             />
                           </div>
                         </div>
@@ -419,13 +419,13 @@ export default function MerchClient({
                         <div className="flex gap-4 pt-4">
                           <button 
                             onClick={() => handleSaveItemEdit(item.id, item.collectionId)}
-                            className="flex-1 bg-accent-800 text-white text-sm font-bold py-4 rounded-xl hover:bg-accent-950 transition-all flex items-center justify-center gap-3"
+                            className="flex-1 bg-accent-800 text-white text-sm font-bold py-4 rounded-panel hover:bg-accent-950 transition-all flex items-center justify-center gap-3"
                           >
                             <Check size={20} /> Finalize and Ingest Curation
                           </button>
                           <button 
                             onClick={() => setEditingItemId(null)}
-                            className="px-8 py-4 bg-slate-100 text-slate-600 text-sm font-bold rounded-xl hover:bg-slate-200 transition-all flex items-center gap-2"
+                            className="px-8 py-4 bg-neutral-100 text-neutral-500 text-sm font-bold rounded-panel hover:bg-neutral-200 transition-all flex items-center gap-2"
                           >
                             <X size={18} /> Cancel
                           </button>
@@ -437,50 +437,50 @@ export default function MerchClient({
               </div>
             ))}
             {activeItems.length === 0 && (
-              <div className="col-span-full py-20 text-center border-2 border-dashed border-slate-200 rounded-3xl bg-white shadow-inner">
+              <div className="col-span-full py-20 text-center border border-dashed border-[#E8E6E1] rounded-panel bg-white">
                 <div className="space-y-3">
-                  <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto text-slate-300">
+                  <div className="w-16 h-16 bg-[#FBFAF8] rounded-panel flex items-center justify-center mx-auto text-neutral-300">
                     <Search size={32} />
                   </div>
-                  <p className="text-xl font-bold text-slate-600">No collections curated yet</p>
-                  <p className="text-sm text-slate-400 font-medium">Use the "Select Collection from Menu" button to start curating.</p>
+                  <p className="text-[16px] font-semibold text-neutral-500">No collections curated yet</p>
+                  <p className="text-sm text-neutral-400 font-medium">Use the "Select Collection from Menu" button to start curating.</p>
                 </div>
               </div>
             )}
           </div>
         </section>
 
-        <div className="pt-12 border-t border-slate-200">
+        <div className="pt-12 border-t border-[#E8E6E1]">
           {/* Configuration Panel */}
           <section className="max-w-3xl space-y-8">
             <div className="space-y-1">
-              <h2 className="text-xl font-extrabold text-slate-900 tracking-tight uppercase italic">Global Render Assets</h2>
-              <p className="text-sm text-slate-500 font-medium">Control hierarchical storefront media flow.</p>
+              <h2 className="text-xl font-semibold text-ink tracking-tight uppercase italic">Global Render Assets</h2>
+              <p className="text-sm text-neutral-500 font-medium">Control hierarchical storefront media flow.</p>
             </div>
             
-            <form onSubmit={handleSaveConfig} className="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+            <form onSubmit={handleSaveConfig} className="space-y-8 bg-white p-8 rounded-panel border border-[#E8E6E1]">
               {/* Hierarchical Poster Link */}
               <div className="space-y-4">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Hero Static Poster (IMG) - Desktop Optimized 2000x1200px</label>
+                <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-400">Hero Static Poster (IMG) - Desktop Optimized 2000x1200px</label>
                 <div className="flex flex-col gap-4">
                   <div className="relative">
-                    <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                    <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />
                     <input
                       type="text"
                       value={heroImageUrl}
                       onChange={(e) => setHeroImageUrl(e.target.value)}
                       placeholder="https://images.unsplash.com/..."
-                      className="w-full bg-slate-50 border border-slate-200 text-sm font-medium text-slate-900 rounded-xl px-12 py-4 outline-none focus:ring-2 focus:ring-accent-500 focus:bg-white transition-all"
+                      className="w-full bg-[#FBFAF8] border border-[#E8E6E1] text-sm font-medium text-ink rounded-panel px-12 py-4 outline-none focus:ring-2 focus:ring-accent-500 focus:bg-white transition-all"
                     />
                   </div>
                   
-                  <label className="cursor-pointer group flex items-center justify-center gap-4 w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl py-8 hover:border-accent-700 hover:bg-accent-50/30 transition-all duration-300">
+                  <label className="cursor-pointer group flex items-center justify-center gap-4 w-full bg-[#FBFAF8] border border-dashed border-[#E8E6E1] rounded-panel py-8 hover:border-accent-700 hover:bg-accent-50/30 transition-all duration-300">
                     {isUploading ? (
                       <Loader2 className="animate-spin text-accent-700" size={24} />
                     ) : (
                       <div className="flex items-center gap-2">
-                        <Upload size={18} className="text-slate-400 group-hover:text-accent-700" />
-                        <span className="text-xs font-black text-slate-500 uppercase tracking-widest group-hover:text-accent-700">Upload from Device</span>
+                        <Upload size={18} className="text-neutral-400 group-hover:text-accent-700" />
+                        <span className="text-xs font-semibold text-neutral-500 uppercase tracking-widest group-hover:text-accent-700">Upload from Device</span>
                       </div>
                     )}
                     <input type="file" className="hidden" accept="image/*" onChange={handleHeroPosterUpload} disabled={isUploading} />
@@ -490,14 +490,14 @@ export default function MerchClient({
 
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                   <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Animation Sequencer Playlist</label>
+                   <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-400">Animation Sequencer Playlist</label>
                    <span className="text-[8px] font-bold text-accent-700 uppercase tracking-widest">Tip: Use Cloudinary f_auto,q_auto links</span>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {heroVideoUrls.map((url, idx) => (
                     <div key={idx} className="relative">
-                      <Video className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                      <Video className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={16} />
                       <input
                         type="text"
                         value={url}
@@ -507,7 +507,7 @@ export default function MerchClient({
                           setHeroVideoUrls(next);
                         }}
                         placeholder={`Hero Animation ${idx + 1}`}
-                        className="w-full bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 rounded-xl px-10 py-3.5 outline-none focus:ring-2 focus:ring-accent-500 focus:bg-white transition-all"
+                        className="w-full bg-[#FBFAF8] border border-[#E8E6E1] text-xs font-medium text-ink rounded-panel px-10 py-3.5 outline-none focus:ring-2 focus:ring-accent-500 focus:bg-white transition-all"
                       />
                     </div>
                   ))}
@@ -517,7 +517,7 @@ export default function MerchClient({
               <button
                 type="submit"
                 disabled={isSavingConfig}
-                className="w-full bg-[#121212] text-white py-4 rounded-xl text-xs font-black uppercase tracking-[0.3em] flex items-center justify-center gap-2 hover:bg-accent-950 transition-all"
+                className="w-full bg-ink text-white py-4 rounded-panel text-xs font-semibold uppercase tracking-[0.3em] flex items-center justify-center gap-2 hover:bg-accent-950 transition-all"
               >
                 {isSavingConfig ? <Loader2 className="animate-spin" size={16} /> : "Finalize Global Hierarchy"}
               </button>

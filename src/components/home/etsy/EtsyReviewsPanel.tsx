@@ -71,7 +71,7 @@ export default function EtsyReviewsPanel() {
       <div className="mb-5 flex flex-col gap-4 @lg:flex-row @lg:items-end @lg:justify-between">
         <div>
           <p className="type-label text-neutral-500">{reviewSection.label}</p>
-          <h2 style={{ color: '#1A1A1A' }} className="type-section-title mt-3 text-[20px]">
+          <h2 style={{ color: 'var(--color-ink)' }} className="type-section-title mt-3 text-[20px]">
             {reviewSection.title}
           </h2>
           <p className="type-section-subtitle mt-2 max-w-[460px] text-neutral-500">
@@ -117,7 +117,7 @@ export default function EtsyReviewsPanel() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`${reviewSection.ctaLabel} — opens etsy.com/shop/${shopName} in a new tab`}
-          className="type-button group inline-flex h-10 w-full items-center justify-center gap-2 rounded-full border border-neutral-300 px-6 text-[12px] uppercase leading-none tracking-[0.12em] text-[#1A1A1A] transition-[background-color,border-color] duration-[250ms] ease-out hover:border-neutral-400 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 @2xl:w-auto"
+          className="type-button group inline-flex h-10 w-full items-center justify-center gap-2 rounded-full border border-neutral-300 px-6 text-[12px] uppercase leading-none tracking-[0.12em] text-ink transition-[background-color,border-color] duration-[250ms] ease-out hover:border-neutral-400 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 @2xl:w-auto"
         >
           {reviewSection.ctaLabel}
           <ArrowUpRight

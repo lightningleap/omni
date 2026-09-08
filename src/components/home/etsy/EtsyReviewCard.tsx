@@ -54,7 +54,7 @@ export default function EtsyReviewCard({
        the opposite. Querying its own box gets both placements right, and a card
        rendered with no container ancestor simply stays stacked. Padding, border,
        radius and background are untouched — the grid moved inside them. */
-    <article className="@container rounded-[8px] border border-[#EAE6DF] bg-white p-5 md:p-6">
+    <article className="@container rounded-panel border border-[#EAE6DF] bg-white p-5 md:p-6">
       {/* Summary | review, with the rule between them.
        *
        * The threshold is the narrowest card width at which the review still
@@ -81,7 +81,7 @@ export default function EtsyReviewCard({
             review rather than as a scoreboard of their own. */}
         <div className="flex flex-col justify-center border-b border-[#EAE6DF] pb-6 @md:border-b-0 @md:border-r @md:pb-0 @md:pr-6">
           <div className="flex items-baseline gap-2">
-            <span className="type-stat text-[32px] text-[#1A1A1A]">{stats.rating.toFixed(1)}</span>
+            <span className="type-stat text-[32px] text-ink">{stats.rating.toFixed(1)}</span>
             <span className="type-label text-neutral-400">({stats.reviewCount})</span>
           </div>
           <Stars rating={stats.rating} size={14} className="mt-2.5" />
@@ -96,7 +96,7 @@ export default function EtsyReviewCard({
         <div className="flex flex-col">
           {/* who · when — first, because it is what makes the rest count */}
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <span className="type-product-name text-[14px] text-[#1A1A1A]">
+            <span className="type-product-name text-[14px] text-ink">
               {author ?? 'Verified Etsy customer'}
             </span>
             {date && <span className="type-caption text-neutral-400">{date}</span>}
@@ -112,13 +112,13 @@ export default function EtsyReviewCard({
               The 620px measure is ~62 characters at this size — the readable
               range for a paragraph. No clamping and no truncation: the whole
               review is always shown, however long it runs. */}
-          <blockquote className="type-review mt-3 max-w-[560px] text-[16px] text-[#1A1A1A]">
+          <blockquote className="type-review mt-3 max-w-[560px] text-[16px] text-ink">
             <p>“{quote}”</p>
           </blockquote>
 
           {/* the shop's own reply, where it left one — two people, not a billboard */}
           {sellerResponse && (
-            <p className="type-body mt-4 border-l-2 border-accent pl-3.5 text-[14px] text-[#334155]">
+            <p className="type-body mt-4 border-l-2 border-accent pl-3.5 text-[14px] text-neutral-500">
               <span className="type-label mb-1 block text-neutral-500">
                 {shopName} replied
               </span>
@@ -139,7 +139,7 @@ export default function EtsyReviewCard({
             {product && (
               <div className="flex min-w-0 items-center gap-3">
                 {product.image && (
-                  <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-[4px] bg-[#F5F5F2]">
+                  <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-card bg-[#F5F5F2]">
                     <Image
                       src={product.image}
                       alt={product.name}
@@ -156,12 +156,12 @@ export default function EtsyReviewCard({
                       href={product.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="type-product-name mt-1 block text-[13px] text-[#1A1A1A] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
+                      className="type-product-name mt-1 block text-[13px] text-ink underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
                     >
                       {product.name}
                     </a>
                   ) : (
-                    <span className="type-product-name mt-1 block text-[13px] text-[#1A1A1A]">
+                    <span className="type-product-name mt-1 block text-[13px] text-ink">
                       {product.name}
                     </span>
                   )}
@@ -171,7 +171,7 @@ export default function EtsyReviewCard({
 
             {customerPhoto && (
               <div className="flex items-center gap-3">
-                <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-[4px] bg-[#F5F5F2]">
+                <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-card bg-[#F5F5F2]">
                   <Image
                     src={customerPhoto.src}
                     alt={customerPhoto.alt}

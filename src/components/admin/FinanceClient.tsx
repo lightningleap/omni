@@ -89,11 +89,11 @@ export default function FinanceClient({
     <div className="space-y-8 font-sans max-w-[1400px] mx-auto">
       {/* PAGE HEADER */}
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-slate-900">Finance & Analytics</h1>
+        <h1 className="text-[24px] font-semibold tracking-[-0.02em] text-ink">Finance & Analytics</h1>
         <div className="flex gap-3">
           <button 
             onClick={downloadReport}
-            className="px-4 py-2 bg-white border border-slate-200 rounded-md text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-sm"
+            className="px-4 py-2 bg-white border border-[#E8E6E1] rounded-card text-sm font-semibold text-ink hover:bg-[#FBFAF8] transition-colors"
           >
             Download Report
           </button>
@@ -102,63 +102,63 @@ export default function FinanceClient({
 
       {/* KPI STAT CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-2">
-           <div className="flex items-center justify-between text-slate-500">
+        <div className="bg-white p-6 rounded-panel border border-[#E8E6E1] space-y-2">
+           <div className="flex items-center justify-between text-neutral-500">
               <div className="flex items-center gap-2">
                  <DollarSign size={16} />
                  <span className="text-xs font-bold uppercase tracking-wider">Total Revenue</span>
               </div>
-              <TrendingUp size={14} className="text-emerald-500" />
+              <TrendingUp size={14} className="text-accent-600" />
            </div>
-           <p className="text-2xl font-bold text-slate-900">{formatUSD(summary.grossRevenue)}</p>
-           <p className="text-[10px] text-slate-400 font-medium tracking-wide">Last 30 days aggregate</p>
+           <p className="text-[24px] font-semibold tracking-[-0.02em] text-ink">{formatUSD(summary.grossRevenue)}</p>
+           <p className="text-[10px] text-neutral-400 font-medium tracking-wide">Last 30 days aggregate</p>
         </div>
 
-        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-2">
-           <div className="flex items-center justify-between text-slate-500">
+        <div className="bg-white p-6 rounded-panel border border-[#E8E6E1] space-y-2">
+           <div className="flex items-center justify-between text-neutral-500">
               <div className="flex items-center gap-2">
                  <CreditCard size={16} />
                  <span className="text-xs font-bold uppercase tracking-wider">Net Profit</span>
               </div>
-              <span className="text-[10px] font-bold text-slate-400">AUDITED</span>
+              <span className="text-[10px] font-bold text-neutral-400">AUDITED</span>
            </div>
-           <p className="text-2xl font-bold text-slate-900">{formatUSD(summary.netProfit)}</p>
-           <p className="text-[10px] text-slate-400 font-medium tracking-wide">After COGS & Stripe Fees</p>
+           <p className="text-[24px] font-semibold tracking-[-0.02em] text-ink">{formatUSD(summary.netProfit)}</p>
+           <p className="text-[10px] text-neutral-400 font-medium tracking-wide">After COGS & Stripe Fees</p>
         </div>
 
-        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-2">
-           <div className="flex items-center justify-between text-slate-500">
+        <div className="bg-white p-6 rounded-panel border border-[#E8E6E1] space-y-2">
+           <div className="flex items-center justify-between text-neutral-500">
               <div className="flex items-center gap-2">
                  <BarChart3 size={16} />
                  <span className="text-xs font-bold uppercase tracking-wider">Avg Order Value</span>
               </div>
            </div>
-           <p className="text-2xl font-bold text-slate-900">{formatUSD(aov)}</p>
-           <p className="text-[10px] text-slate-400 font-medium tracking-wide">Based on {totalOrders} orders</p>
+           <p className="text-[24px] font-semibold tracking-[-0.02em] text-ink">{formatUSD(aov)}</p>
+           <p className="text-[10px] text-neutral-400 font-medium tracking-wide">Based on {totalOrders} orders</p>
         </div>
 
-        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-2">
-           <div className="flex items-center justify-between text-slate-500">
+        <div className="bg-white p-6 rounded-panel border border-[#E8E6E1] space-y-2">
+           <div className="flex items-center justify-between text-neutral-500">
               <div className="flex items-center gap-2">
                  <Percent size={16} />
                  <span className="text-xs font-bold uppercase tracking-wider">Avg Margin</span>
               </div>
            </div>
-           <p className="text-2xl font-bold text-slate-900">{avgMargin.toFixed(1)}%</p>
-           <p className="text-[10px] text-slate-400 font-medium tracking-wide">Portfolio-wide average</p>
+           <p className="text-[24px] font-semibold tracking-[-0.02em] text-ink">{avgMargin.toFixed(1)}%</p>
+           <p className="text-[10px] text-neutral-400 font-medium tracking-wide">Portfolio-wide average</p>
         </div>
       </div>
 
       {/* REVENUE VELOCITY CHART */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden p-6">
-        <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest italic mb-6">Revenue Velocity (Last 30 Days)</h3>
+      <div className="bg-white border border-[#E8E6E1] rounded-panel overflow-hidden p-6">
+        <h3 className="text-sm font-bold text-ink uppercase tracking-widest italic mb-6">Revenue Velocity (Last 30 Days)</h3>
         <div className="h-[300px] w-full">
            <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={summary.graphData}>
                  <defs>
                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                       <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1}/>
-                       <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                       <stop offset="5%" stopColor="#3E715C" stopOpacity={0.1}/>
+                       <stop offset="95%" stopColor="#3E715C" stopOpacity={0}/>
                     </linearGradient>
                  </defs>
                  <XAxis 
@@ -174,7 +174,7 @@ export default function FinanceClient({
                  <Area 
                     type="monotone" 
                     dataKey="revenue" 
-                    stroke="#6366f1" 
+                    stroke="#3E715C" 
                     strokeWidth={2}
                     fillOpacity={1} 
                     fill="url(#colorRevenue)" 
@@ -185,16 +185,16 @@ export default function FinanceClient({
       </div>
 
       {/* UNIT ECONOMICS TABLE */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-slate-100 flex justify-between items-center">
+      <div className="bg-white border border-[#E8E6E1] rounded-panel overflow-hidden">
+        <div className="p-4 border-b border-[#EFEDE8] flex justify-between items-center">
            <div className="relative group flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-accent-700 transition-colors" size={16} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 group-focus-within:text-accent-700 transition-colors" size={16} />
               <input
                 type="text"
                 placeholder="Product SKU search..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 text-sm text-slate-900 pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500/10 focus:border-accent-700 transition-all placeholder:text-slate-400"
+                className="w-full bg-[#FBFAF8] border border-[#E8E6E1] text-sm text-ink pl-10 pr-4 py-2 rounded-card focus:outline-none focus:ring-2 focus:ring-accent-500/10 focus:border-accent-700 transition-all placeholder:text-neutral-400"
               />
            </div>
         </div>
@@ -202,54 +202,54 @@ export default function FinanceClient({
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-slate-50/50 text-[11px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100">
-                <th className="px-6 py-4">Product</th>
-                <th className="px-4 py-4">Retail</th>
-                <th className="px-4 py-4">Base Cost</th>
-                <th className="px-4 py-4">Profit/Unit</th>
-                <th className="px-4 py-4">Margin %</th>
-                <th className="px-4 py-4 text-center">Velocity</th>
-                <th className="px-6 py-4 text-right">Yield</th>
+              <tr className="bg-[#FBFAF8] text-[11px] font-bold text-neutral-500 uppercase tracking-wider border-b border-[#EFEDE8]">
+                <th className="px-4 py-3.5">Product</th>
+                <th className="px-4 py-3.5">Retail</th>
+                <th className="px-4 py-3.5">Base Cost</th>
+                <th className="px-4 py-3.5">Profit/Unit</th>
+                <th className="px-4 py-3.5">Margin %</th>
+                <th className="px-4 py-3.5 text-center">Velocity</th>
+                <th className="px-4 py-3.5 text-right">Yield</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-[#EFEDE8]">
               {filtered.map((item) => {
                 const profitPerUnit = item.price - item.cost
                 const isLowMargin = item.marginPercent < 40
                 const isHighMargin = item.marginPercent > 60
 
                 return (
-                  <tr key={item.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-4">
+                  <tr key={item.id} className="hover:bg-[#FBFAF8] transition-colors">
+                    <td className="px-4 py-3.5">
                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-slate-50 border border-slate-100 rounded-lg flex items-center justify-center overflow-hidden relative">
+                          <div className="w-10 h-10 bg-[#FBFAF8] border border-[#EFEDE8] rounded-card flex items-center justify-center overflow-hidden relative">
                              {item.imageUrl && <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />}
                           </div>
-                          <span className="text-sm font-bold text-slate-900">{item.name}</span>
+                          <span className="text-sm font-bold text-ink">{item.name}</span>
                        </div>
                     </td>
-                    <td className="px-4 py-4 text-sm font-medium text-slate-600">
+                    <td className="px-4 py-3.5 text-sm font-medium text-neutral-500">
                        {formatUSD(item.price)}
                     </td>
-                    <td className="px-4 py-4 text-sm font-medium text-slate-400">
+                    <td className="px-4 py-3.5 text-sm font-medium text-neutral-400">
                        {formatUSD(item.cost)}
                     </td>
-                    <td className="px-4 py-4 text-sm font-bold text-slate-900">
+                    <td className="px-4 py-3.5 text-sm font-bold text-ink">
                        {formatUSD(profitPerUnit)}
                     </td>
-                    <td className="px-4 py-4">
+                    <td className="px-4 py-3.5">
                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                          isHighMargin ? "bg-emerald-50 text-emerald-700 border border-emerald-100" :
-                          isLowMargin ? "bg-rose-50 text-rose-700 border border-rose-100" :
-                          "bg-slate-50 text-slate-600 border border-slate-200"
+                          isHighMargin ? "bg-accent-50 text-accent-800 border border-accent-200" :
+                          isLowMargin ? "bg-[#FBF3F0] text-brand-terracotta border border-[#E7D3CB]" :
+                          "bg-[#FBFAF8] text-neutral-500 border border-[#E8E6E1]"
                         }`}>
                           {item.marginPercent.toFixed(1)}%
                        </span>
                     </td>
-                    <td className="px-4 py-4 text-sm text-slate-600 font-medium text-center">
+                    <td className="px-4 py-3.5 text-sm text-neutral-500 font-medium text-center">
                        {item.unitsSold}
                     </td>
-                    <td className="px-6 py-4 text-right text-sm font-bold text-slate-900">
+                    <td className="px-4 py-3.5 text-right text-sm font-bold text-ink">
                        {formatUSD(item.totalProfitGenerated)}
                     </td>
                   </tr>

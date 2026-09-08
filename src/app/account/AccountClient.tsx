@@ -3,11 +3,27 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Package, Heart, LogOut, Loader2, ShoppingBag, ExternalLink, ChevronRight } from 'lucide-react';
+import { User, Package, Heart, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import ProductCard from '@/components/ProductCard';
 import { useWishlistStore } from '@/store/useWishlistStore';
 import { signOutAction } from '@/app/auth/auth-actions';
+import OrderCard from '@/components/account/OrderCard';
+import EmptyOrders from '@/components/account/EmptyOrders';
+
+/**
+ * One order as the history list needs it. Narrower than the Prisma row on
+ * purpose: this is the shape `OrderCard` reads, so a schema field that stops
+ * being selected becomes a type error here rather than an undefined at runtime.
+ */
+interface Order {
+  id: string;
+  orderNumber?: string | null;
+  status: string;
+  totalAmount: number;
+  createdAt: Date | string;
+  items?: { id: string; quantity: number; product?: { name?: string | null; images?: unknown } | null }[];
+}
 
 interface AccountClientProps {
   user: any; // Data passed from the Server Component via Prisma
@@ -35,18 +51,18 @@ const AccountClient = ({ user }: AccountClientProps) => {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 space-y-8">
         <div className="space-y-4 text-center">
-          <h2 className="type-h2 text-black">
-            Access Denied
+          <h2 className="type-h2 text-ink">
+            Not signed in
           </h2>
           <p className="type-label text-neutral-400">
-            Identity Not Verified
+            Sign in to see your orders and wishlist.
           </p>
         </div>
         <Link
           href="/auth"
-          className="type-button rounded-2xl bg-black px-12 py-4 text-[11px] uppercase tracking-[0.28em] text-white shadow-lg transition-all hover:bg-neutral-800"
+          className="type-button rounded-full bg-accent px-10 text-[12px] uppercase tracking-[0.12em] text-accent-on h-[54px] inline-flex items-center transition-colors duration-200 hover:bg-accent-950 hover:text-accent-on-strong"
         >
-          Verify Identity
+          Sign In
         </Link>
       </div>
     );
@@ -56,13 +72,13 @@ const AccountClient = ({ user }: AccountClientProps) => {
   const userLastName = user.name?.split(' ').slice(1).join(' ') || '';
 
   const tabs = [
-    { id: 'orders', title: 'Order History', icon: <Package size={16} /> },
+    { id: 'orders', title: 'Orders', icon: <Package size={16} /> },
     { id: 'wishlist', title: 'Wishlist', icon: <Heart size={16} /> },
-    { id: 'settings', title: 'Identity Settings', icon: <User size={16} /> },
+    { id: 'settings', title: 'Profile', icon: <User size={16} /> },
   ];
 
   return (
-    <div className="min-h-screen pt-20 pb-20 px-6 md:px-12 text-black font-sans">
+    <div className="min-h-screen pt-20 pb-20 px-6 md:px-12 text-ink font-sans">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
@@ -72,15 +88,25 @@ const AccountClient = ({ user }: AccountClientProps) => {
               animate={{ opacity: 1, y: 0 }}
               className="flex items-center gap-6"
             >
-              <div className="w-20 h-20 bg-white border border-neutral-200 rounded-[30px] flex items-center justify-center text-black shadow-sm">
+              <div className="w-20 h-20 bg-white border border-neutral-200 rounded-panel flex items-center justify-center text-ink">
                 <User size={32} />
               </div>
               <div className="space-y-1">
-                <h1 className="type-h1 text-black">
+                {/* The UI face, explicitly.
+                    `h1` is pushed to the display face at 44–88px by the base
+                    layer, and `.type-h2` keeps it there — both are editorial
+                    steps meant for a page that is making a statement. This is a
+                    dashboard, and the heading is a name, not a headline: it
+                    should read as identity at the top of an interface, so it
+                    takes the interface typeface at an interface size. */}
+                <h1 className="font-sans text-[28px] font-semibold leading-none tracking-tight text-ink md:text-[34px]">
                   {userFirstName} <br className="md:hidden" /> {userLastName}
                 </h1>
-                <p className="type-label text-neutral-400">
-                  Member Profile • {user.email}
+                {/* An email is a string people read, not a label. Uppercased and
+                    letter-spaced it becomes a puzzle — sentence case with the
+                    address's own casing preserved is simply legible. */}
+                <p className="type-caption normal-case tracking-normal text-neutral-500">
+                  {user.email}
                 </p>
               </div>
             </motion.div>
@@ -88,10 +114,10 @@ const AccountClient = ({ user }: AccountClientProps) => {
 
           <button
             onClick={handleSignOut}
-            className="type-button flex items-center gap-3 text-[11px] uppercase tracking-[0.18em] bg-white border border-neutral-200 px-8 py-4 rounded-2xl hover:bg-neutral-50 transition-all shadow-sm group text-black"
+            className="type-button flex items-center gap-3 text-[11px] uppercase tracking-[0.18em] bg-white border border-neutral-200 px-8 py-4 rounded-full hover:bg-neutral-50 transition-colors duration-200 group text-ink"
           >
             <LogOut size={14} className="group-hover:-translate-x-1 transition-transform" />
-            Terminate Session
+            Sign Out
           </button>
         </div>
 
@@ -103,8 +129,8 @@ const AccountClient = ({ user }: AccountClientProps) => {
               onClick={() => setActiveTab(tab.id as any)}
               className={`type-button pb-4 text-[11px] uppercase tracking-[0.18em] flex items-center gap-2 transition-all border-b-2 whitespace-nowrap ${
                 activeTab === tab.id
-                  ? "text-black border-black"
-                  : "text-neutral-400 border-transparent hover:text-black"
+                  ? "text-accent-ink border-accent"
+                  : "text-neutral-400 border-transparent hover:text-accent-ink"
               }`}
             >
               {tab.icon}
@@ -124,70 +150,27 @@ const AccountClient = ({ user }: AccountClientProps) => {
                 exit={{ opacity: 0, y: -10 }}
                 className="space-y-6"
               >
+                {/* ORDER HISTORY — a list of order cards, not a table.
+                    The previous version was a four-column table whose rows
+                    were set in bold italic uppercase at 11px with an 8px
+                    sub-label, which is close to unreadable and matched nothing
+                    else on the site. It also coloured DELIVERED with
+                    `emerald-50/600`, a green from outside the palette.
+
+                    Each order now carries its reference, date, item count,
+                    status, thumbnails, total and a Track order action — see
+                    `OrderCard`. */}
                 {user.orders?.length > 0 ? (
-                  <div className="bg-white border border-neutral-200 rounded-[40px] p-8 md:p-10 shadow-sm overflow-hidden">
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-left border-collapse">
-                        <thead className="text-[10px] uppercase tracking-[0.3em] text-neutral-400 border-b border-neutral-100">
-                          <tr>
-                            <th className="pb-6 font-black italic text-black">Order Identity</th>
-                            <th className="pb-6 font-black italic">Timestamp</th>
-                            <th className="pb-6 font-black italic">Financials</th>
-                            <th className="pb-6 font-black italic text-right">Logistics</th>
-                          </tr>
-                        </thead>
-                        <tbody className="text-sm">
-                          {user.orders.map((order: any) => (
-                            <tr key={order.id} className="border-b border-neutral-50 hover:bg-neutral-50/50 transition-colors last:border-0 font-bold uppercase italic tracking-widest text-[11px]">
-                              <td className="py-8 font-black text-black">
-                                <div className="space-y-1">
-                                  <p>{order.orderNumber || `UNR-${order.id.substring(0, 5)}`}</p>
-                                  <p className="text-[8px] text-neutral-400 not-italic uppercase font-bold tracking-widest">
-                                    {order.items?.length || 0} Units Assigned
-                                  </p>
-                                </div>
-                              </td>
-                              <td className="py-8 text-neutral-400">
-                                {new Date(order.createdAt).toLocaleDateString()}
-                              </td>
-                              <td className="py-8">
-                                <div className="flex flex-col gap-2">
-                                  <span className="text-black">${Number(order.totalAmount).toFixed(2)}</span>
-                                  {order.trackingNumber && (
-                                    <div className="flex items-center gap-2 text-accent-700">
-                                      <span className="text-[8px] font-black underline underline-offset-4 uppercase tracking-widest">Tracking Active</span>
-                                    </div>
-                                  )}
-                                </div>
-                              </td>
-                              <td className="py-8 text-right">
-                                <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-[9px] font-black tracking-widest ${
-                                  order.status === 'PAID' ? 'bg-accent-50 text-accent-700 border-accent-200' :
-                                  order.status === 'SHIPPED' ? 'bg-accent-50 text-accent-700 border-accent-200' :
-                                  order.status === 'DELIVERED' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                                  'bg-neutral-50 text-neutral-400 border-neutral-100'
-                                }`}>
-                                  {order.status}
-                                </span>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
+                  <ul className="grid gap-4 sm:grid-cols-2">
+                    {user.orders.map((order: Order) => (
+                      <li key={order.id}>
+                        <OrderCard order={order} />
+                      </li>
+                    ))}
+                  </ul>
                 ) : (
-                  <div className="bg-white border border-neutral-200 rounded-[40px] py-32 flex flex-col items-center justify-center space-y-6 shadow-sm border-dashed">
-                    <div className="w-20 h-20 bg-neutral-50 rounded-full flex items-center justify-center text-neutral-200">
-                      <ShoppingBag size={40} />
-                    </div>
-                    <div className="text-center space-y-2">
-                       <p className="type-body font-semibold uppercase tracking-[0.18em] text-black">Your collection is currently empty.</p>
-                       <p className="type-caption text-neutral-400 uppercase tracking-[0.18em]">Initiate your first acquisition today.</p>
-                    </div>
-                    <Link href="/collections" className="type-button mt-4 rounded-2xl bg-black px-10 py-4 text-[11px] uppercase tracking-[0.18em] text-white shadow-lg transition-all hover:bg-neutral-800 active:scale-95">
-                       Acquire Products
-                    </Link>
+                  <div className="rounded-panel border border-[#EAE6DF] bg-white">
+                    <EmptyOrders />
                   </div>
                 )}
               </motion.div>
@@ -207,15 +190,15 @@ const AccountClient = ({ user }: AccountClientProps) => {
                     ))}
                   </div>
                 ) : (
-                  <div className="bg-white border border-neutral-200 rounded-[40px] py-32 flex flex-col items-center justify-center space-y-6 shadow-sm border-dashed">
+                  <div className="bg-white border border-neutral-200 rounded-panel py-32 flex flex-col items-center justify-center space-y-6 border-dashed">
                     <div className="w-20 h-20 bg-neutral-50 rounded-full flex items-center justify-center text-neutral-200">
                       <Heart size={40} />
                     </div>
                     <div className="text-center space-y-2">
-                       <p className="type-body font-semibold uppercase tracking-[0.18em] text-black">Wishlist is currently offline.</p>
+                       <p className="type-body font-semibold uppercase tracking-[0.18em] text-ink">Wishlist is currently offline.</p>
                        <p className="type-caption text-neutral-400 uppercase tracking-[0.18em]">Bookmark your favorite pieces to see them here.</p>
                     </div>
-                    <Link href="/collections" className="type-button mt-4 rounded-2xl bg-black px-10 py-4 text-[11px] uppercase tracking-[0.18em] text-white shadow-lg transition-all hover:bg-neutral-800 active:scale-95">
+                    <Link href="/collections" className="type-button mt-4 rounded-full bg-accent px-10 text-[12px] uppercase tracking-[0.12em] text-accent-on h-[54px] inline-flex items-center transition-colors duration-200 hover:bg-accent-950 hover:text-accent-on-strong">
                        Browse Catalog
                     </Link>
                   </div>
@@ -229,25 +212,20 @@ const AccountClient = ({ user }: AccountClientProps) => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="max-w-2xl bg-white border border-neutral-200 rounded-[40px] p-10 shadow-sm"
+                className="max-w-2xl bg-white border border-neutral-200 rounded-panel p-10"
               >
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                  <div className="space-y-8">
-                    <h3 className="type-h3 border-b border-neutral-100 pb-4 text-black">Identity Details</h3>
-                    <div className="space-y-6">
-                      <Detail label="Verified Name" value={user.name || 'Anonymous'} />
-                      <Detail label="Access Email" value={user.email || ''} />
-                      <Detail label="Identity Clearance" value={user.role || 'CUSTOMER'} />
-                    </div>
-                  </div>
-                  <div className="space-y-8">
-                    <h3 className="type-h3 border-b border-neutral-100 pb-4 text-black">Node Activity</h3>
-                    <div className="space-y-2">
-                      <p className="type-caption text-neutral-400 uppercase tracking-[0.18em]">Total Spent</p>
-                      <p className="type-price text-xl text-black">
-                        ${Number(user.totalSpent || 0).toFixed(2)}
-                      </p>
-                    </div>
+                {/* One column. A `md:grid-cols-2` with a single child would
+                    hold an empty half of the panel open on desktop and squeeze
+                    the details into the left; a single column lets them use the
+                    panel's full width. The panel keeps its `max-w-2xl` for the
+                    same reason — the measure is what stops three short fields
+                    stretching across the whole page. */}
+                <div className="space-y-8">
+                  <h3 className="type-label border-b border-neutral-100 pb-4 text-neutral-500">Your Details</h3>
+                  <div className="space-y-6">
+                    <Detail label="Name" value={user.name || 'Not provided'} />
+                    <Detail label="Email" value={user.email || ''} />
+                    <Detail label="Account Type" value={user.role || 'CUSTOMER'} />
                   </div>
                 </div>
               </motion.div>
@@ -260,13 +238,13 @@ const AccountClient = ({ user }: AccountClientProps) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="mt-20 p-12 bg-white border border-neutral-200 rounded-[40px] text-center space-y-6 shadow-sm"
+          className="mt-20 p-12 bg-white border border-neutral-200 rounded-panel text-center space-y-6"
         >
           <p className="type-label text-neutral-400">
-            Logistical Resolution Center
+            Need a hand?
           </p>
           <Link href="/faq" className="type-button inline-block border-b-2 border-black pb-1 text-sm uppercase tracking-[0.18em] transition-all hover:border-neutral-200 hover:text-neutral-500">
-            Access Support Handshake
+            Visit the FAQ
           </Link>
         </motion.div>
       </div>
@@ -277,7 +255,7 @@ const AccountClient = ({ user }: AccountClientProps) => {
 const Detail = ({ label, value }: { label: string; value: string }) => (
   <div className="space-y-2">
     <p className="type-caption text-neutral-400 uppercase tracking-[0.18em]">{label}</p>
-    <p className="type-caption text-sm font-semibold uppercase tracking-[0.18em] leading-none text-black">{value || 'Not provided'}</p>
+    <p className="type-caption text-sm font-semibold uppercase tracking-[0.18em] leading-none text-ink">{value || 'Not provided'}</p>
   </div>
 );
 

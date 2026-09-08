@@ -90,7 +90,7 @@ export default function OrderDetailDrawer({ order, onClose }: { order: any; onCl
           {/* Drawer Header */}
           <div className="p-6 border-b border-white/10 flex items-center justify-between sticky top-0 bg-black/80 backdrop-blur z-10">
             <div className="space-y-1">
-              <h2 className="text-white text-sm font-black uppercase tracking-[0.2em] flex items-center gap-2">
+              <h2 className="text-white text-sm font-semibold uppercase tracking-[0.2em] flex items-center gap-2">
                 <Network size={14} className="text-neutral-500" />
                 Network Intel
               </h2>
@@ -120,11 +120,11 @@ export default function OrderDetailDrawer({ order, onClose }: { order: any; onCl
                   <motion.div 
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-5 bg-accent-700/10 border border-accent-700/30 rounded-xl space-y-4"
+                    className="p-5 bg-accent-700/10 border border-accent-700/30 rounded-panel space-y-4"
                   >
-                    <div className="flex bg-accent-700/20 p-2 rounded-lg items-center gap-2 w-fit">
+                    <div className="flex bg-accent-700/20 p-2 rounded-card items-center gap-2 w-fit">
                       <Lock size={12} className="text-accent-600" />
-                      <span className="text-[9px] font-black uppercase tracking-widest text-accent-600">Security Recovery Active</span>
+                      <span className="text-[9px] font-semibold uppercase tracking-widest text-accent-600">Security Recovery Active</span>
                     </div>
                     <p className="text-[9px] text-accent-400 leading-relaxed uppercase tracking-widest font-bold">
                       Order is stuck in PENDING. Use the recovery protocol to verify payment via Stripe and trigger fulfillment.
@@ -132,7 +132,7 @@ export default function OrderDetailDrawer({ order, onClose }: { order: any; onCl
                     <button
                       onClick={handleRepair}
                       disabled={isRepairing}
-                      className="w-full py-3 bg-accent-800 text-[10px] text-white font-black uppercase tracking-[0.3em] hover:bg-accent-700 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-lg shadow-accent-800/20"
+                      className="w-full py-3 bg-accent-800 text-[10px] text-white font-semibold uppercase tracking-[0.3em] hover:bg-accent-700 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
                     >
                       {isRepairing ? <Loader2 size={14} className="animate-spin" /> : <RefreshCcw size={14} />}
                       Force Administrative Repair
@@ -142,15 +142,15 @@ export default function OrderDetailDrawer({ order, onClose }: { order: any; onCl
 
                 {/* TRACKING PROTOCOLS (Visible for PAID/SHIPPED/PROCESSING) */}
                 {status !== "PENDING" && status !== "CANCELLED" && (
-                  <div className="bg-white/[0.03] border border-white/10 p-6 rounded-2xl space-y-6">
+                  <div className="bg-white/[0.03] border border-white/10 p-6 rounded-panel space-y-6">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-1">
                         <p className="text-[8px] uppercase tracking-widest text-neutral-500">Logistics Carrier</p>
-                        <p className="text-xs text-white font-black uppercase tracking-widest">{order.carrier || "MANIFESTED"}</p>
+                        <p className="text-xs text-white font-semibold uppercase tracking-widest">{order.carrier || "MANIFESTED"}</p>
                       </div>
                       <div className="space-y-1">
                         <p className="text-[8px] uppercase tracking-widest text-neutral-500">Tracking Number</p>
-                        <p className="text-xs text-white font-black uppercase tracking-widest">{order.trackingNumber || "AWAITING..."}</p>
+                        <p className="text-xs text-white font-semibold uppercase tracking-widest">{order.trackingNumber || "AWAITING..."}</p>
                       </div>
                     </div>
 
@@ -159,9 +159,9 @@ export default function OrderDetailDrawer({ order, onClose }: { order: any; onCl
                         href={order.trackingUrl} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors group"
+                        className="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-panel hover:bg-white/10 transition-colors group"
                       >
-                        <span className="text-[9px] font-black uppercase tracking-widest text-white">Live Tracking Vector</span>
+                        <span className="text-[9px] font-semibold uppercase tracking-widest text-white">Live Tracking Vector</span>
                         <ExternalLink size={14} className="text-neutral-500 group-hover:text-white transition-colors" />
                       </a>
                     )}
@@ -169,7 +169,7 @@ export default function OrderDetailDrawer({ order, onClose }: { order: any; onCl
                     <button
                       onClick={handleSyncPrintify}
                       disabled={isSyncing}
-                      className="w-full py-4 border border-white/20 text-[10px] text-white font-black uppercase tracking-[0.3em] hover:bg-white/5 transition-all flex items-center justify-center gap-3 rounded-xl"
+                      className="w-full py-4 border border-white/20 text-[10px] text-white font-semibold uppercase tracking-[0.3em] hover:bg-white/5 transition-all flex items-center justify-center gap-3 rounded-panel"
                     >
                       {isSyncing ? <Loader2 size={14} className="animate-spin" /> : <RefreshCcw size={14} />}
                       Sync With Factory
@@ -185,7 +185,7 @@ export default function OrderDetailDrawer({ order, onClose }: { order: any; onCl
                 <MapPin size={12} />
                 Destination Vector
               </h3>
-              <div className="flex items-start gap-4 p-5 bg-white/[0.02] border border-white/10 rounded-2xl">
+              <div className="flex items-start gap-4 p-5 bg-white/[0.02] border border-white/10 rounded-panel">
                 <p className="text-[10px] text-neutral-300 leading-relaxed tracking-wider uppercase font-bold">
                   {order.shippingAddress || "NO DESTINATION RECORDED. DIGITAL DELIVERY ONLY."}
                 </p>
@@ -231,7 +231,7 @@ export default function OrderDetailDrawer({ order, onClose }: { order: any; onCl
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className="w-full bg-white text-black py-4 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-neutral-200 transition-colors flex items-center justify-center gap-3 disabled:opacity-50"
+              className="w-full bg-white text-black py-4 text-[10px] font-semibold uppercase tracking-[0.3em] hover:bg-neutral-200 transition-colors flex items-center justify-center gap-3 disabled:opacity-50"
             >
               {isSaving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
               Commit Configuration

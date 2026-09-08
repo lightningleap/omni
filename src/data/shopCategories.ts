@@ -1,4 +1,4 @@
-import type { ShopCategory } from '@/types/plp';
+import type { ShopAudience, ShopCategory } from '@/types/plp';
 
 /**
  * The category registry — one entry per Product Listing Page.
@@ -157,3 +157,20 @@ export const KIDS_AGE_SLUGS = AGE_CATEGORIES.map((c) => c.slug);
 
 /** Every listing page, for the sitemap. */
 export const ALL_CATEGORY_HREFS = ALL_SHOP_CATEGORIES.map(categoryHref);
+
+/**
+ * The primary categories for one audience — Men / Women / Unisex, or
+ * Kids / Boys / Girls / Toddler / Baby.
+ *
+ * This is the set a shopper moves BETWEEN, which is not the same as the set the
+ * registry contains: the fit and age entries are also real listing pages, but
+ * they are ways of narrowing a catalogue rather than sibling departments, and
+ * putting all ten in one rail turns navigation into a filter panel. Those stay
+ * reachable through the filters, where they belong.
+ *
+ * Derived from `SHOP_CATEGORIES` rather than listed again, so a new department
+ * appears in the rail by virtue of existing.
+ */
+export function getPrimaryCategories(audience: ShopAudience): ShopCategory[] {
+  return SHOP_CATEGORIES.filter((c) => c.audience === audience);
+}

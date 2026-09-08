@@ -14,14 +14,14 @@ export default function WishlistClient({ user }: { user?: any }) {
   if (wishlistCount === 0) {
     return (
       <div className="min-h-screen pt-12 pb-20 px-6 md:px-12 flex flex-col items-center justify-center text-center">
-        <div className="w-20 h-20 bg-[#f5f5f6] rounded-full flex items-center justify-center mb-8 border border-[#eaeaec]">
-          <Heart size={32} className="text-[#d4d5d9]" />
+        <div className="w-20 h-20 bg-surface rounded-full flex items-center justify-center mb-8 border border-hairline">
+          <Heart size={32} className="text-neutral-300" />
         </div>
-        <h1 className="type-h2 mb-4 text-[#282C3F]">Your Wishlist is Empty</h1>
-        <p className="type-body mb-8 max-w-md text-[#94969f]">Save your favorite items here to keep track of them and buy them later.</p>
+        <h1 className="type-h2 mb-4 text-ink">Your Wishlist is Empty</h1>
+        <p className="type-body mb-8 max-w-md text-neutral-500">Save your favorite items here to keep track of them and buy them later.</p>
         <Link 
           href="/collections"
-          className="type-button flex items-center gap-2 text-[#ff3f6c] text-sm uppercase tracking-[0.18em] hover:underline"
+          className="type-button flex items-center gap-2 text-accent-ink text-sm uppercase tracking-[0.18em] hover:underline"
         >
           Start Shopping <ArrowRight size={16} />
         </Link>
@@ -33,7 +33,7 @@ export default function WishlistClient({ user }: { user?: any }) {
     <div className="min-h-screen pt-12 pb-20 px-4 md:px-12">
       <div className="max-w-7xl mx-auto">
         <div className="mb-12">
-          <h1 className="type-h1 mb-2 text-black">
+          <h1 className="type-h2 mb-2 text-ink">
             Wishlist
           </h1>
           <p className="type-label text-neutral-500">

@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from 'react';
+import EmptyBag from '@/components/cart/EmptyBag';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ShoppingBag, ArrowRight, Minus, Plus, Trash2, Lock } from 'lucide-react';
+import { X, ShoppingBag, Minus, Plus, Trash2, Lock } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCartStore } from '@/store/useCartStore';
@@ -83,12 +84,12 @@ const CartDrawer: React.FC = () => {
               scale: { duration: 0.4, ease: "easeOut" }
             }}
             className="fixed top-0 right-0 h-full w-full max-w-md bg-white z-[101] shadow-2xl flex flex-col"
-            style={{ borderLeft: '1px solid #eaeaec' }}
+            style={{ borderLeft: '1px solid var(--color-hairline)' }}
           >
-            <div className="p-6 border-b flex items-center justify-between bg-white" style={{ borderColor: '#eaeaec' }}>
+            <div className="p-6 border-b flex items-center justify-between bg-white" style={{ borderColor: 'var(--color-hairline)' }}>
               <div className="flex items-center gap-3">
-                <ShoppingBag size={20} className="text-[#94969f]" />
-                <h2 className="text-lg font-black uppercase text-[#282C3F] tracking-tight">Shopping Bag</h2>
+                <ShoppingBag size={20} className="text-neutral-500" />
+                <h2 className="type-label text-ink">Shopping Bag</h2>
                 {itemCount > 0 && (
                   <motion.span
                     key={itemCount}
@@ -103,7 +104,7 @@ const CartDrawer: React.FC = () => {
               </div>
               <button
                 onClick={() => setDrawerOpen(false)}
-                className="p-2 text-neutral-400 hover:text-black hover:bg-neutral-50 rounded-full transition-colors"
+                className="p-2 text-neutral-400 hover:text-ink hover:bg-neutral-50 rounded-full transition-colors"
               >
                 <X size={20} />
               </button>
@@ -111,28 +112,12 @@ const CartDrawer: React.FC = () => {
 
             <div className="flex-1 overflow-y-auto custom-scrollbar">
               {items.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center p-12 text-center">
-                  <motion.div
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.2 }}
-                    className="w-20 h-20 bg-neutral-50 rounded-full flex items-center justify-center mb-8 border border-neutral-100"
-                  >
-                    <ShoppingBag size={32} className="text-neutral-300" />
-                  </motion.div>
-                  <h3 className="type-body mb-2 font-sans font-medium text-black">Your cart is currently empty.</h3>
-                  <button
-                    onClick={() => setDrawerOpen(false)}
-                    className="mt-6 flex items-center gap-2 text-black text-xs uppercase tracking-[0.2em] hover:text-accent-700 transition-colors font-bold"
-                  >
-                    Continue Browsing <ArrowRight size={14} />
-                  </button>
-                </div>
+                <EmptyBag onContinue={() => setDrawerOpen(false)} />
               ) : (
                 <div className="p-6 space-y-6">
                   {items.map((item) => (
-                    <div key={item.id} className="flex gap-4 group bg-white p-4 items-start border" style={{ borderColor: '#eaeaec' }}>
-                      <div className="relative w-20 aspect-[3/4] bg-[#f5f5f6] overflow-hidden flex-shrink-0" style={{ border: '1px solid #eaeaec' }}>
+                    <div key={item.id} className="flex gap-4 group bg-white p-4 items-start border" style={{ borderColor: 'var(--color-hairline)' }}>
+                      <div className="relative w-20 aspect-[3/4] bg-surface overflow-hidden flex-shrink-0" style={{ border: '1px solid var(--color-hairline)' }}>
                         <Image
                           src={item.image}
                           alt={item.name}
@@ -144,7 +129,7 @@ const CartDrawer: React.FC = () => {
                       <div className="flex-1 flex flex-col justify-between">
                         <div>
                           <div className="flex justify-between items-start gap-2">
-                            <h4 className="text-sm font-bold text-black leading-tight line-clamp-2 uppercase tracking-tight">{item.name}</h4>
+                            <h4 className="type-product-name text-sm text-ink leading-tight line-clamp-2 uppercase tracking-tight">{item.name}</h4>
                             <button
                               onClick={() => handleRemoveItem(item.id, item)}
                               className="text-neutral-300 hover:text-red-500 transition-colors p-1"
@@ -152,6 +137,16 @@ const CartDrawer: React.FC = () => {
                               <Trash2 size={16} />
                             </button>
                           </div>
+                          {/* The chosen variant, so the bag says which one was
+                              added — two sizes of the same garment are now two
+                              separate lines and would otherwise be
+                              indistinguishable. Only renders what was actually
+                              chosen; a product with no options shows nothing. */}
+                          {(item.size || item.color) && (
+                            <p className="type-caption mt-1 text-neutral-500">
+                              {[item.color, item.size].filter(Boolean).join(' · ')}
+                            </p>
+                          )}
                           <p className="text-sm font-light text-neutral-500 mt-1">${item.price.toFixed(2)}</p>
                         </div>
 
@@ -159,14 +154,14 @@ const CartDrawer: React.FC = () => {
                           <div className="flex items-center bg-white border border-neutral-200 rounded-none overflow-hidden">
                             <button
                               onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                              className="p-2 text-neutral-400 hover:text-black hover:bg-neutral-50 transition-colors"
+                              className="p-2 text-neutral-400 hover:text-ink hover:bg-neutral-50 transition-colors"
                             >
                               <Minus size={12} />
                             </button>
-                            <span className="w-8 text-center text-xs font-bold text-black">{item.quantity}</span>
+                            <span className="w-8 text-center text-xs font-bold text-ink">{item.quantity}</span>
                             <button
                               onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                              className="p-2 text-neutral-400 hover:text-black hover:bg-neutral-50 transition-colors"
+                              className="p-2 text-neutral-400 hover:text-ink hover:bg-neutral-50 transition-colors"
                             >
                               <Plus size={12} />
                             </button>
@@ -182,10 +177,10 @@ const CartDrawer: React.FC = () => {
             <div className="p-6 bg-white border-t border-neutral-100 mt-auto">
               <div className="flex justify-between items-end mb-6">
                 <div className="flex flex-col">
-                  <span className="text-xs uppercase tracking-[0.2em] text-neutral-400 font-black mb-1">Subtotal</span>
-                  <span className="text-neutral-300 text-[9px] uppercase tracking-wider">Taxes & shipping calculated at checkout</span>
+                  <span className="type-label text-neutral-500 mb-1">Subtotal</span>
+                  <span className="type-caption text-[11px] normal-case tracking-normal text-neutral-400">Taxes and shipping calculated at checkout</span>
                 </div>
-                <span className="text-2xl font-bold text-black">${subtotal.toFixed(2)}</span>
+                <span className="type-price text-xl text-ink">${subtotal.toFixed(2)}</span>
               </div>
 
               <Link
@@ -203,9 +198,15 @@ const CartDrawer: React.FC = () => {
                   });
                   setDrawerOpen(false);
                 }}
-                className={`w-full py-5 bg-black text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-neutral-800 transition-colors flex justify-center items-center gap-3 rounded-none shadow-xl ${items.length === 0 ? 'pointer-events-none opacity-50' : ''}`}
+                aria-disabled={items.length === 0}
+                className={`btn-commerce w-full ${items.length === 0 ? "pointer-events-none" : ""}`}
               >
-                <Lock size={14} />
+                {/* 14px lock against 13px text — the icon reads as the same
+                    weight as the label rather than as a badge beside it. Gap,
+                    height, radius, hover, press and focus all come from
+                    `.btn-commerce`, so this button and the homepage "Shop" CTA
+                    cannot drift apart. */}
+                <Lock aria-hidden size={14} strokeWidth={2} />
                 Secure Checkout
               </Link>
             </div>

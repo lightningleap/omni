@@ -1,4 +1,32 @@
 import type { NextConfig } from "next";
+import { networkInterfaces } from "node:os";
+
+/**
+ * Every address this machine can be reached on, for `allowedDevOrigins`.
+ *
+ * The dev server prints a "Network" URL using the machine's LAN address, and
+ * anyone who opens that URL — a phone testing the mobile layout, a second
+ * machine, the host's own IP — arrives from an origin the dev client refuses
+ * unless it is listed. The failure is silent and confusing: the page
+ * server-renders and looks correct, but React never hydrates, so nothing is
+ * interactive and every action throws "Router action dispatched before
+ * initialization".
+ *
+ * Reading the interfaces means the list is right on any network without anyone
+ * remembering to update it when DHCP hands out a different address. Loopback is
+ * excluded because the literals below already cover it.
+ *
+ * Dev only — `allowedDevOrigins` has no effect on a production build.
+ */
+function localNetworkHosts(): string[] {
+  const hosts = new Set<string>();
+  for (const addresses of Object.values(networkInterfaces())) {
+    for (const address of addresses ?? []) {
+      if (!address.internal && address.address) hosts.add(address.address);
+    }
+  }
+  return [...hosts];
+}
 
 const nextConfig: NextConfig = {
   // Docker only. `standalone` emits a self-contained server bundle with a
@@ -19,7 +47,12 @@ const nextConfig: NextConfig = {
   // over `127.0.0.1:3000`, 4 — same server, same moment, no console error to
   // explain it. Listing the other ways this machine is reached makes them all
   // behave like `localhost`. No effect on a production build.
-  allowedDevOrigins: ['127.0.0.1', 'localhost'],
+  //
+  // The LAN addresses are appended from `localNetworkHosts()` above, so opening
+  // the dev server's own "Network" URL hydrates exactly like localhost does.
+  // Listing only the loopback names left that URL — the one used for testing on
+  // a phone — permanently broken.
+  allowedDevOrigins: ['127.0.0.1', 'localhost', ...localNetworkHosts()],
 
   images: {
     formats: ['image/avif', 'image/webp'],

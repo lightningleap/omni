@@ -65,15 +65,15 @@ export default function CollectionsClient({ initialCollections }: { initialColle
       {/* Header */}
       <div className="flex justify-between items-end">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Collections</h2>
+          <h2 className="text-[24px] font-semibold tracking-[-0.02em] text-ink">Collections</h2>
           <p className="text-sm text-neutral-500 mt-1">Organize and curate your product catalog into thematic groups.</p>
         </div>
       </div>
 
       {/* Creation Sleek Card */}
-      <div className="bg-white border border-neutral-200/60 rounded-3xl p-8 space-y-6 shadow-sm transition-all hover:shadow-md">
+      <div className="bg-white border border-[#E8E6E1] rounded-panel p-8 space-y-6 transition-all">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-accent-50 text-accent-700 rounded-lg">
+          <div className="p-2 bg-accent-50 text-accent-700 rounded-card">
             <FolderTree size={20} />
           </div>
           <h3 className="text-sm font-bold text-neutral-900 tracking-tight">Create New Collection</h3>
@@ -88,13 +88,13 @@ export default function CollectionsClient({ initialCollections }: { initialColle
                 value={newColName}
                 onChange={e => setNewColName(e.target.value)}
                 disabled={isCreating}
-                className="w-full bg-neutral-50 border border-neutral-200 rounded-xl text-sm font-bold text-neutral-900 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-800 transition-all placeholder:text-neutral-300"
+                className="w-full bg-[#FBFAF8] border border-[#E8E6E1] rounded-panel text-sm font-bold text-neutral-900 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-800 transition-all placeholder:text-neutral-300"
               />
             </div>
             <button 
               type="submit"
               disabled={isCreating || !newColName.trim()}
-              className="w-full bg-accent-800 text-white font-bold text-xs py-3.5 rounded-xl flex items-center justify-center gap-2 hover:bg-accent-950 transition-all disabled:opacity-50"
+              className="w-full bg-accent-800 text-white font-bold text-xs py-3.5 rounded-panel flex items-center justify-center gap-2 hover:bg-accent-950 transition-all disabled:opacity-50"
             >
               {isCreating ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
               Initialize Collection
@@ -108,30 +108,30 @@ export default function CollectionsClient({ initialCollections }: { initialColle
               onChange={e => setNewColDesc(e.target.value)}
               disabled={isCreating}
               rows={4}
-              className="w-full bg-neutral-50 border border-neutral-200 rounded-xl text-sm font-medium text-neutral-600 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-800 transition-all resize-none placeholder:text-neutral-300"
+              className="w-full bg-[#FBFAF8] border border-[#E8E6E1] rounded-panel text-sm font-medium text-neutral-600 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-800 transition-all resize-none placeholder:text-neutral-300"
             />
           </div>
         </form>
       </div>
 
       {/* Active Collections Data Table */}
-      <div className="bg-white rounded-3xl border border-neutral-200/60 overflow-hidden shadow-sm">
+      <div className="bg-white rounded-panel border border-[#E8E6E1] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-neutral-50/50 border-b border-neutral-100">
+              <tr className="bg-[#FBFAF8] border-b border-[#EFEDE8]">
                 <th className="p-5 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Collection</th>
                 <th className="p-5 text-xs font-semibold text-neutral-500 uppercase tracking-wider text-center">Products</th>
                 <th className="p-5 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Description</th>
                 <th className="p-5 text-xs font-semibold text-neutral-500 uppercase tracking-wider text-right">Delete</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-100">
+            <tbody className="divide-y divide-[#EFEDE8]">
               {collections.map((col) => {
                 const isDeleting = loadingIds.has(col.id);
 
                 return (
-                  <tr key={col.id} className="group hover:bg-neutral-50/50 transition-all duration-200">
+                  <tr key={col.id} className="group hover:bg-[#FBFAF8] transition-all duration-200">
                     <td className="p-5">
                       <div className="flex flex-col">
                         <span className="text-sm font-bold text-neutral-900 group-hover:text-accent-700 transition-colors tracking-tight">{col.name}</span>
@@ -152,7 +152,7 @@ export default function CollectionsClient({ initialCollections }: { initialColle
                       <button 
                         disabled={isDeleting}
                         onClick={() => handleDelete(col.id)}
-                        className="p-2.5 rounded-xl bg-rose-50 text-rose-500 hover:bg-rose-100 transition-all disabled:opacity-50"
+                        className="p-2.5 rounded-panel bg-[#FBF3F0] text-brand-terracotta hover:bg-[#FBF3F0] transition-all disabled:opacity-50"
                       >
                         {isDeleting ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={16} />}
                       </button>
@@ -164,7 +164,7 @@ export default function CollectionsClient({ initialCollections }: { initialColle
                 <tr>
                   <td colSpan={4} className="p-20 text-center">
                     <div className="flex flex-col items-center gap-3">
-                      <div className="w-16 h-16 bg-neutral-50 rounded-full flex items-center justify-center border border-neutral-100">
+                      <div className="w-16 h-16 bg-[#FBFAF8] rounded-full flex items-center justify-center border border-[#EFEDE8]">
                         <FolderTree size={24} className="text-neutral-300" />
                       </div>
                       <p className="text-sm font-semibold text-neutral-400">No active collections found.</p>

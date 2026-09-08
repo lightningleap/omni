@@ -47,7 +47,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-black/80 backdrop-blur-md"
+            className="absolute inset-0 bg-ink/80 backdrop-blur-md"
           />
           
           <motion.div
@@ -153,7 +153,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 <button
                   disabled={isLoading}
                   type="submit"
-                  className="w-full bg-white text-black py-4 font-bold uppercase tracking-[0.3em] text-[11px] flex items-center justify-center gap-2 hover:bg-neutral-200 transition-colors group disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+                  className="w-full bg-white text-ink py-4 font-bold uppercase tracking-[0.3em] text-[11px] flex items-center justify-center gap-2 hover:bg-neutral-200 transition-colors group disabled:opacity-50 disabled:cursor-not-allowed mt-2"
                 >
                   {isLoading ? (
                     <Loader2 className="animate-spin" size={16} />

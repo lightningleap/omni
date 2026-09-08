@@ -38,8 +38,16 @@ export async function POST(req: Request) {
   async function fulfillOrder(orderId: string, stripeObject: any) {
     console.log(`[FULFILLMENT] Processing Order: ${orderId}`);
 
+    // Idempotency guard, keyed on OUR order rather than on Stripe's object id.
+    //
+    // It used to look the order up by `stripeSessionId: stripeObject.id`, which
+    // only works when the object is a Checkout Session. With the embedded flow
+    // the object is a PaymentIntent, whose id is not a session id, so that
+    // lookup would miss and a redelivered webhook could fulfil the same order
+    // twice — incrementing the customer's lifetime spend again each time.
+    // `orderId` is the one identifier both shapes carry in metadata.
     const existingOrder = await prisma.order.findUnique({
-      where: { stripeSessionId: stripeObject.id },
+      where: { id: orderId },
       include: { user: true }
     });
 
@@ -47,7 +55,13 @@ export async function POST(req: Request) {
 
     // 1. Gather Data
     const addressDetails = stripeObject.shipping_details?.address || stripeObject.shipping?.address;
-    const customerName = stripeObject.shipping_details?.name || stripeObject.customer_details?.name;
+    // `shipping.name` is where a PaymentIntent puts it; the other two are the
+    // Checkout Session's shapes. Without the middle term every embedded order
+    // would have recorded its shipping label with no recipient on it.
+    const customerName =
+      stripeObject.shipping_details?.name ||
+      stripeObject.shipping?.name ||
+      stripeObject.customer_details?.name;
     const customerEmail = stripeObject.customer_details?.email || stripeObject.receipt_email;
     const formattedAddress = addressDetails ? `${addressDetails.line1}, ${addressDetails.city}, ${addressDetails.state} ${addressDetails.postal_code}` : "N/A";
 
@@ -58,7 +72,11 @@ export async function POST(req: Request) {
 
     if (!orderWithItems) return;
 
-    const amountPaid = (stripeObject.amount_total || 0) / 100;
+    // A Checkout Session reports `amount_total`; a PaymentIntent reports
+    // `amount`. Reading only the first silently recorded every embedded order
+    // as $0.00 paid — which would also have zeroed the profit calculation and
+    // the customer's lifetime spend.
+    const amountPaid = (stripeObject.amount_total ?? stripeObject.amount ?? 0) / 100;
     const profit = amountPaid - orderWithItems.items.reduce((sum, i) => sum + (i.product.cost || 0) * i.quantity, 0);
 
     // 2. Update DB
@@ -66,14 +84,23 @@ export async function POST(req: Request) {
       where: { id: orderId },
       data: {
         status: "PAID",
-        stripeSessionId: stripeObject.id,
+        // Only a Checkout Session has a session id. Writing a PaymentIntent id
+        // into this column would put a `pi_…` value in a field the rest of the
+        // codebase reads as `cs_…`, and the column is @unique, so it would also
+        // collide with the payment-intent column's own value.
+        ...(typeof stripeObject.object === "string" && stripeObject.object === "checkout.session"
+          ? { stripeSessionId: stripeObject.id }
+          : {}),
         // Store the payment intent so refund / dispute / failed-payment
         // events (which only carry the payment_intent, not the session id)
-        // can be traced back to this order.
+        // can be traced back to this order. On the embedded flow the object IS
+        // the payment intent, so its own id is the value.
         stripePaymentIntentId:
-          typeof stripeObject.payment_intent === "string"
-            ? stripeObject.payment_intent
-            : stripeObject.payment_intent?.id ?? undefined,
+          stripeObject.object === "payment_intent"
+            ? stripeObject.id
+            : typeof stripeObject.payment_intent === "string"
+              ? stripeObject.payment_intent
+              : stripeObject.payment_intent?.id ?? undefined,
         profit,
         totalPaid: amountPaid,
         shippingAddress: `${customerName} | ${customerEmail} | ${formattedAddress}`,
@@ -175,10 +202,26 @@ export async function POST(req: Request) {
   }
 
   // --- STRIPE HANDLERS ---
+  // The hosted Checkout Session path. Retained rather than deleted: sessions
+  // created before the switch to the embedded flow can still complete, and a
+  // webhook that no longer understands them would leave those orders PENDING
+  // forever with the money taken.
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     const fullSession = await stripe.checkout.sessions.retrieve(session.id, { expand: ["line_items", "customer"] }) as any;
     if (fullSession.metadata?.orderId) await fulfillOrder(fullSession.metadata.orderId, fullSession);
+  }
+
+  // The embedded flow's completion event.
+  //
+  // This is now the event that fulfils an order. The client also learns the
+  // payment succeeded — `confirmPayment` resolves and the shopper is sent to
+  // the success page — but the ORDER is only ever marked PAID here, from a
+  // signed Stripe event. A browser that closes mid-redirect, or a shopper who
+  // never loads the success page, still gets a fulfilled order.
+  if (event.type === "payment_intent.succeeded") {
+    const intent = event.data.object as Stripe.PaymentIntent;
+    if (intent.metadata?.orderId) await fulfillOrder(intent.metadata.orderId, intent);
   }
 
   // A refund was issued (from the Stripe dashboard or our own admin action).

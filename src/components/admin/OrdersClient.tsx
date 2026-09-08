@@ -1,8 +1,21 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Search, ChevronDown, CheckSquare, Square, CreditCard, Package, Truck, Zap, Loader2, X } from "lucide-react";
+import { Zap, X, Check, Inbox } from "lucide-react";
 import { StatusBadge } from "@/components/admin/StatusBadge";
+import {
+  ADMIN_SHELL,
+  AdminButton,
+  AdminEmpty,
+  AdminPageHeader,
+  AdminPanel,
+  AdminSearch,
+  AdminTable,
+  AdminTableWrap,
+  AdminTd,
+  AdminTh,
+  AdminTr,
+} from "@/components/admin/ui/primitives";
 // Fixed imports to match the server actions
 import { forcePushToPrintify, fetchPrintifyTracking, setupLogisticsWebhook } from "@/app/actions/admin/orders";
 
@@ -33,7 +46,21 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderDa
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [selectedOrder, setSelectedOrder] = useState<OrderData | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
-  const [lastSyncTime, setLastSyncTime] = useState<Date>(new Date());
+  const [syncError, setSyncError] = useState<string | null>(null);
+  /**
+   * Null until the client has actually synced.
+   *
+   * This used to be `useState<Date>(new Date())`, which runs on the SERVER
+   * too. The server stamped one second and the browser stamped another, and
+   * the two formatted differently besides — Node rendered "3:36:03 pm"
+   * against the browser's "3:36:04 PM". React reported a hydration mismatch
+   * on every single load of this page and threw the tree away to re-render it.
+   *
+   * A "when did THIS browser last sync" clock is client state by definition,
+   * so there is nothing for the server to render. It stays null through SSR
+   * and the first paint; the effect below stamps it.
+   */
+  const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
 
   // Background Sync Logic
   useEffect(() => {
@@ -41,17 +68,32 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderDa
       setIsSyncing(true);
       try {
         const response = await fetch("/api/orders");
-        if (response.ok) {
-          const newData = await response.json();
-          setOrders(newData);
-          setLastSyncTime(new Date());
+        // A non-2xx used to fall through silently, so an expired admin session
+        // looked identical to a working sync that simply had no new orders.
+        if (!response.ok) {
+          throw new Error(
+            response.status === 401
+              ? "Session expired — sign in again to keep orders live."
+              : `Order sync failed (${response.status}).`
+          );
         }
+        setOrders(await response.json());
+        setLastSyncTime(new Date());
+        setSyncError(null);
       } catch (error) {
-        console.error("Sync failed");
+        // The original logged the bare string "Sync failed" and dropped the
+        // cause, which made this impossible to diagnose from the console.
+        console.error("[orders] sync failed:", error);
+        setSyncError(error instanceof Error ? error.message : "Order sync failed.");
       } finally {
         setIsSyncing(false);
       }
     };
+
+    // Stamp the first sync time on the client. Deliberately in an effect: it
+    // is browser-only state that cannot exist during render.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setLastSyncTime(new Date());
 
     const interval = setInterval(syncOrders, 30000); // Sync every 30 seconds
     return () => clearInterval(interval);
@@ -67,122 +109,172 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderDa
     else setSelectedIds(new Set(filteredOrders.map(o => o.id)));
   };
 
-  const toggleOne = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
+  const toggleOne = (id: string) => {
     const newSet = new Set(selectedIds);
     if (newSet.has(id)) newSet.delete(id);
     else newSet.add(id);
     setSelectedIds(newSet);
   };
 
+  const allSelected = filteredOrders.length > 0 && selectedIds.size === filteredOrders.length;
+
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-4">
-           <h1 className="text-2xl font-bold text-slate-900">Orders</h1>
-           <div className="flex items-center gap-2 px-3 py-1 bg-slate-100 border border-slate-200 rounded-full">
-              <span className="relative flex h-2 w-2">
-                {isSyncing && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-600 opacity-75"></span>}
-                <span className={`relative inline-flex rounded-full h-2 w-2 ${isSyncing ? 'bg-accent-700' : 'bg-emerald-500'}`}></span>
-              </span>
-              <span className="text-[10px] font-bold text-slate-500 uppercase">
-                {isSyncing ? 'Syncing...' : `Updated ${lastSyncTime.toLocaleTimeString()}`}
-              </span>
-           </div>
-        </div>
-        <div className="flex gap-3">
-          <button
+    <div className={ADMIN_SHELL}>
+      <AdminPageHeader
+        title="Orders"
+        meta={
+          <>
+            <span aria-hidden className="relative flex h-1.5 w-1.5">
+              {isSyncing && (
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent-600 opacity-75 motion-reduce:animate-none" />
+              )}
+              <span
+                className={`relative inline-flex h-1.5 w-1.5 rounded-full ${
+                  syncError ? 'bg-brand-terracotta' : isSyncing ? 'bg-accent-700' : 'bg-accent-600'
+                }`}
+              />
+            </span>
+            {/* Live region: the clock updates on a 30s timer with no user
+                action, so a screen reader is told politely rather than never. */}
+            <span aria-live="polite" className={syncError ? 'text-brand-terracotta' : undefined}>
+              {syncError
+                ? syncError
+                : isSyncing
+                  ? 'Syncing…'
+                  : lastSyncTime
+                    ? `Updated ${lastSyncTime.toLocaleTimeString()}`
+                    : null}
+            </span>
+          </>
+        }
+        action={
+          <AdminButton
             onClick={async () => {
               if (confirm("Establish permanent Logistics Bridge?")) {
                 const res = await setupLogisticsWebhook();
-                alert((res as any).success ? "Success" : (res as any).error);
+                alert((res as { success?: boolean; error?: string }).success ? "Success" : (res as { error?: string }).error);
               }
             }}
-            className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-md text-sm font-semibold hover:bg-slate-50 shadow-sm"
           >
-            <Zap size={14} className="text-amber-500" /> Logistics Setup
-          </button>
-        </div>
-      </div>
+            <Zap aria-hidden size={14} strokeWidth={1.75} className="text-accent-700" /> Logistics Setup
+          </AdminButton>
+        }
+      />
 
-      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-slate-100">
-          <div className="relative group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-            <input
-              type="text"
-              placeholder="Search orders"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 text-sm pl-10 pr-4 py-2.5 rounded-lg focus:ring-2 focus:ring-accent-500/20 outline-none"
-            />
-          </div>
+      <AdminPanel>
+        <div style={{ borderColor: '#E8E6E1' }} className="border-b p-3 md:p-4">
+          <AdminSearch
+            value={search}
+            onChange={setSearch}
+            placeholder="Search orders"
+            label="Search orders by id or customer email"
+          />
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="bg-slate-50/50 text-[11px] font-bold text-slate-500 uppercase border-b border-slate-100">
-                <th className="px-6 py-4 w-12">
-                   <div
-                    className={`w-4 h-4 border rounded cursor-pointer ${selectedIds.size === filteredOrders.length ? 'bg-accent-800 border-accent-800' : 'bg-white border-slate-300'}`}
-                    onClick={toggleAll}
-                  />
-                </th>
-                <th className="px-4 py-4">Order</th>
-                <th className="px-4 py-4">Customer</th>
-                <th className="px-4 py-4">Total</th>
-                <th className="px-4 py-4">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filteredOrders.map((order) => (
-                <tr
-                  key={order.id}
-                  onClick={() => setSelectedOrder(order)}
-                  className="group hover:bg-slate-50 cursor-pointer"
-                >
-                  <td className="px-6 py-4" onClick={(e) => toggleOne(order.id, e)}>
-                     <div className={`w-4 h-4 border rounded ${selectedIds.has(order.id) ? 'bg-accent-800 border-accent-800' : 'bg-white border-slate-300'}`} />
-                  </td>
-                  <td className="px-4 py-4 text-sm font-bold text-slate-900">#{order.id.substring(0, 5)}</td>
-                  <td className="px-4 py-4 text-sm">{order.user?.email || "Guest"}</td>
-                  <td className="px-4 py-4 text-sm font-semibold">${(order.totalPaid || order.totalAmount).toFixed(2)}</td>
-                  <td className="px-4 py-4"><StatusBadge status={order.status} /></td>
+        {filteredOrders.length === 0 ? (
+          <AdminEmpty
+            icon={<Inbox aria-hidden size={28} strokeWidth={1.5} />}
+            title={search ? 'No matching orders' : 'No orders yet'}
+            message={
+              search
+                ? 'No order id or customer email matches that search.'
+                : 'Orders placed in the storefront appear here.'
+            }
+          />
+        ) : (
+          <AdminTableWrap>
+            <AdminTable>
+              <thead>
+                <tr>
+                  <AdminTh className="w-10">
+                    {/* A real checkbox, not a styled div. The originals were
+                        <div>s with click handlers: unreachable by keyboard and
+                        silent to a screen reader, on the control that drives
+                        bulk selection. */}
+                    <label className="flex items-center">
+                      <span className="sr-only">Select all orders</span>
+                      <input
+                        type="checkbox"
+                        checked={allSelected}
+                        onChange={toggleAll}
+                        className="h-3.5 w-3.5 cursor-pointer accent-[#2F5646]"
+                      />
+                    </label>
+                  </AdminTh>
+                  <AdminTh>Order</AdminTh>
+                  <AdminTh>Customer</AdminTh>
+                  <AdminTh className="text-right">Total</AdminTh>
+                  <AdminTh>Status</AdminTh>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+              </thead>
+              <tbody>
+                {filteredOrders.map((order) => (
+                  <AdminTr
+                    key={order.id}
+                    interactive
+                    onClick={() => setSelectedOrder(order)}
+                  >
+                    <AdminTd onClick={(e) => e.stopPropagation()}>
+                      <label className="flex items-center">
+                        <span className="sr-only">Select order {order.id.substring(0, 5)}</span>
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.has(order.id)}
+                          onChange={() => toggleOne(order.id)}
+                          className="h-3.5 w-3.5 cursor-pointer accent-[#2F5646]"
+                        />
+                      </label>
+                    </AdminTd>
+                    <AdminTd className="font-semibold text-ink">#{order.id.substring(0, 5)}</AdminTd>
+                    <AdminTd className="max-w-[280px] truncate">{order.user?.email || "Guest"}</AdminTd>
+                    <AdminTd className="text-right font-semibold tabular-nums text-ink">
+                      ${(order.totalPaid || order.totalAmount).toFixed(2)}
+                    </AdminTd>
+                    <AdminTd><StatusBadge status={order.status} /></AdminTd>
+                  </AdminTr>
+                ))}
+              </tbody>
+            </AdminTable>
+          </AdminTableWrap>
+        )}
+      </AdminPanel>
 
       {selectedOrder && (
         <div className="fixed inset-0 z-50 flex justify-end">
-           <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setSelectedOrder(null)} />
-           <div className="relative w-full max-w-3xl bg-white shadow-2xl overflow-y-auto animate-in slide-in-from-right duration-300">
-              <div className="p-8 space-y-6">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-xl font-bold">Order Details</h2>
-                  <button onClick={() => setSelectedOrder(null)}><X /></button>
+           <div className="absolute inset-0 bg-ink/40" onClick={() => setSelectedOrder(null)} aria-hidden />
+           <div className="relative w-full max-w-xl overflow-y-auto bg-white">
+              <div className="space-y-5 p-5 md:p-6">
+                <div className="flex items-center justify-between gap-4">
+                  <h2 className="text-[16px] font-semibold text-ink">Order Details</h2>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedOrder(null)}
+                    aria-label="Close order details"
+                    className="flex h-8 w-8 items-center justify-center rounded-card text-neutral-500 transition-colors hover:bg-[#F4F2ED] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-700/30"
+                  >
+                    <X aria-hidden size={16} strokeWidth={2} />
+                  </button>
                 </div>
                 {/* Simplified manifest for clarity */}
-                <div className="space-y-4">
+                <ul style={{ borderColor: '#E8E6E1' }} className="divide-y border-y" >
                   {selectedOrder.items.map(item => (
-                    <div key={item.id} className="flex justify-between p-4 bg-slate-50 rounded-lg">
-                      <span>{item.name} (x{item.quantity})</span>
-                      <span className="font-bold">${(item.price * item.quantity).toFixed(2)}</span>
-                    </div>
+                    <li key={item.id} className="flex justify-between gap-4 py-3 text-[13px]">
+                      <span className="min-w-0 text-neutral-600">{item.name} (x{item.quantity})</span>
+                      <span className="shrink-0 font-semibold tabular-nums text-ink">${(item.price * item.quantity).toFixed(2)}</span>
+                    </li>
                   ))}
-                </div>
-                <button
+                </ul>
+                <AdminButton
+                  variant="primary"
+                  className="w-full"
                   onClick={async () => {
                     const res = await forcePushToPrintify(selectedOrder.id);
-                    alert((res as any).success ? "Order Pushed" : (res as any).error);
+                    alert((res as { success?: boolean; error?: string }).success ? "Order Pushed" : (res as { error?: string }).error);
                   }}
-                  className="w-full py-4 bg-accent-800 text-white font-bold rounded-lg"
                 >
+                  <Check aria-hidden size={14} strokeWidth={2} />
                   Force Push to Printify
-                </button>
+                </AdminButton>
               </div>
            </div>
         </div>

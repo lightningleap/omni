@@ -27,14 +27,14 @@ export default function ActiveFilterChips({
           type="button"
           onClick={chip.remove}
           aria-label={`Remove filter ${chip.label}`}
-          className="group/chip inline-flex h-9 items-center gap-2 rounded-full border border-accent/20 bg-white px-4 text-[12px] font-medium text-[#1A1A1A] transition-[background-color,border-color] duration-200 ease-out hover:border-accent/40 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
+          className="group/chip inline-flex h-9 items-center gap-2 rounded-full border border-accent/20 bg-white px-4 text-[12px] font-medium text-ink transition-[background-color,border-color] duration-200 ease-out hover:border-accent/40 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
         >
           {chip.label}
           <X
             aria-hidden
             size={13}
             strokeWidth={2.5}
-            className="text-neutral-400 transition-colors duration-200 group-hover/chip:text-[#1A1A1A]"
+            className="text-neutral-400 transition-colors duration-200 group-hover/chip:text-ink"
           />
         </button>
       ))}

@@ -1,22 +1,43 @@
 import React from 'react';
-import { notFound } from 'next/navigation';
-import CollectionClient from '@/components/CollectionClient';
-import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { ArrowLeft, Sparkles } from 'lucide-react';
-import { resolveProductAttributes } from '@/utils/plp/productAttributes';
-import { getSessionUser } from "@/lib/auth";
+import { prisma } from '@/lib/prisma';
+import PlpClient from '@/components/plp/PlpClient';
+import { getCatalogue } from '@/components/plp/PlpPage';
+import { getFilterConfig } from '@/filters';
+import { parseFilterState } from '@/utils/plp/filterUrl';
+import type { ShopCategory } from '@/types/plp';
+import { getSessionUser } from '@/lib/auth';
 
 export const revalidate = 3600; // ISR: 1 hour
 
 interface CollectionPageProps {
   params: Promise<{ handle: string }>;
-  searchParams: Promise<{ audience?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
+/**
+ * A collection is a Product Listing Page scoped to one collection.
+ *
+ * It used to render its own client (`CollectionClient`): an 88px title, a count
+ * pill and a bare grid — no breadcrumb, no sort, no filters. It imported
+ * `FilterSidebar` and never rendered it, which is the clearest evidence that the
+ * filtering was intended and simply never wired up. Meanwhile `/shop/<category>`
+ * and `/kids/<age>` already had all of it through `PlpClient`.
+ *
+ * So this route no longer has a layout of its own. It resolves the collection,
+ * describes it as a `ShopCategory` — the same shape the static registry hands
+ * the other two route families — and hands it to the same client. Collections
+ * inherit filtering, sorting, URL state, the mobile filter drawer, the empty
+ * state and the back link for free, and can never drift from the shop pages
+ * again, because there is only one listing page left to drift.
+ */
 export default async function IndividualCollectionPage({ params, searchParams }: CollectionPageProps) {
   const { handle } = await params;
-  const { audience } = await searchParams;
+  const query = await searchParams;
+
+  const audienceParam = typeof query.audience === 'string' ? query.audience : undefined;
+
   // ADULT / KIDS narrowing driven by the storefront nav.
   //
   // A missing param defaults to ADULT rather than "every audience". The nav
@@ -24,30 +45,25 @@ export default async function IndividualCollectionPage({ params, searchParams }:
   // toddler tees under a toggle that reads "Adult". The nav corrects the URL to
   // the shopper's persisted mode on mount, but that happens after this render —
   // defaulting here means the mixed grid never paints at all.
-  const audienceFilter =
-    audience?.toLowerCase() === 'kids' ? 'KIDS' as const : 'ADULT' as const;
+  const isKids = audienceParam?.toLowerCase() === 'kids';
+  const audience = isKids ? ('kids' as const) : ('adult' as const);
+
   const { user, isAdmin } = await getSessionUser();
+  const safeUser = user
+    ? { id: user.id, email: user.email, role: isAdmin ? 'ADMIN' : 'CUSTOMER' }
+    : null;
 
+  // `all` is a virtual collection (the footer's "New Arrivals"): no Collection
+  // row exists for it, so it resolves to the unscoped audience catalogue.
+  const collection =
+    handle === 'all'
+      ? null
+      : await prisma.collection.findUnique({
+          where: { handle },
+          select: { id: true, name: true },
+        });
 
-  const safeUser = user ? {
-    id: user.id,
-    email: user.email,
-    role: isAdmin ? 'ADMIN' : 'CUSTOMER'
-  } : null;
-
-  // Fetch the collection by handle with visibility check
-  const collection = await prisma.collection.findUnique({
-    where: { 
-      handle
-    },
-    include: {
-      products: {
-        where: { status: 'LIVE', ...(audienceFilter ? { audience: audienceFilter } : {}) }
-      }
-    }
-  });
-
-  // "Coming Soon" state for non-existent or hidden handles
+  // "Coming Soon" state for non-existent or hidden handles.
   if (!collection && handle !== 'all') {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
@@ -58,56 +74,43 @@ export default async function IndividualCollectionPage({ params, searchParams }:
         <p className="type-body max-w-sm text-neutral-400">
           We are currently curating the next archive drop. Stay tuned for the release.
         </p>
-        <Link href="/" className="type-button mt-12 flex items-center gap-2 text-black text-xs uppercase tracking-[0.18em] hover:translate-x-2 transition-transform">
+        <Link
+          href="/"
+          className="type-button mt-12 flex items-center gap-2 text-ink text-xs uppercase tracking-[0.18em] hover:translate-x-2 transition-transform"
+        >
           <ArrowLeft size={16} /> Return to Home
         </Link>
       </div>
     );
   }
 
-  // The 'all' handle is a virtual collection (linked from the footer as
-  // "New Arrivals"): there is no Collection row for it, so pull the live
-  // catalogue directly instead of rendering an empty grid.
-  const products = collection
-    ? collection.products
-    : await prisma.product.findMany({
-        where: { status: 'LIVE', ...(audienceFilter ? { audience: audienceFilter } : {}) },
-        orderBy: { createdAt: 'desc' },
-      });
+  const products = await getCatalogue(audience, { collectionId: collection?.id });
 
-  // Map database products
-  const formattedProducts = products.map(p => ({
-    _id: p.id,
-    variantId: '',
-    name: p.name,
-    slug: p.printifyId,
-    image: p.imageUrl,
-    secondaryImage: p.imageUrl,
-    price: `$${p.price.toFixed(2)}`,
-    rawPrice: p.price,
-    category: collection?.name || 'Uncategorized',
-    // Resolved through the shared catalogue adapter — the same one the PLP and
-    // the homepage feed use — so the always-visible colour swatches on these
-    // cards are the same colours the filter panel would match.
-    attributes: resolveProductAttributes({ name: p.name, collectionName: collection?.name }),
-  }));
+  // The trail points back into the audience the shopper is actually browsing,
+  // so the back link on a Kids collection offers Kids rather than Shop.
+  const parent = isKids
+    ? { label: 'Kids', href: '/shop/kids' }
+    : { label: 'Shop', href: '/shop/men' };
 
-  // Fetch collections for filter
-  const allCollections = await prisma.collection.findMany({
-    select: { name: true }
-  });
-  const categories = ['All', ...allCollections.map(c => c.name)];
+  const category: ShopCategory = {
+    slug: handle,
+    label: collection?.name ?? 'New Arrivals',
+    audience,
+    description: collection
+      ? undefined
+      : 'Fresh designs, just added to Unrwly.',
+    breadcrumb: [{ label: 'Home', href: '/' }, parent],
+  };
 
-  const audienceLabel = audienceFilter === 'KIDS' ? 'Kids' : audienceFilter === 'ADULT' ? 'Adult' : '';
-  const pageTitle = collection?.name
-    ? (audienceLabel ? `${audienceLabel} · ${collection.name}` : collection.name)
-    : "New Arrivals";
+  // Seed the client from the URL, validated against this audience's own config,
+  // so a shared or bookmarked filtered link opens on exactly the view it names.
+  const initialState = parseFilterState(query, getFilterConfig(audience));
 
   return (
-    <CollectionClient
-      initialProducts={formattedProducts}
-      categories={categories}
-      title={pageTitle}
+    <PlpClient
+      category={category}
+      products={products}
+      initialState={initialState}
       user={safeUser}
     />
   );

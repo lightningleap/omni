@@ -16,7 +16,7 @@ export default function PlpBreadcrumb({
   current: string;
 }) {
   return (
-    <nav aria-label="Breadcrumb" className="mb-6">
+    <nav aria-label="Breadcrumb" className="mb-5">
       <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
         {trail.map((crumb) => (
           <li key={`${crumb.label}-${crumb.href}`} className="flex items-center gap-x-2">

@@ -21,7 +21,7 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen pt-12 pb-24 px-6 md:px-12 lg:px-24">
       <div className="max-w-7xl mx-auto">
-        <h1 className="type-h1 mb-16 text-[#0F172A]">
+        <h1 className="type-h1 mb-16 text-ink">
           CONTACT US
         </h1>
 
@@ -32,7 +32,7 @@ export default function ContactPage() {
               <h2 className="type-label mb-6 text-brand-terracotta">
                 Support
               </h2>
-              <p className="type-body max-w-md text-[#334155]">
+              <p className="type-body max-w-md text-neutral-500">
                 We're here to help with orders, product inquiries, or just to chat. 
                 Our team typically responds within 24 hours.
               </p>
@@ -44,8 +44,8 @@ export default function ContactPage() {
                   <Mail size={20} />
                 </div>
                 <div>
-                  <h3 className="type-caption mb-1 text-[15px] font-semibold text-[#0F172A]">Email</h3>
-                  <a href="mailto:support@unrwly.com" className="text-[#334155] hover:text-[#0F172A] transition-colors">
+                  <h3 className="type-caption mb-1 text-ink">Email</h3>
+                  <a href="mailto:support@unrwly.com" className="text-neutral-500 hover:text-ink transition-colors">
                     support@unrwly.com
                   </a>
                 </div>
@@ -56,8 +56,8 @@ export default function ContactPage() {
                   <Clock size={20} />
                 </div>
                 <div>
-                  <h3 className="type-caption mb-1 text-[15px] font-semibold text-[#0F172A]">Response Time</h3>
-                  <p className="text-[#334155]">Monday - Friday: 9am - 6pm EST</p>
+                  <h3 className="type-caption mb-1 text-ink">Response Time</h3>
+                  <p className="text-neutral-500">Monday - Friday: 9am - 6pm EST</p>
                 </div>
               </div>
 
@@ -66,8 +66,8 @@ export default function ContactPage() {
                   <HelpCircle size={20} />
                 </div>
                 <div>
-                  <h3 className="type-caption mb-1 text-[15px] font-semibold text-[#0F172A]">FAQs</h3>
-                  <Link href="/faq" className="text-[#334155] hover:text-[#0F172A] underline underline-offset-4 transition-colors">
+                  <h3 className="type-caption mb-1 text-ink">FAQs</h3>
+                  <Link href="/faq" className="text-neutral-500 hover:text-ink underline underline-offset-4 transition-colors">
                     Browse our common questions
                   </Link>
                 </div>
@@ -82,13 +82,13 @@ export default function ContactPage() {
                   <div className="bg-accent-50 p-4 rounded-full mb-6">
                     <CheckCircle2 className="text-accent-700" size={48} />
                   </div>
-                  <h2 className="type-h3 mb-4 text-[#0F172A]">Message Sent!</h2>
-                  <p className="text-[#334155] mb-8 max-w-[200px]">
+                  <h2 className="type-h3 mb-4 text-ink">Message Sent!</h2>
+                  <p className="text-neutral-500 mb-8 max-w-[200px]">
                     We've received your request and will get back to you soon.
                   </p>
                   <button 
                     onClick={() => setIsSuccess(false)}
-                    className="type-button bg-[#121212] px-8 py-3 text-sm uppercase tracking-[0.18em] text-white transition-colors hover:bg-accent-800"
+                    className="type-button bg-ink px-8 py-3 text-sm uppercase tracking-[0.18em] text-white transition-colors hover:bg-accent-800"
                   >
                     Send Another
                   </button>
@@ -97,7 +97,7 @@ export default function ContactPage() {
                 <form action={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="type-label ml-1 text-[#D97757]">
+                      <label className="type-label ml-1 text-brand-terracotta">
                         Name
                       </label>
                       <input
@@ -106,11 +106,11 @@ export default function ContactPage() {
                         id="name"
                         required
                         placeholder="ALEX DOE"
-                        className="w-full bg-slate-50 border border-slate-200 px-4 py-4 text-[#0F172A] placeholder:text-slate-400 focus:outline-none focus:border-accent-700 focus:ring-1 focus:ring-accent-700 transition-colors rounded-sm"
+                        className="w-full bg-slate-50 border border-slate-200 px-4 py-4 text-ink placeholder:text-slate-400 focus:outline-none focus:border-accent-700 focus:ring-1 focus:ring-accent-700 transition-colors rounded-sm"
                       />
                     </div>
                     <div className="space-y-2">
-                      <label htmlFor="email" className="type-label ml-1 text-[#D97757]">
+                      <label htmlFor="email" className="type-label ml-1 text-brand-terracotta">
                         Email
                       </label>
                       <input
@@ -119,7 +119,7 @@ export default function ContactPage() {
                         id="email"
                         required
                         placeholder="ALEX@EXAMPLE.COM"
-                        className="w-full bg-slate-50 border border-slate-200 px-4 py-4 text-[#0F172A] placeholder:text-slate-400 focus:outline-none focus:border-accent-700 focus:ring-1 focus:ring-accent-700 transition-colors rounded-sm"
+                        className="w-full bg-slate-50 border border-slate-200 px-4 py-4 text-ink placeholder:text-slate-400 focus:outline-none focus:border-accent-700 focus:ring-1 focus:ring-accent-700 transition-colors rounded-sm"
                       />
                     </div>
                   </div>
@@ -133,12 +133,12 @@ export default function ContactPage() {
                       name="orderNumber"
                       id="orderNumber"
                       placeholder="#12345"
-                      className="w-full bg-slate-50 border border-slate-200 px-4 py-4 text-[#0F172A] placeholder:text-slate-400 focus:outline-none focus:border-accent-700 focus:ring-1 focus:ring-accent-700 transition-colors rounded-sm"
+                      className="w-full bg-slate-50 border border-slate-200 px-4 py-4 text-ink placeholder:text-slate-400 focus:outline-none focus:border-accent-700 focus:ring-1 focus:ring-accent-700 transition-colors rounded-sm"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <label htmlFor="message" className="type-label ml-1 text-[#D97757]">
+                    <label htmlFor="message" className="type-label ml-1 text-brand-terracotta">
                       Message
                     </label>
                     <textarea
@@ -147,14 +147,14 @@ export default function ContactPage() {
                       required
                       placeholder="HOW CAN WE HELP?"
                       rows={6}
-                      className="w-full bg-slate-50 border border-slate-200 px-4 py-4 text-[#0F172A] placeholder:text-slate-400 focus:outline-none focus:border-accent-700 focus:ring-1 focus:ring-accent-700 transition-colors resize-none rounded-sm"
+                      className="w-full bg-slate-50 border border-slate-200 px-4 py-4 text-ink placeholder:text-slate-400 focus:outline-none focus:border-accent-700 focus:ring-1 focus:ring-accent-700 transition-colors resize-none rounded-sm"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={isPending}
-                    className="type-button h-16 w-full bg-[#121212] text-sm uppercase tracking-[0.18em] text-white transition-all hover:bg-accent-800 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed group relative overflow-hidden flex items-center justify-center gap-2"
+                    className="type-button h-16 w-full bg-ink text-sm uppercase tracking-[0.18em] text-white transition-all hover:bg-accent-800 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed group relative overflow-hidden flex items-center justify-center gap-2"
                   >
                     {isPending ? (
                       <div className="flex items-center gap-2">

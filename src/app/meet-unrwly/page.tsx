@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import MeetUnrwlyClient from './MeetUnrwlyClient';
 import { findStudioImage } from '@/lib/studioAssets';
+import { ETSY_LISTINGS } from '@/data/etsyListings';
 
 export const metadata: Metadata = {
   title: 'Meet UNRWLY',
@@ -20,5 +21,41 @@ export default function MeetUnrwlyPage() {
   // mark instead — see the note in MeetUnrwlyClient.
   const founderImage = findStudioImage('brand', 'founder');
 
-  return <MeetUnrwlyClient founderImage={founderImage} />;
+  /**
+   * Editorial imagery, resolved on the server so a missing file is a missing
+   * SECTION rather than a broken <img>. Each is looked up by name; the client
+   * only renders the panels it was actually given.
+   */
+  const studioImage = findStudioImage('brand', 'studio');
+  const adultBanner = findStudioImage('brand', 'hero banner adult');
+  const kidsBanner = findStudioImage('brand', 'hero banner kids');
+
+  /**
+   * The only numbers on this page, and both are counted rather than claimed.
+   *
+   * They are the live Etsy listings in `data/etsyListings.ts`, which is
+   * generated from the Printify shops that publish those listings — so "87
+   * designs" means 87 things a customer can actually go and buy today, and the
+   * figure moves when the catalogue does.
+   *
+   * Nothing else numeric appears here. There is no founding year, customer
+   * count, order total or country tally anywhere in this project, and inventing
+   * one on the page whose entire job is to be believed would be the worst
+   * possible place to start.
+   */
+  const designCounts = {
+    adult: ETSY_LISTINGS.adult.length,
+    kids: ETSY_LISTINGS.kids.length,
+    total: ETSY_LISTINGS.adult.length + ETSY_LISTINGS.kids.length,
+  };
+
+  return (
+    <MeetUnrwlyClient
+      founderImage={founderImage}
+      studioImage={studioImage}
+      adultBanner={adultBanner}
+      kidsBanner={kidsBanner}
+      designCounts={designCounts}
+    />
+  );
 }

@@ -16,14 +16,14 @@ const ProductReviews = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   return (
-    <section id="reviews" className="bg-white py-16" style={{ borderTop: '1px solid #eaeaec' }}>
+    <section id="reviews" className="bg-white py-16" style={{ borderTop: '1px solid var(--color-hairline)' }}>
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col lg:flex-row gap-24">
           
           {/* Left Column: Summary */}
           <div className="lg:w-1/3 space-y-12">
             <div>
-              <h2 className="text-2xl font-black text-[#282C3F] uppercase tracking-tight">
+              <h2 className="text-2xl font-black text-ink uppercase tracking-tight">
                 Customer Reviews
               </h2>
             </div>
@@ -75,7 +75,7 @@ const ProductReviews = () => {
 
           {/* Right Column: List */}
           <div className="lg:w-2/3 space-y-16">
-            <div className="divide-y" style={{ borderColor: '#eaeaec' }}>
+            <div className="divide-y" style={{ borderColor: 'var(--color-hairline)' }}>
               {MOCK_REVIEWS.map((review) => (
                 <div key={review.id} className="py-14 first:pt-0 group">
                   <div className="flex flex-col md:flex-row justify-between gap-6 mb-8">

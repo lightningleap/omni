@@ -242,7 +242,7 @@ export default function CategoryCircleGrid({ collections }: { collections: Colle
                     circles above it stay on one axis and the row reads as a
                     grid rather than a ragged set of columns. */}
                 <div className={`mt-3 flex items-center justify-center ${TITLE_HEIGHT} ${TITLE_BOX}`}>
-                  <span className="text-center text-[14px] font-medium leading-[1.28] tracking-[0.01em] text-[#2B2B2B] transition-colors duration-[220ms] ease-out group-hover:text-accent-ink">
+                  <span className="text-center text-[14px] font-medium leading-[1.28] tracking-[0.01em] text-ink transition-colors duration-[220ms] ease-out group-hover:text-accent-ink">
                     {c.name}
                   </span>
                 </div>
