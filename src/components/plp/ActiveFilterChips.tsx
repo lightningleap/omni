@@ -42,7 +42,7 @@ export default function ActiveFilterChips({
       <button
         type="button"
         onClick={onClearAll}
-        className="type-button ml-1 h-9 px-2 text-[11px] uppercase tracking-[0.1em] text-[#C56A4E] transition-opacity duration-200 hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
+        className="type-button ml-1 h-9 px-2 text-[11px] uppercase tracking-[0.1em] text-accent-700 transition-opacity duration-200 hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
       >
         Clear All
       </button>

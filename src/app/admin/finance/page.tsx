@@ -1,5 +1,6 @@
 import { getUnitEconomics, getFinancialSummary } from "@/app/actions/admin/analytics"
 import FinanceClient from "@/components/admin/FinanceClient"
+import { ADMIN_SHELL } from "@/components/admin/ui/primitives"
 
 export default async function FinancePage() {
   // Fetch both datasets concurrently to optimize TTFB
@@ -9,7 +10,7 @@ export default async function FinancePage() {
   ])
 
   return (
-    <div className="space-y-8 font-sans max-w-[1400px] mx-auto w-full">
+    <div className={`${ADMIN_SHELL} space-y-8`}>
       <FinanceClient
         items={unitData.unitEconomics}
         summary={summaryData}

@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, ArrowLeft, Star, ShoppingBag, ShieldCheck, Truck, RotateCcw, MapPin, ChevronRight, Heart, Share2, Minus, Plus, ExternalLink, X } from 'lucide-react';
 import Link from 'next/link';
 import ProductCard from '@/components/ProductCard';
+import SectionHeader from '@/components/SectionHeader';
 import { useCartStore } from '@/store/useCartStore';
 import { useWishlistStore } from '@/store/useWishlistStore';
 import { useRouter } from 'next/navigation';
@@ -30,6 +31,76 @@ const COLOR_MAP: Record<string, string> = {
  * and announced by keyboard and screen readers rather than being a div that
  * happens to respond to clicks.
  */
+/**
+ * A block of existing HTML, clamped until asked to open.
+ *
+ * ── WHY IT CLAMPS BY HEIGHT AND NOT BY TEXT ─────────────────────────────────
+ * The description arrives as HTML (`parsedDetails`), and the brief is explicit
+ * that not one word of it may be rewritten, summarised or dropped. Any excerpt
+ * built by slicing the string would have to cut inside tags and rebuild them,
+ * which is how "preserve the original" quietly becomes "mangle the original".
+ *
+ * So nothing is extracted. The ENTIRE description is always in the DOM exactly
+ * as authored; a `max-height` decides how much of it you can see, and opening
+ * removes the height. The preview is therefore generated from the real content
+ * by definition, and "Read less" restores byte-identical markup because it was
+ * never altered.
+ *
+ * The button only appears when the content actually overflows — measured, not
+ * assumed, and re-measured on resize, so a two-line description on a wide
+ * screen does not offer to expand something that is already fully visible.
+ */
+function ReadMore({ html, collapsedHeight = 176 }: { html: string; collapsedHeight?: number }) {
+  const [expanded, setExpanded] = useState(false);
+  const [overflows, setOverflows] = useState(false);
+  const innerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = innerRef.current;
+    if (!el) return;
+    const measure = () => setOverflows(el.scrollHeight > collapsedHeight + 8);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [collapsedHeight, html]);
+
+  const clamped = !expanded && overflows;
+
+  return (
+    <div>
+      <div className="relative">
+        <div
+          ref={innerRef}
+          style={clamped ? { maxHeight: collapsedHeight } : undefined}
+          className={`type-body prose prose-sm max-w-none text-neutral-500 ${clamped ? 'overflow-hidden' : ''}`}
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+        {/* Not decoration: without it the clamp cuts a line of type in half and
+            reads as a rendering fault. White to transparent, so it registers as
+            the text running out rather than as a coloured panel. */}
+        {clamped && (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-white to-transparent"
+          />
+        )}
+      </div>
+
+      {overflows && (
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          aria-expanded={expanded}
+          className="type-button mt-3 inline-flex items-center gap-1.5 text-[12px] tracking-[0.06em] text-accent-700 underline underline-offset-4 transition-opacity duration-200 hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
+        >
+          {expanded ? 'Read less' : 'Read more'}
+        </button>
+      )}
+    </div>
+  );
+}
+
 function AccordionRow({
   title,
   defaultOpen = false,
@@ -202,9 +273,9 @@ const CrossSellCarousel = ({ products, user }: { products: any[], user?: any }) 
   if (!products || products.length === 0) return null;
   return (
     <section className="bg-white px-4 md:px-12 py-16" style={{ borderTop: '1px solid var(--color-hairline)' }}>
-      <div className="max-w-7xl mx-auto">
-        <h2 className="type-h3 mb-6 text-ink">Similar Products</h2>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+      <div className="mx-auto max-w-[1440px]">
+        <SectionHeader title="Similar Products" />
+        <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-5">
           {products.map((product, index) => (
             <ProductCard key={product._id || product.slug} product={product} index={index} user={user} />
           ))}
@@ -517,7 +588,11 @@ export default function ProductClient({ product, recommendations = [], user, ets
 
   return (
     <div className="min-h-screen bg-white text-neutral-500 font-sans selection:bg-ink selection:text-white">
-      <div className="hidden md:block max-w-7xl mx-auto px-12 pt-12 pb-4">
+      {/* max-w-[1440px] + px-4/md:px-12 is the container the homepage sections
+          already use. The page sat in a max-w-7xl (1280px) box with 48px
+          gutters, so on a 1600px display it floated in ~200px of dead margin on
+          each side while the gallery and the buy column fought over the middle. */}
+      <div className="hidden md:block mx-auto max-w-[1440px] px-4 md:px-12 pt-10 pb-4">
         <nav className="flex items-center gap-2 text-xs text-neutral-500 font-medium">
           <Link href="/" className="hover:text-ink">Home</Link>
           <ChevronRight size={10} />
@@ -527,7 +602,7 @@ export default function ProductClient({ product, recommendations = [], user, ets
         </nav>
       </div>
 
-      <div className="max-w-7xl mx-auto md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-12 pb-24">
+      <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-0 pb-20 md:px-4 lg:grid-cols-12 lg:gap-x-16 lg:px-12">
 
         <div className="lg:col-span-7">
           {/* ── Desktop gallery: thumbnail rail + one large image ─────────────
@@ -620,7 +695,7 @@ export default function ProductClient({ product, recommendations = [], user, ets
               >
                 <Heart
                   size={20}
-                  className={`transition-all ${isInWishlist ? 'text-rose-500 fill-rose-500 scale-110' : 'text-neutral-400 group-hover/heart:text-rose-500'}`}
+                  className={`transition-colors duration-200 ${isInWishlist ? 'fill-accent-700 text-accent-700' : 'text-neutral-400 group-hover/heart:text-accent-700'}`}
                 />
               </button>
               <button className="w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center text-neutral-400 hover:text-ink transition-colors">
@@ -640,28 +715,28 @@ export default function ProductClient({ product, recommendations = [], user, ets
               <p className="type-label text-ink">UNRWLY</p>
               {/* Product name is product information, not editorial display type:
                   `font-sans` keeps it on Manrope against the global h1 default. */}
-              <h1 className="type-product-name font-sans text-xl leading-tight text-neutral-500 uppercase md:text-2xl">{product.name}</h1>
+              <h1 className="type-product-name font-sans text-lg leading-snug text-ink uppercase md:text-xl">{product.name}</h1>
             </div>
 
             <hr className="border-neutral-100" />
 
             <div className="space-y-1">
               <div className="flex items-baseline gap-3">
-                <span className="type-price text-4xl text-ink">{activePriceDisplay}</span>
+                <span className="type-price text-2xl text-ink md:text-[26px]">{activePriceDisplay}</span>
               </div>
-              <p className="type-caption text-[11px] uppercase tracking-[0.18em] text-emerald-600">inclusive of all taxes</p>
+              <p className="type-caption text-[11px] uppercase tracking-[0.14em] text-neutral-400">inclusive of all taxes</p>
             </div>
 
             <div className="space-y-6 pt-4">
               {availableSizes.length > 0 && (
                 <div className="space-y-4" id="size-selector">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-semibold uppercase tracking-widest">
+                    <span className="type-label text-ink">
                       Size{selectedSize ? <span className="ml-2 font-medium normal-case tracking-normal text-neutral-500">{selectedSize}</span> : null}
                     </span>
-                    <button type="button" onClick={() => setSizeGuideOpen(true)} className="text-[12px] font-bold uppercase tracking-widest hover:underline text-accent-ink">Size Guide &gt;</button>
+                    <button type="button" onClick={() => setSizeGuideOpen(true)} className="type-button text-[11px] tracking-[0.06em] text-accent-700 underline underline-offset-4 transition-opacity duration-200 hover:opacity-70">Size guide</button>
                   </div>
-                  <div className="flex flex-wrap gap-3">
+                  <div className="flex flex-wrap gap-2">
                     {availableSizes.map(size => {
                       const isActive = selectedSize.toUpperCase() === size.toUpperCase();
                       // Real availability, from the variant data — see the note on
@@ -673,7 +748,7 @@ export default function ProductClient({ product, recommendations = [], user, ets
                           disabled={isOutOfStock}
                           aria-label={isOutOfStock ? `Size ${size} — unavailable` : `Size ${size}`}
                           onClick={() => { setSelectedSize(isActive ? '' : size); setSizeError(false); }}
-                          className={`relative w-14 h-14 flex items-center justify-center text-sm font-bold border transition-all duration-200 rounded-sm ${
+                          className={`relative flex h-11 min-w-[2.75rem] items-center justify-center rounded-card border px-3 text-[13px] font-semibold transition-colors duration-200 ${
                             isOutOfStock ? 'opacity-20 cursor-not-allowed overflow-hidden' : ''
                           } ${
                             // Selection reads in the accent, like every other active
@@ -702,10 +777,10 @@ export default function ProductClient({ product, recommendations = [], user, ets
 
               {availableColors.length > 0 && (
                 <div className="space-y-4">
-                  <span className="text-sm font-semibold uppercase tracking-widest block">
+                  <span className="type-label block text-ink">
                     Color{selectedColor ? <span className="ml-2 font-medium normal-case tracking-normal text-neutral-500">{selectedColor}</span> : null}
                   </span>
-                  <div className="flex flex-wrap gap-4">
+                  <div className="flex flex-wrap gap-3">
                     {availableColors.map(color => {
                       const isActive = selectedColor.toLowerCase() === color.toLowerCase();
                       const hex = colorHexes.get(color) || COLOR_MAP[color] || '#888';
@@ -716,7 +791,7 @@ export default function ProductClient({ product, recommendations = [], user, ets
                           aria-label={`Colour ${color}`}
                           aria-pressed={isActive}
                           title={color}
-                          className={`w-8 h-8 rounded-full border-2 transition-all p-0.5 ${isActive ? 'border-neutral-900 scale-110' : 'border-transparent hover:scale-110'}`}
+                          className={`h-7 w-7 rounded-full p-0.5 transition-shadow duration-200 ${isActive ? 'ring-2 ring-ink ring-offset-2' : 'ring-1 ring-black/10 hover:ring-black/25'}`}
                         >
                           <div className="w-full h-full rounded-full shadow-inner" style={{ backgroundColor: hex }} />
                         </button>
@@ -773,30 +848,30 @@ export default function ProductClient({ product, recommendations = [], user, ets
               <button
                 onClick={handleToggleWishlist}
                 className={`btn-commerce-secondary group/wish ${
-                  isInWishlist ? 'text-brand-terracotta' : 'text-neutral-500'
+                  isInWishlist ? 'text-accent-700' : 'text-neutral-500'
                 }`}
               >
-                <Heart aria-hidden size={15} strokeWidth={2} className={isInWishlist ? 'fill-brand-terracotta' : 'group-hover/wish:text-brand-terracotta transition-colors'} />
+                <Heart aria-hidden size={15} strokeWidth={2} className={isInWishlist ? 'fill-accent-700' : 'transition-colors'} />
                 {isInWishlist ? 'In Wishlist' : 'Wishlist'}
               </button>
             </div>
 
-            <div className="py-6 mt-4 space-y-3" style={{ borderTop: '1px solid var(--color-hairline)' }}>
+            <div className="mt-6 space-y-2.5 py-6" style={{ borderTop: '1px solid var(--color-hairline)' }}>
               <div className="flex items-center gap-3">
-                <ShieldCheck size={18} className="text-ink shrink-0" />
-                <span className="text-[12px] text-ink font-semibold">100% Original Products</span>
+                <ShieldCheck size={15} className="shrink-0 text-neutral-400" />
+                <span className="text-[12px] font-medium text-neutral-500">100% Original Products</span>
               </div>
               <div className="flex items-center gap-3">
-                <RotateCcw size={18} className="text-ink shrink-0" />
-                <span className="text-[12px] text-ink font-semibold">Easy 14-day Returns & Exchange</span>
+                <RotateCcw size={15} className="shrink-0 text-neutral-400" />
+                <span className="text-[12px] font-medium text-neutral-500">Easy 14-day Returns & Exchange</span>
               </div>
               <div className="flex items-center gap-3">
-                <MapPin size={18} className="text-ink shrink-0" />
-                <span className="text-[12px] text-ink font-semibold">Pay on Delivery Available</span>
+                <MapPin size={15} className="shrink-0 text-neutral-400" />
+                <span className="text-[12px] font-medium text-neutral-500">Pay on Delivery Available</span>
               </div>
               <div className="flex items-center gap-3">
-                <Truck size={18} className="text-ink shrink-0" />
-                <span className="text-[12px] text-ink font-semibold">Free Delivery on orders above $50</span>
+                <Truck size={15} className="shrink-0 text-neutral-400" />
+                <span className="text-[12px] font-medium text-neutral-500">Free Delivery on orders above $50</span>
               </div>
             </div>
           </div>
@@ -807,10 +882,10 @@ export default function ProductClient({ product, recommendations = [], user, ets
         <button
           onClick={handleToggleWishlist}
           className={`btn-commerce-secondary flex-1 ${
-            isInWishlist ? 'text-brand-terracotta' : 'text-neutral-500'
+            isInWishlist ? 'text-accent-700' : 'text-neutral-500'
           }`}
         >
-          <Heart aria-hidden size={15} strokeWidth={2} className={isInWishlist ? 'fill-brand-terracotta' : ''} /> {isInWishlist ? 'Wishlisted' : 'Wishlist'}
+          <Heart aria-hidden size={15} strokeWidth={2} className={isInWishlist ? 'fill-accent-700' : ''} /> {isInWishlist ? 'Wishlisted' : 'Wishlist'}
         </button>
         <button
           onClick={handleAddToCart}
@@ -833,14 +908,31 @@ export default function ProductClient({ product, recommendations = [], user, ets
           section with no real data is now simply not rendered. Shipping &
           Returns is the one constant, because it is Unrwly policy and true of
           every order. */}
-      <section className="bg-white px-6 md:px-12 py-16 border-t border-neutral-100">
-        <div className="mx-auto max-w-3xl divide-y divide-black/[0.06] border-y border-black/[0.06]">
+      {/* ── WIDTH ────────────────────────────────────────────────────────
+          980px, and the number is doing two jobs at once.
+
+          It was `max-w-3xl` (768px), then briefly `max-w-[68ch]` — which was a
+          mistake, because `ch` is the width of a "0" and at this 16px body step
+          that resolves to about 578px. Aiming for a reading measure made the
+          column NARROWER than the 768px it replaced, which is the cramped
+          paragraph in a field of empty page this is fixing.
+
+          980px is ~73% of the 1344px the page container offers at its widest,
+          inside the 70–85% the brief asks for, and it holds the body copy at
+          roughly 100 characters a line — the top of a comfortable measure
+          rather than past it. So the panels fill their container completely;
+          there is no second, narrower column inside this one leaving a gap of
+          its own.
+
+          The rules and the chevrons therefore run the full 980px while the
+          prose still breaks where prose should. Nothing here changes the type
+          size: the body step is already 15→16px, and the problem was never the
+          type. ── */}
+      <section className="border-t border-neutral-100 bg-white px-6 py-14 md:px-8 lg:px-12">
+        <div className="mx-auto max-w-[980px] divide-y divide-black/[0.06] border-y border-black/[0.06]">
           {parsedDetails && (
             <AccordionRow title="Product Details" defaultOpen>
-              <div
-                className="type-body prose prose-sm max-w-none text-neutral-500"
-                dangerouslySetInnerHTML={{ __html: parsedDetails }}
-              />
+              <ReadMore html={parsedDetails} />
             </AccordionRow>
           )}
 
@@ -900,10 +992,18 @@ export default function ProductClient({ product, recommendations = [], user, ets
           </AccordionRow>
         </div>
 
-        {/* ── About UNRWLY — deliberately small, per the brief. ── */}
-        <div className="mx-auto mt-16 max-w-3xl text-center">
+        {/* ── About UNRWLY — deliberately small, per the brief. ──────────
+            Centred on purpose and kept that way: it is a three-line sign-off
+            under a rule, not a content column, and centring is what marks it as
+            the end of the page rather than another unlabelled panel. What
+            changed is that it now centres inside the SAME 980px the accordions
+            use, so it is measured against them instead of against its own
+            leftover `max-w-3xl`. Its 56ch line is a touch wider than before and
+            still well short of the panels above, which is what keeps it reading
+            as a coda. ── */}
+        <div className="mx-auto mt-16 max-w-[980px] text-center">
           <p className="type-label mb-3 text-neutral-400">Designed by UNRWLY</p>
-          <p className="type-body mx-auto max-w-[52ch] text-neutral-500">
+          <p className="type-body mx-auto max-w-[56ch] text-neutral-500">
             Original prints, drawn in-house and printed to order. Every piece is
             made when you buy it, so nothing sits in a warehouse and nothing goes
             to landfill unsold.

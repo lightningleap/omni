@@ -45,7 +45,11 @@ export default function BrowseCollectionsSection({
             subtitle={browseCollections.section.subtitle}
           />
 
-          <CategoryCircleGrid collections={items} />
+          {/* The active mode travels with every link. The collection page has
+              to default a missing `audience` to Adult (an unscoped grid would
+              paint toddler tees under an Adult toggle), so a Kids circle that
+              omitted it was asking the Adult catalogue for Dinosaur World. */}
+          <CategoryCircleGrid collections={items} audience={mode} />
         </div>
       </section>
     </ModeFade>

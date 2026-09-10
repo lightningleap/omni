@@ -159,6 +159,19 @@ export const EMPTY_ATTRIBUTES: ProductAttributes = {
   genders: [],
 };
 
+/**
+ * Does this text contain any of these keywords as a WHOLE token?
+ *
+ * Shared with the Browse Collections rules so a section and a PLP facet judge a
+ * title by identical arithmetic. Whole-token, never substring: that is what
+ * stops `non` matching "non-toxic" and `cat` matching "catalogue", and it is
+ * the difference between a mapping and a fuzzy search.
+ */
+export function matchesAnyKeyword(text: string, keywords: string[]): boolean {
+  const tokens = tokenize(text);
+  return keywords.some((k) => tokens.has(k));
+}
+
 /** Whole-word, case-insensitive, punctuation-tolerant token set. */
 function tokenize(text: string): Set<string> {
   return new Set(

@@ -16,7 +16,9 @@ export default function PlpBreadcrumb({
   current: string;
 }) {
   return (
-    <nav aria-label="Breadcrumb" className="mb-5">
+    /* 16px to the title, not 20px: the header below now carries its own rule
+       and padding, so the trail no longer has to hold the gap on its own. */
+    <nav aria-label="Breadcrumb" className="mb-4">
       <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
         {trail.map((crumb) => (
           <li key={`${crumb.label}-${crumb.href}`} className="flex items-center gap-x-2">

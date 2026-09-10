@@ -7,6 +7,13 @@ import {
   Sparkles, Loader2, X,
 } from "lucide-react"
 import { generateAiImage } from "@/app/actions/admin/products"
+import {
+  ADMIN_ACCENT,
+  AdminButton,
+  AdminSectionHeading,
+  AdminSelect,
+  AdminTextarea,
+} from "@/components/admin/ui/primitives"
 
 // ---- Layer model -------------------------------------------------
 type Base = { id: string; x: number; y: number; rotation: number }
@@ -286,7 +293,7 @@ export default function DesignEditor({
               onTransformEnd={(e) => { const n = e.target; const sx = n.scaleX(); n.scaleX(1); n.scaleY(1); update(l.id, { x: n.x(), y: n.y(), radius: Math.max(5, l.radius * sx) }) }} />
           )
         })}
-        <Transformer ref={trRef} rotateEnabled anchorSize={8} borderStroke="#3E715C" anchorStroke="#3E715C" />
+        <Transformer ref={trRef} rotateEnabled anchorSize={8} borderStroke={ADMIN_ACCENT} anchorStroke={ADMIN_ACCENT} />
       </Layer>
     </Stage>
   )
@@ -310,7 +317,7 @@ export default function DesignEditor({
           /* Garment template: outline behind, print stage on the chest */
           <div className="relative" style={{ width: gBox.w, height: gBox.h }}>
             {positionLabel && (
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 bg-ink text-white text-[10px] font-semibold uppercase tracking-widest px-2.5 py-1 rounded-full shadow">
+              <span className="type-admin-label absolute -top-3 left-1/2 z-10 -translate-x-1/2 rounded-card bg-ink px-2.5 py-1 text-white">
                 {positionLabel}
               </span>
             )}
@@ -326,7 +333,7 @@ export default function DesignEditor({
           /* Plain print-area box */
           <div className="relative" style={{ width: displayW, height: displayH }}>
             {positionLabel && (
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 bg-ink text-white text-[10px] font-semibold uppercase tracking-widest px-2.5 py-1 rounded-full shadow">
+              <span className="type-admin-label absolute -top-3 left-1/2 z-10 -translate-x-1/2 rounded-card bg-ink px-2.5 py-1 text-white">
                 {positionLabel}
               </span>
             )}
@@ -343,9 +350,7 @@ export default function DesignEditor({
         {selected ? (
           <div className="bg-[#FBFAF8] border border-[#E8E6E1] rounded-panel p-3 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
-                {selected.type}
-              </span>
+              <span className="type-admin-label text-neutral-500">{selected.type}</span>
               <div className="flex gap-1">
                 <IconMini onClick={() => move(1)} title="Forward"><ArrowUp size={14} /></IconMini>
                 <IconMini onClick={() => move(-1)} title="Backward"><ArrowDown size={14} /></IconMini>
@@ -355,12 +360,21 @@ export default function DesignEditor({
 
             {selected.type === "text" && (
               <div className="space-y-2">
-                <textarea value={selected.text} onChange={(e) => update(selected.id, { text: e.target.value })} rows={2}
-                  className="w-full text-xs border border-[#E8E6E1] rounded-card p-2 resize-none focus:outline-none focus:border-accent-600" />
-                <select value={selected.fontFamily} onChange={(e) => update(selected.id, { fontFamily: e.target.value })}
-                  className="w-full text-xs border border-[#E8E6E1] rounded-card p-2 bg-white">
+                <AdminTextarea
+                  aria-label="Layer text"
+                  value={selected.text}
+                  onChange={(e) => update(selected.id, { text: e.target.value })}
+                  rows={2}
+                  className="resize-none p-2"
+                />
+                <AdminSelect
+                  aria-label="Font"
+                  value={selected.fontFamily}
+                  onChange={(e) => update(selected.id, { fontFamily: e.target.value })}
+                  className="p-2"
+                >
                   {FONTS.map((f) => <option key={f} value={f}>{f}</option>)}
-                </select>
+                </AdminSelect>
                 <div className="flex items-center gap-2">
                   <button onClick={() => update(selected.id, { fontStyle: selected.fontStyle.includes("bold") ? "normal" : "bold" })}
                     className={`p-1.5 rounded-card border ${selected.fontStyle.includes("bold") ? "bg-ink text-white border-ink" : "border-[#E8E6E1] text-neutral-500"}`}>
@@ -376,14 +390,14 @@ export default function DesignEditor({
 
             {(selected.type === "rect" || selected.type === "circle") && (
               <div className="flex items-center gap-2">
-                <span className="text-[11px] font-bold text-neutral-500">Color</span>
+                <span className="type-admin-label text-neutral-500">Colour</span>
                 <input type="color" value={selected.fill} onChange={(e) => update(selected.id, { fill: e.target.value })}
                   className="w-8 h-8 rounded cursor-pointer border border-[#E8E6E1]" />
               </div>
             )}
           </div>
         ) : (
-          <div className="bg-[#FBFAF8] border border-dashed border-[#E8E6E1] rounded-panel p-4 text-center text-[11px] text-neutral-400 font-medium">
+          <div className="type-admin-meta rounded-panel border border-dashed border-[#E8E6E1] bg-[#FBFAF8] p-4 text-center text-neutral-400">
             Add an element, then click it to edit.
           </div>
         )}
@@ -391,10 +405,10 @@ export default function DesignEditor({
         {/* Layer list */}
         {layers.length > 0 && (
           <div className="bg-white border border-[#E8E6E1] rounded-panel p-2 space-y-1">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400 px-1">Layers</span>
+            <span className="type-admin-label px-1 text-neutral-400">Layers</span>
             {[...layers].reverse().map((l) => (
               <button key={l.id} onClick={() => setSelectedId(l.id)}
-                className={`w-full text-left px-2 py-1.5 rounded-card text-xs font-semibold flex items-center gap-2 ${selectedId === l.id ? "bg-accent-50 text-accent-800" : "text-neutral-500 hover:bg-[#FBFAF8]"}`}>
+                className={`type-admin-meta flex w-full items-center gap-2 rounded-card px-2 py-1.5 text-left font-semibold ${selectedId === l.id ? "bg-accent-50 text-accent-800" : "text-neutral-500 hover:bg-[#FBFAF8]"}`}>
                 {l.type === "text" ? <Type size={12} /> : l.type === "image" ? <Upload size={12} /> : l.type === "rect" ? <Square size={12} /> : <CircleIcon size={12} />}
                 <span className="truncate">{l.type === "text" ? (l as TextLayer).text : l.type}</span>
               </button>
@@ -409,33 +423,38 @@ export default function DesignEditor({
           onClick={() => !aiLoading && setAiOpen(false)}>
           <div className="bg-white rounded-panel w-full max-w-md p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between">
-              <span className="text-base font-semibold text-ink flex items-center gap-2">
-                <Sparkles size={18} className="text-accent-700" /> AI Image
-              </span>
+              <AdminSectionHeading className="flex items-center gap-2">
+                <Sparkles aria-hidden size={15} className="text-accent-700" /> AI image
+              </AdminSectionHeading>
               <button onClick={() => !aiLoading && setAiOpen(false)} className="text-neutral-400 hover:text-ink">
                 <X size={18} />
               </button>
             </div>
-            <textarea
+            <AdminTextarea
+              aria-label="Describe the image to generate"
               value={aiPrompt}
               onChange={(e) => setAiPrompt(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) runAi() }}
               rows={3}
               autoFocus
-              placeholder="Describe the image… e.g. 'a retro sunset with palm trees, bold vintage poster style'"
-              className="w-full bg-white border border-[#E8E6E1] rounded-panel text-sm text-ink px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-accent-500/10 focus:border-accent-700 resize-none"
+              placeholder="Describe the image… e.g. “a retro sunset with palm trees, bold vintage poster style”"
             />
-            {aiError && <p className="text-xs font-bold text-brand-terracotta">{aiError}</p>}
-            <button
+            {aiError && <p className="type-admin-body font-semibold text-brand-terracotta" role="alert">{aiError}</p>}
+            <AdminButton
+              variant="primary"
               onClick={runAi}
               disabled={aiLoading || !aiPrompt.trim()}
-              className="w-full py-3 bg-accent-800 text-white rounded-panel text-sm font-semibold uppercase tracking-widest hover:bg-accent-950 transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="h-11 w-full"
             >
-              {aiLoading ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
-              {aiLoading ? "Generating…" : "Generate & Add"}
-            </button>
-            <p className="text-[11px] text-neutral-400 text-center">
-              Free AI — takes a few seconds. The image is added to your canvas; drag/resize it like any layer.
+              {aiLoading ? (
+                <Loader2 aria-hidden size={15} className="animate-spin" />
+              ) : (
+                <Sparkles aria-hidden size={15} />
+              )}
+              {aiLoading ? "Generating…" : "Generate and add"}
+            </AdminButton>
+            <p className="type-admin-meta text-center text-neutral-400">
+              Takes a few seconds. The image is added to your canvas — drag and resize it like any layer.
             </p>
           </div>
         </div>
@@ -451,7 +470,7 @@ function ToolBtn({ icon, label, onClick, accent }: { icon: React.ReactNode; labe
         ? "bg-accent-50 border-accent-200 text-accent-700 hover:bg-accent-100"
         : "bg-white border-[#E8E6E1] text-neutral-500 hover:border-accent-600 hover:text-accent-700"}`}>
       {icon}
-      <span className="text-[9px] font-bold uppercase tracking-wide">{label}</span>
+      <span className="type-admin-label">{label}</span>
     </button>
   )
 }

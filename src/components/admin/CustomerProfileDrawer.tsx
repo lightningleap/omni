@@ -1,9 +1,17 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, Package, Clock, Mail, Calendar, DollarSign, CreditCard, Loader2, Save } from "lucide-react";
+import { X, Calendar, DollarSign, Loader2, Save } from "lucide-react";
 import { getCustomerProfile, saveInternalNotes } from "@/app/actions/admin/customers";
 import { StatusBadge } from "./StatusBadge";
+import {
+  ADMIN_RULE,
+  AdminEmpty,
+  AdminMono,
+  AdminPanel,
+  AdminSectionHeading,
+  AdminTextarea,
+} from "@/components/admin/ui/primitives";
 
 interface OrderItem {
   id: string;
@@ -94,107 +102,142 @@ export default function CustomerProfileDrawer({
   if (!profile) return null;
 
   return (
-    <div className="min-h-full flex flex-col font-sans bg-surface">
+    <div className="flex min-h-full flex-col bg-surface">
       {/* HEADER */}
-      <div className="px-8 py-6 bg-white border-b border-[#E8E6E1] flex justify-between items-center sticky top-0 z-10">
+      <div
+        style={{ borderColor: ADMIN_RULE }}
+        className="sticky top-0 z-10 flex items-center justify-between border-b bg-white px-6 py-5"
+      >
         <div className="flex items-center gap-4">
-           <div className="w-10 h-10 bg-accent-800 rounded-full flex items-center justify-center text-white font-bold text-lg">
-              {profile.name?.[0] || profile.email[0].toUpperCase()}
-           </div>
-           <div>
-              <h2 className="text-[16px] font-semibold text-ink">{profile.name || "Guest Customer"}</h2>
-              <p className="text-sm text-neutral-500 font-medium">{profile.email}</p>
-           </div>
-           {profile.role === "VIP" && (
-              <span className="bg-[#FFF5D1] text-[#4F4700] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#FBE9B3] uppercase tracking-wider">
-                VIP
-              </span>
-           )}
+          <div className="type-admin-section flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-800 text-white">
+            {profile.name?.[0]?.toUpperCase() || profile.email[0].toUpperCase()}
+          </div>
+          <div className="min-w-0">
+            <h2 className="type-admin-section text-ink">{profile.name || "Guest customer"}</h2>
+            <p className="type-admin-meta truncate text-neutral-500">{profile.email}</p>
+          </div>
+          {profile.role === "VIP" && (
+            <span className="type-admin-label rounded-card border border-[#FBE9B3] bg-[#FFF5D1] px-2 py-1 text-[#4F4700]">
+              VIP
+            </span>
+          )}
         </div>
-        <button onClick={onClose} className="p-2 text-neutral-400 hover:text-neutral-500 transition-colors">
-          <X size={20} />
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close customer profile"
+          className="rounded-card p-2 text-neutral-400 transition-colors hover:bg-[#FBFAF8] hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-700/30"
+        >
+          <X aria-hidden size={18} />
         </button>
       </div>
 
-      <div className="p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 gap-6 p-6 lg:grid-cols-3">
         {/* LEFT COLUMN: ORDER HISTORY */}
         <div className="lg:col-span-2 space-y-6">
-           <section className="bg-white border border-[#E8E6E1] rounded-panel overflow-hidden">
-              <div className="px-4 py-3.5 border-b border-[#EFEDE8] flex justify-between items-center">
-                 <h3 className="text-sm font-bold text-ink uppercase tracking-wider">Order history</h3>
-                 <span className="text-xs text-neutral-500 font-medium">{profile.orders.length} orders total</span>
-              </div>
-              <div className="divide-y divide-[#EFEDE8] max-h-[600px] overflow-y-auto">
-                 {profile.orders.map((order) => (
-                    <div key={order.id} className="p-6 space-y-4">
-                       <div className="flex justify-between items-start">
-                          <div className="space-y-1">
-                             <p className="text-sm font-bold text-ink">Order #{order.id.substring(0, 5)}</p>
-                             <p className="text-xs text-neutral-500 font-medium">{new Date(order.createdAt).toLocaleDateString()}</p>
-                          </div>
-                          <div className="flex items-center gap-3">
-                             <StatusBadge status={order.status} />
-                             <p className="text-sm font-bold text-ink">${order.totalAmount.toFixed(2)}</p>
-                          </div>
-                       </div>
-                       <div className="flex flex-wrap gap-2">
-                          {order.items.map((item) => (
-                             <div key={item.id} className="px-2 py-1 bg-[#FBFAF8] border border-[#EFEDE8] rounded text-[10px] text-neutral-500 font-medium">
-                                {item.name} (x{item.quantity})
-                             </div>
-                          ))}
-                       </div>
+          <AdminPanel>
+            <div
+              style={{ borderColor: ADMIN_RULE }}
+              className="flex items-center justify-between border-b px-4 py-3"
+            >
+              <AdminSectionHeading as="h3">Order history</AdminSectionHeading>
+              <span className="type-admin-meta text-neutral-500">
+                {profile.orders.length} {profile.orders.length === 1 ? "order" : "orders"}
+              </span>
+            </div>
+            <div className="max-h-[600px] divide-y divide-[#EFEDE8] overflow-y-auto">
+              {profile.orders.map((order) => (
+                <div key={order.id} className="space-y-3 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="type-admin-body font-semibold text-ink">
+                        Order <AdminMono>#{order.id.substring(0, 5)}</AdminMono>
+                      </p>
+                      <p className="type-admin-meta text-neutral-500">
+                        {new Date(order.createdAt).toLocaleDateString()}
+                      </p>
                     </div>
-                 ))}
-                 {profile.orders.length === 0 && (
-                    <div className="p-12 text-center text-neutral-400 italic">
-                       No orders logged for this account.
+                    <div className="flex items-center gap-3">
+                      <StatusBadge status={order.status} />
+                      <p className="type-admin-body font-semibold tabular-nums text-ink">
+                        ${order.totalAmount.toFixed(2)}
+                      </p>
                     </div>
-                 )}
-              </div>
-           </section>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {order.items.map((item) => (
+                      <div
+                        key={item.id}
+                        style={{ borderColor: ADMIN_RULE }}
+                        className="type-admin-meta rounded-card border bg-[#FBFAF8] px-2 py-0.5 text-neutral-500"
+                      >
+                        {item.name} (×{item.quantity})
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              {profile.orders.length === 0 && (
+                <AdminEmpty
+                  title="No orders yet"
+                  message="This account has not placed an order."
+                />
+              )}
+            </div>
+          </AdminPanel>
         </div>
 
         {/* RIGHT COLUMN: PROFILE INTEL */}
         <div className="space-y-6">
-           <section className="bg-white border border-[#E8E6E1] rounded-panel p-6 space-y-6">
-              <h3 className="text-sm font-bold text-ink uppercase tracking-wider">Profile Intel</h3>
-              <div className="space-y-4">
-                 <div className="flex items-center gap-3 text-neutral-500">
-                    <Calendar size={16} className="text-neutral-400" />
-                    <div className="text-sm">
-                       <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Member since</p>
-                       <p className="font-medium text-ink">{new Date(profile.createdAt).toLocaleDateString()}</p>
-                    </div>
-                 </div>
-                 <div className="flex items-center gap-3 text-neutral-500 pt-2 border-t border-[#EFEDE8]">
-                    <DollarSign size={16} className="text-neutral-400" />
-                    <div className="text-sm">
-                       <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Total spent</p>
-                       <p className="font-bold text-ink text-lg">${profile.totalSpent.toFixed(2)}</p>
-                    </div>
-                 </div>
+          <AdminPanel padded className="space-y-5">
+            <AdminSectionHeading as="h3">Profile</AdminSectionHeading>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <Calendar aria-hidden size={15} className="shrink-0 text-neutral-400" />
+                <div>
+                  <p className="type-admin-label text-neutral-400">Member since</p>
+                  <p className="type-admin-body font-medium text-ink">
+                    {new Date(profile.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
               </div>
-           </section>
+              <div className="flex items-center gap-3 border-t border-[#EFEDE8] pt-4">
+                <DollarSign aria-hidden size={15} className="shrink-0 text-neutral-400" />
+                <div>
+                  <p className="type-admin-label text-neutral-400">Total spent</p>
+                  <p className="type-admin-stat text-ink">${profile.totalSpent.toFixed(2)}</p>
+                </div>
+              </div>
+            </div>
+          </AdminPanel>
 
-           <section className="bg-white border border-[#E8E6E1] rounded-panel p-6 space-y-4">
-              <div className="flex justify-between items-center">
-                 <h3 className="text-sm font-bold text-ink uppercase tracking-wider">Internal Notes</h3>
-                 <button 
-                  onClick={handleSaveNotes}
-                  disabled={savingNotes}
-                  className="text-accent-700 hover:text-accent-800 p-1 transition-colors"
-                 >
-                    {savingNotes ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-                 </button>
-              </div>
-              <textarea 
-                 value={notes}
-                 onChange={(e) => setNotes(e.target.value)}
-                 className="w-full h-40 p-4 bg-[#FBFAF8] border border-[#EFEDE8] rounded-card text-sm text-neutral-500 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-accent-500/10 focus:border-accent-700 transition-all leading-relaxed"
-                 placeholder="Jot down internal intelligence..."
-              />
-           </section>
+          <AdminPanel padded className="space-y-3">
+            <div className="flex items-center justify-between">
+              <AdminSectionHeading as="h3">
+                <label htmlFor="customer-notes">Internal notes</label>
+              </AdminSectionHeading>
+              <button
+                type="button"
+                onClick={handleSaveNotes}
+                disabled={savingNotes}
+                aria-label="Save internal notes"
+                className="rounded-card p-1.5 text-accent-700 transition-colors hover:bg-accent-50 hover:text-accent-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-700/30 disabled:opacity-50"
+              >
+                {savingNotes ? (
+                  <Loader2 aria-hidden size={15} className="animate-spin" />
+                ) : (
+                  <Save aria-hidden size={15} />
+                )}
+              </button>
+            </div>
+            <AdminTextarea
+              id="customer-notes"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="h-40 bg-[#FBFAF8]"
+              placeholder="Notes about this customer, visible only to admins."
+            />
+          </AdminPanel>
         </div>
       </div>
     </div>

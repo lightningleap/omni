@@ -5,6 +5,8 @@ import { prisma } from '@/lib/prisma';
 import PlpClient from '@/components/plp/PlpClient';
 import { getCatalogue } from '@/components/plp/PlpPage';
 import { getFilterConfig } from '@/filters';
+import { findBrowseCollection, getBrowseCollectionRule } from '@/data/browseCollectionRules';
+import { getPrimaryCategories } from '@/data/shopCategories';
 import { parseFilterState } from '@/utils/plp/filterUrl';
 import type { ShopCategory } from '@/types/plp';
 import { getSessionUser } from '@/lib/auth';
@@ -45,7 +47,26 @@ export default async function IndividualCollectionPage({ params, searchParams }:
   // toddler tees under a toggle that reads "Adult". The nav corrects the URL to
   // the shopper's persisted mode on mount, but that happens after this render —
   // defaulting here means the mixed grid never paints at all.
-  const isKids = audienceParam?.toLowerCase() === 'kids';
+  const explicitKids = audienceParam?.toLowerCase() === 'kids';
+
+  /*
+   * When the param is missing, let the HANDLE settle it before falling back.
+   *
+   * A Browse Collections handle belongs to exactly one mode — `dinosaur-world`
+   * is only ever Kids, `witchy-and-gothic` only ever Adult — so a bare
+   * `/collections/dinosaur-world` is not ambiguous, it is just missing a
+   * breadcrumb. Without this it defaulted to Adult, found no Kids rule there,
+   * and rendered "Collection Coming Soon" — so every shared, bookmarked or
+   * hand-typed Kids category link was broken even though the rail's own links
+   * carry the param correctly.
+   *
+   * Only consulted when the param is ABSENT. An explicit `?audience=adult`
+   * still means Adult, so the nav can never be overruled by a handle.
+   */
+  const inferredKids =
+    audienceParam === undefined && getBrowseCollectionRule('kids', handle) !== undefined;
+
+  const isKids = explicitKids || inferredKids;
   const audience = isKids ? ('kids' as const) : ('adult' as const);
 
   const { user, isAdmin } = await getSessionUser();
@@ -63,8 +84,34 @@ export default async function IndividualCollectionPage({ params, searchParams }:
           select: { id: true, name: true },
         });
 
-  // "Coming Soon" state for non-existent or hidden handles.
-  if (!collection && handle !== 'all') {
+  /*
+   * A Browse Collections circle, when no `Collection` row carries its handle.
+   *
+   * The rail lists the Etsy shop's SECTIONS ("Witchy & Gothic") while this
+   * database's collections record product TYPES ("Mugs"). Those vocabularies
+   * never met, so every circle but "All" resolved to `null` above and fell
+   * straight into the Coming Soon branch — which is the whole reason the
+   * categories looked empty.
+   *
+   * Order matters: the curated row WINS. This is consulted only when there
+   * isn't one, so creating `witchy-and-gothic` in the studio and assigning
+   * products to it silently takes over from the keyword rule.
+   */
+  const rule = collection ? undefined : getBrowseCollectionRule(audience, handle);
+  const railEntry = collection ? undefined : findBrowseCollection(audience, handle);
+
+  // Named collections referenced by a rule (`Home & Desk` → five of them) still
+  // have to become ids, and the handles are authored, not user input.
+  const ruleCollections = rule?.collections?.length
+    ? await prisma.collection.findMany({
+        where: { handle: { in: rule.collections } },
+        select: { id: true },
+      })
+    : [];
+
+  // "Coming Soon" is now only for a handle NOTHING knows about — not for a
+  // real section that simply has no `Collection` row of its own.
+  if (!collection && !rule && handle !== 'all') {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
         <div className="w-20 h-20 bg-neutral-50 rounded-full flex items-center justify-center mb-8 border border-neutral-100">
@@ -84,7 +131,20 @@ export default async function IndividualCollectionPage({ params, searchParams }:
     );
   }
 
-  const products = await getCatalogue(audience, { collectionId: collection?.id });
+  /*
+   * A section declared empty (`emptyReason`) must select NOTHING rather than
+   * fall through to the whole catalogue. "On Sale" has no per-product sale data
+   * behind it, and an unnarrowed query there would quietly present all 87 Adult
+   * products as discounted — a worse failure than the empty state, because it
+   * looks like it worked.
+   */
+  const products = rule?.emptyReason
+    ? []
+    : await getCatalogue(audience, {
+        collectionId: collection?.id,
+        collectionIds: ruleCollections.length ? ruleCollections.map((c) => c.id) : undefined,
+        titleKeywords: rule?.keywords,
+      });
 
   // The trail points back into the audience the shopper is actually browsing,
   // so the back link on a Kids collection offers Kids rather than Shop.
@@ -92,14 +152,37 @@ export default async function IndividualCollectionPage({ params, searchParams }:
     ? { label: 'Kids', href: '/shop/kids' }
     : { label: 'Shop', href: '/shop/men' };
 
+  /*
+   * The department tab, as a SCOPE — never as an identity.
+   *
+   * `?dept=men` narrows which products this collection lists and nothing else.
+   * The scope comes from the very same registry entry `/shop/men` uses, so the
+   * tab and the department page can never disagree about what "Men" selects,
+   * and a scope added to the registry later starts working here with no change
+   * to this file.
+   *
+   * Note what is NOT taken from that entry: its `label`, its `description` and
+   * its `breadcrumb`. Those stay the collection's, which is the whole point —
+   * the title below reads `collection?.name ?? railEntry?.name`, with the
+   * department nowhere in it.
+   */
+  const deptParam = typeof query.dept === 'string' ? query.dept : undefined;
+  const dept = deptParam
+    ? getPrimaryCategories(audience).find((c) => c.slug === deptParam)
+    : undefined;
+
   const category: ShopCategory = {
     slug: handle,
-    label: collection?.name ?? 'New Arrivals',
+    // The rail's own wording, verbatim — a shopper who clicked "French with
+    // Attitude" should land on a page that says so, not on the name of some
+    // collection the rule happened to resolve through.
+    label: collection?.name ?? railEntry?.name ?? 'New Arrivals',
     audience,
-    description: collection
-      ? undefined
-      : 'Fresh designs, just added to Unrwly.',
+    description: collection || railEntry ? undefined : 'Fresh designs, just added to Unrwly.',
     breadcrumb: [{ label: 'Home', href: '/' }, parent],
+    // The only thing the department contributes. `usePlpFilters` runs this
+    // through `applyCategoryScope`, the same path `/shop/unisex` takes.
+    scope: dept?.scope,
   };
 
   // Seed the client from the URL, validated against this audience's own config,

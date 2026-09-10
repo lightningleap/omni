@@ -1,11 +1,29 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Trash2, Search, ChevronDown, Image as ImageIcon, Loader2, Plus, ArrowUpRight, DollarSign, Filter, CheckCircle2 } from "lucide-react";
+import { Trash2, Image as ImageIcon, Loader2, Plus, ArrowUpRight, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { bulkPublishToCollection, syncPrintifyManual, updateProductGatekeeper, toggleProductStatus, deleteManyProducts } from "@/app/actions/admin/products";
+import ProductCard from "@/components/admin/cards/ProductCard";
+import { AdminCardGrid, AdminViewToggle, useAdminView } from "@/components/admin/ui/views";
+import { AdminCheckbox } from "@/components/admin/ui/checkbox";
+import {
+  ADMIN_RULE,
+  AdminButton,
+  adminButtonClass,
+  AdminEmpty,
+  AdminMono,
+  AdminPageHeader,
+  AdminPanel,
+  AdminSearch,
+  AdminTable,
+  AdminTableWrap,
+  AdminTd,
+  AdminTh,
+  AdminTr,
+} from "@/components/admin/ui/primitives";
 
 type ProductData = {
   id: string;
@@ -37,6 +55,16 @@ export default function ProductsClient({
   const [savingIds, setSavingIds] = useState<Set<string>>(new Set());
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [sourceFilter, setSourceFilter] = useState<"ALL" | "STUDIO" | "SYNCED">("ALL");
+  /**
+   * Presentation only.
+   *
+   * The source tabs, the search, the selection set, the saving/saved sets and
+   * every handler are declared once above and read by both trees. `view` never
+   * reaches `filteredProducts` or any server action — which is what makes
+   * "filter to My designs, switch to cards, see the same products, still
+   * selected" true without a line of code to keep the two in step.
+   */
+  const [view, setView] = useAdminView("products");
   const router = useRouter();
 
   // FALLBACK REFRESH
@@ -58,6 +86,14 @@ export default function ProductsClient({
     return matchesSearch && matchesSource;
   });
 
+  // Named once rather than re-deriving the same comparison in the header
+  // cell's class, its content, its label and its aria-pressed.
+  const allSelected = filteredProducts.length > 0 && selectedIds.size === filteredProducts.length;
+  /* Some but not all — the header box shows a dash rather than claiming the
+     whole page is selected. `toggleAll` already selects all from this state,
+     so this is presentation only. */
+  const someSelected = selectedIds.size > 0 && !allSelected;
+
   const toggleAll = () => {
     if (selectedIds.size === filteredProducts.length) {
       setSelectedIds(new Set());
@@ -66,12 +102,18 @@ export default function ProductsClient({
     }
   };
 
-  const toggleOne = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
+  const toggleOneById = (id: string) => {
     const newSet = new Set(selectedIds);
     if (newSet.has(id)) newSet.delete(id);
     else newSet.add(id);
     setSelectedIds(newSet);
+  };
+
+  // The table's cell click needs the event stopped before the row sees it; the
+  // card's checkbox has no row to stop it reaching. Same Set either way.
+  const toggleOne = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleOneById(id);
   };
 
   const handleBulkPublish = async () => {
@@ -166,236 +208,327 @@ export default function ProductsClient({
   };
 
   return (
-    <div className="space-y-10 font-sans">
-      {/* PAGE HEADER */}
-      <div className="flex justify-between items-center px-4">
-        <div className="flex flex-col">
-           <h1 className="text-[24px] font-semibold tracking-[-0.02em] text-ink">Inventory</h1>
-           <p className="text-xs text-neutral-400 font-bold uppercase tracking-widest mt-1">Resource Management</p>
-        </div>
-        <div className="flex gap-3">
-          <button
-            disabled={bulkLoading}
-            onClick={handleManualSync}
-            className="px-6 py-2.5 bg-white border border-[#E8E6E1] rounded-panel text-xs font-semibold uppercase tracking-widest text-ink hover:bg-[#FBFAF8] transition-all flex items-center gap-2"
-          >
-            {bulkLoading ? <Loader2 size={14} className="animate-spin" /> : <ArrowUpRight size={14} />}
-            Sync Printify
-          </button>
-          <Link
-            href="/admin/products/new"
-            className="px-6 py-2.5 bg-accent-800 border border-accent-800 rounded-panel text-xs font-semibold uppercase tracking-widest text-white hover:bg-accent-950 transition-all flex items-center gap-2"
-          >
-            <Plus size={14} /> Create Product
-          </Link>
-        </div>
-      </div>
+    <div className="space-y-6">
+      <AdminPageHeader
+        title="Products"
+        action={
+          <>
+            <AdminButton disabled={bulkLoading} onClick={handleManualSync}>
+              {bulkLoading ? (
+                <Loader2 aria-hidden size={14} className="animate-spin" />
+              ) : (
+                <ArrowUpRight aria-hidden size={14} />
+              )}
+              Sync Printify
+            </AdminButton>
+            <Link href="/admin/products/new" className={adminButtonClass("primary")}>
+              <Plus aria-hidden size={14} /> New product
+            </Link>
+          </>
+        }
+      />
 
-      {/* RESOURCE LIST CARD */}
-      <div className="bg-white border border-[#E8E6E1] rounded-panel overflow-hidden min-h-[60vh]">
-        {/* Source tabs */}
-        <div className="px-8 pt-6 flex items-center gap-2 border-b border-[#EFEDE8] pb-0">
+      <AdminPanel className="min-h-[60vh]">
+        {/* Source tabs. They were `text-xs uppercase tracking-widest`, a step
+            the studio uses nowhere else; the label step is the same one the
+            table headers below them use, so the tab and the column it filters
+            are set alike. */}
+        <div
+          style={{ borderColor: ADMIN_RULE }}
+          className="flex items-center gap-1 border-b px-4 pt-3"
+        >
           {([
             ["ALL", `All (${initialProducts.length})`],
-            ["STUDIO", `My Designs (${studioCount})`],
+            ["STUDIO", `My designs (${studioCount})`],
             ["SYNCED", `Synced (${syncedCount})`],
           ] as const).map(([key, lbl]) => (
-            <button key={key} onClick={() => setSourceFilter(key)}
-              className={`px-4 py-2.5 text-xs font-semibold uppercase tracking-widest border-b-2 -mb-px transition-colors ${sourceFilter === key ? "border-accent-800 text-accent-700" : "border-transparent text-neutral-400 hover:text-ink"}`}>
+            <button
+              key={key}
+              type="button"
+              onClick={() => setSourceFilter(key)}
+              aria-pressed={sourceFilter === key}
+              className={`type-admin-label -mb-px border-b-2 px-3 py-2.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-700/30 ${
+                sourceFilter === key
+                  ? "border-accent-800 text-accent-700"
+                  : "border-transparent text-neutral-400 hover:text-ink"
+              }`}
+            >
               {lbl}
             </button>
           ))}
         </div>
-        {/* Filter Bar */}
-        <div className="p-8 pb-4 flex items-center gap-6">
-           <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />
-              <input
-                type="text"
-                placeholder="Search resources by name..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full bg-[#FBFAF8] border border-[#E8E6E1] text-sm text-ink pl-12 pr-4 py-3.5 rounded-panel focus:outline-none focus:ring-4 focus:ring-accent-50 transition-all placeholder:text-neutral-400 font-medium"
-              />
-           </div>
-           
-           <button className="px-6 py-3.5 bg-white border border-[#E8E6E1] rounded-panel text-xs font-semibold uppercase tracking-widest text-neutral-500 hover:bg-[#FBFAF8] transition-colors flex items-center gap-2">
-              <Filter size={16} /> Sort
-           </button>
+
+        <div
+          style={{ borderColor: ADMIN_RULE }}
+          className="flex items-center gap-3 border-b p-4"
+        >
+          <div className="min-w-0 flex-1">
+            <AdminSearch
+              value={search}
+              onChange={setSearch}
+              placeholder="Search products…"
+              label="Search products by name"
+            />
+          </div>
+          <AdminViewToggle view={view} onChange={setView} />
         </div>
 
-        {/* DATA TABLE */}
-        <div className="overflow-x-auto p-4 pt-0">
-          <table className="w-full text-left border-separate border-spacing-y-2">
-            <thead>
-              <tr className="text-[10px] font-semibold text-neutral-400 uppercase tracking-[0.2em]">
-                <th className="px-4 py-3.5 w-12 text-center">
-                   <div 
-                    className={`w-5 h-5 border rounded-card cursor-pointer mx-auto flex items-center justify-center transition-all ${selectedIds.size === filteredProducts.length && filteredProducts.length > 0 ? 'bg-[#3E715C] border-[#3E715C]' : 'bg-white border-[#E8E6E1]'}`}
-                    onClick={toggleAll}
-                  >
-                    {selectedIds.size === filteredProducts.length && filteredProducts.length > 0 && <div className="w-2 h-0.5 bg-white rounded-full" />}
-                  </div>
-                </th>
-                <th className="px-4 py-3.5 w-16">Visual</th>
-                <th className="px-4 py-3.5">Identity</th>
-                <th className="px-4 py-3.5">Scope</th>
-                <th className="px-4 py-3.5 text-right">Yield</th>
-                <th className="px-4 py-3.5 text-center">Protocol</th>
-                <th className="px-4 py-3.5 text-right">Profit</th>
-                <th className="px-4 py-3.5 w-10"></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y-0">
-              {filteredProducts.map((product) => {
-                const isSelected = selectedIds.has(product.id);
-                const isSaving = savingIds.has(product.id);
-                const isSaved = savedIds.has(product.id);
-                const potentialProfit = product.price - (product.cost || 0);
+        {filteredProducts.length === 0 ? (
+          <AdminEmpty
+            icon={<ImageIcon aria-hidden size={24} />}
+            title="No products match these filters"
+            message="Clear the search, or switch to All to see the whole catalogue."
+          />
+        ) : view === 'list' ? (
+          <AdminTableWrap>
+            <AdminTable>
+              <thead>
+                <tr>
+                  <AdminTh className="w-12 text-center">
+                    <AdminCheckbox
+                      className="mx-auto"
+                      checked={allSelected}
+                      indeterminate={someSelected}
+                      onChange={toggleAll}
+                      label={allSelected ? "Clear selection" : "Select all products"}
+                    />
+                  </AdminTh>
+                  <AdminTh className="w-16">Image</AdminTh>
+                  <AdminTh>Product</AdminTh>
+                  <AdminTh>Collection</AdminTh>
+                  <AdminTh className="text-right">Price</AdminTh>
+                  <AdminTh className="text-center">Live</AdminTh>
+                  <AdminTh className="text-right">Profit</AdminTh>
+                  <AdminTh className="w-10" />
+                </tr>
+              </thead>
+              <tbody>
+                {filteredProducts.map((product) => {
+                  const isSelected = selectedIds.has(product.id);
+                  const isSaving = savingIds.has(product.id);
+                  const isSaved = savedIds.has(product.id);
+                  const potentialProfit = product.price - (product.cost || 0);
 
-                return (
-                  <tr 
-                    key={product.id} 
-                    className={`group transition-all duration-300 ${isSelected ? 'bg-accent-50/40 translate-x-1' : 'hover:bg-[#FBFAF8]'}`}
-                  >
-                    <td className="px-6 py-5 text-center" onClick={(e) => toggleOne(product.id, e)}>
-                       <div className={`w-5 h-5 border rounded-card cursor-pointer mx-auto flex items-center justify-center transition-all ${isSelected ? 'bg-[#3E715C] border-[#3E715C]' : 'bg-white border-[#E8E6E1] hover:border-neutral-300'}`}>
-                          {isSelected && <div className="w-2 h-0.5 bg-white rounded-full" />}
-                       </div>
-                    </td>
-                    <td className="px-4 py-5">
-                       <Link href={`/admin/products/${product.id}`} className="block">
-                          <div className="w-12 h-12 rounded-panel bg-neutral-100 border border-[#E8E6E1] relative overflow-hidden transition-transform duration-500 hover:scale-110">
-                             {product.imageUrl ? (
-                               <Image src={product.imageUrl} alt={product.name} fill className="object-cover" />
-                             ) : (
-                               <ImageIcon size={18} className="text-neutral-300 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-                             )}
+                  return (
+                    <AdminTr
+                      key={product.id}
+                      className={`group ${isSelected ? "bg-accent-50/40" : ""}`}
+                    >
+                      <AdminTd className="text-center" onClick={(e) => toggleOne(product.id, e)}>
+                        <AdminCheckbox
+                          checked={isSelected}
+                          onChange={() => toggleOneById(product.id)}
+                          label={`Select ${product.name}`}
+                        />
+                      </AdminTd>
+                      <AdminTd>
+                        <Link href={`/admin/products/${product.id}`} className="block">
+                          <div
+                            style={{ borderColor: ADMIN_RULE }}
+                            className="relative h-11 w-11 overflow-hidden rounded-card border bg-[#FBFAF8]"
+                          >
+                            {product.imageUrl ? (
+                              <Image src={product.imageUrl} alt="" fill className="object-cover" />
+                            ) : (
+                              <ImageIcon
+                                aria-hidden
+                                size={16}
+                                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-neutral-300"
+                              />
+                            )}
                           </div>
-                       </Link>
-                    </td>
-                    <td className="px-4 py-5">
-                        <Link href={`/admin/products/${product.id}`} className="flex flex-col gap-0.5">
-                          <span className="text-[13px] font-semibold text-ink transition-colors capitalize flex items-center gap-2">
+                        </Link>
+                      </AdminTd>
+                      <AdminTd>
+                        <Link
+                          href={`/admin/products/${product.id}`}
+                          className="flex flex-col gap-0.5"
+                        >
+                          <span className="flex items-center gap-2 font-semibold text-ink">
                             {product.name}
                             {product.source === "STUDIO" && (
-                              <span className="text-[8px] font-semibold uppercase tracking-wider text-accent-700 bg-accent-50 border border-accent-100 px-1.5 py-0.5 rounded">Studio</span>
+                              <span className="type-admin-label rounded-card border border-accent-100 bg-accent-50 px-1.5 py-0.5 text-accent-700">
+                                Studio
+                              </span>
                             )}
                           </span>
-                          <span className="text-[9px] text-neutral-400 font-bold uppercase tracking-[0.1em]">ID: {product.id.substring(0, 8)}</span>
-                       </Link>
-                    </td>
-                    <td className="px-4 py-5">
-                       <select
-                         disabled={isSaving}
-                         value={product.collectionId || "none"}
-                         onChange={(e) => handleInlineUpdate(product.id, product.price, e.target.value, product.status)}
-                         className="bg-transparent border-none text-[12px] font-bold text-neutral-500 focus:ring-0 focus:outline-none cursor-pointer hover:bg-neutral-100 rounded-card px-2 py-1 transition-all capitalize"
-                       >
-                         <option value="none">UNASSIGNED</option>
-                         {collections.map(c => (
-                           <option key={c.id} value={c.id}>{c.name}</option>
-                         ))}
-                       </select>
-                    </td>
-                    <td className="px-4 py-5 text-right">
-                       <div className="flex items-center justify-end gap-1.5">
-                          <span className="text-neutral-300 text-[10px] font-semibold tracking-tight">$</span>
+                          <AdminMono className="text-neutral-400">
+                            {product.id.substring(0, 8)}
+                          </AdminMono>
+                        </Link>
+                      </AdminTd>
+                      <AdminTd>
+                        <select
+                          disabled={isSaving}
+                          value={product.collectionId || "none"}
+                          aria-label={`Collection for ${product.name}`}
+                          onChange={(e) =>
+                            handleInlineUpdate(product.id, product.price, e.target.value, product.status)
+                          }
+                          className="type-admin-body cursor-pointer rounded-card border-none bg-transparent px-2 py-1 text-neutral-600 outline-none transition-colors hover:bg-[#F4F2ED] focus-visible:ring-2 focus-visible:ring-accent-700/30"
+                        >
+                          <option value="none">Unassigned</option>
+                          {collections.map((c) => (
+                            <option key={c.id} value={c.id}>
+                              {c.name}
+                            </option>
+                          ))}
+                        </select>
+                      </AdminTd>
+                      <AdminTd className="text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <span className="text-neutral-400">$</span>
                           <input
                             type="number"
                             step="0.01"
                             disabled={isSaving}
                             defaultValue={product.price}
+                            aria-label={`Price for ${product.name}`}
                             onBlur={(e) => {
-                               const newPrice = parseFloat(e.target.value);
-                               if (newPrice !== product.price) {
-                                 handleInlineUpdate(product.id, newPrice, product.collectionId || "none", product.status);
-                               }
+                              const newPrice = parseFloat(e.target.value);
+                              if (newPrice !== product.price) {
+                                handleInlineUpdate(
+                                  product.id,
+                                  newPrice,
+                                  product.collectionId || "none",
+                                  product.status
+                                );
+                              }
                             }}
-                            className="bg-transparent border-none text-right text-[13px] font-semibold text-ink w-20 px-2 py-1 rounded-card focus:ring-4 focus:ring-accent-50 focus:bg-white transition-all"
+                            className="type-admin-body w-20 rounded-card border-none bg-transparent px-2 py-1 text-right font-semibold tabular-nums text-ink outline-none transition-colors focus:bg-white focus:ring-2 focus:ring-accent-700/15"
                           />
-                       </div>
-                    </td>
-                    <td className="px-4 py-5">
-                       <div className="flex items-center justify-center">
+                        </div>
+                      </AdminTd>
+                      <AdminTd>
+                        <div className="flex items-center justify-center">
                           <button
+                            type="button"
                             disabled={isSaving}
                             onClick={() => handleStatusToggle(product.id, product.status)}
-                            className={`relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer rounded-full transition-colors duration-300 ease-in-out ${product.status === "LIVE" ? 'bg-[#3E715C]' : 'bg-neutral-200'}`}
+                            role="switch"
+                            aria-checked={product.status === "LIVE"}
+                            aria-label={`${product.name} is ${product.status === "LIVE" ? "live" : "hidden"}`}
+                            className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-700/30 focus-visible:ring-offset-1 ${
+                              product.status === "LIVE" ? "bg-accent-800" : "bg-neutral-200"
+                            }`}
                           >
-                            <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white ring-0 transition duration-300 ease-in-out ${product.status === "LIVE" ? 'translate-x-5' : 'translate-x-0'}`} />
+                            <span
+                              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition duration-200 ${
+                                product.status === "LIVE" ? "translate-x-4" : "translate-x-0"
+                              }`}
+                            />
                           </button>
-                       </div>
-                    </td>
-                    <td className="px-4 py-5 text-right">
-                       <div className="flex flex-col items-end">
-                          <span className={`text-[12px] font-semibold ${potentialProfit > 0 ? "text-accent-700" : "text-brand-terracotta"}`}>
-                             ${potentialProfit.toFixed(2)}
+                        </div>
+                      </AdminTd>
+                      <AdminTd className="text-right">
+                        <div className="flex flex-col items-end">
+                          <span
+                            className={`font-semibold tabular-nums ${
+                              potentialProfit > 0 ? "text-accent-700" : "text-brand-terracotta"
+                            }`}
+                          >
+                            ${potentialProfit.toFixed(2)}
                           </span>
-                          <span className="text-[9px] text-neutral-400 font-bold uppercase tracking-tight">Projected</span>
-                       </div>
-                    </td>
-                    <td className="px-4 py-5 w-10 text-center">
-                       {isSaving ? (
-                         <Loader2 size={14} className="text-accent-700 animate-spin" />
-                       ) : isSaved ? (
-                         <CheckCircle2 size={14} className="text-accent-600 animate-in zoom-in duration-300" />
-                       ) : null}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
-        {filteredProducts.length === 0 && (
-          <div className="p-20 text-center">
-            <p className="text-sm font-bold text-neutral-400 uppercase tracking-widest">No resources located.</p>
-          </div>
+                          <span className="type-admin-meta text-neutral-400">projected</span>
+                        </div>
+                      </AdminTd>
+                      <AdminTd className="w-10 text-center">
+                        {isSaving ? (
+                          <Loader2 aria-hidden size={14} className="animate-spin text-accent-700" />
+                        ) : isSaved ? (
+                          <CheckCircle2
+                            aria-hidden
+                            size={14}
+                            className="animate-in zoom-in text-accent-600 duration-300"
+                          />
+                        ) : null}
+                      </AdminTd>
+                    </AdminTr>
+                  );
+                })}
+              </tbody>
+            </AdminTable>
+          </AdminTableWrap>
+        ) : (
+          /* Cards. Every prop here is the row's own state and the row's own
+             handler — the card renders them differently and calls the same
+             functions, so there is no second write path to keep in sync. */
+          <AdminCardGrid min={220} className="p-4">
+            {filteredProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                collections={collections}
+                isSelected={selectedIds.has(product.id)}
+                isSaving={savingIds.has(product.id)}
+                isSaved={savedIds.has(product.id)}
+                onToggleSelect={() => toggleOneById(product.id)}
+                onStatusToggle={() => handleStatusToggle(product.id, product.status)}
+                onInlineUpdate={(price, collectionId) =>
+                  handleInlineUpdate(product.id, price, collectionId, product.status)
+                }
+              />
+            ))}
+          </AdminCardGrid>
         )}
-      </div>
+      </AdminPanel>
 
-      {/* FLOATING ACTION BAR */}
+      {/* The bulk bar. Every control in it was uppercase at a different
+          tracking — "SELECT COLLECTION", "Assign", "Destroy" — which read as
+          three separate widgets bolted together. Same buttons and the same
+          select as the rest of the studio now, and "Destroy" is "Delete". */}
+      {/* The bar was `min-w-[400px]` on a `fixed` element, so on a 375px phone
+          it pushed past the viewport and scrolled the page sideways. `max-w`
+          caps it at the screen and the row wraps. Desktop is untouched — the
+          cap only binds below 400px, where the old width was already wrong. */}
       {selectedIds.size > 0 && (
-        <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-bottom-8 duration-500">
-          <div className="bg-white border border-[#3E715C]/20 px-4 py-3 rounded-panel flex items-center gap-6 min-w-[400px]">
-            <div className="bg-[#3E715C] text-white px-4 py-1.5 rounded-panel text-[11px] font-semibold uppercase tracking-widest">
-              {selectedIds.size} Selected
-            </div>
-            
+        <div className="animate-in slide-in-from-bottom-8 fixed bottom-8 left-1/2 z-[100] w-max max-w-[calc(100vw-1.5rem)] -translate-x-1/2 duration-300">
+          <div
+            style={{ borderColor: ADMIN_RULE }}
+            className="flex min-w-[min(400px,100%)] flex-wrap items-center gap-x-4 gap-y-2 rounded-panel border bg-white p-3 shadow-lg"
+          >
+            <span className="type-admin-label rounded-card bg-accent-800 px-3 py-1.5 text-white">
+              {selectedIds.size} selected
+            </span>
+
             <div className="h-4 w-px bg-neutral-200" />
-            
-            <div className="flex-1 flex items-center gap-2">
+
+            <div className="flex flex-1 items-center gap-2">
+              <label htmlFor="bulk-collection" className="sr-only">
+                Collection to assign to the selected products
+              </label>
               <select
+                id="bulk-collection"
                 value={bulkCollectionSync}
                 onChange={(e) => setBulkCollectionSync(e.target.value)}
-                className="bg-[#FBFAF8] border-none text-[11px] font-semibold text-neutral-500 rounded-card px-4 py-2 focus:ring-0 cursor-pointer hover:bg-neutral-100 transition-colors uppercase tracking-tight"
+                className="type-admin-body cursor-pointer rounded-card border-none bg-[#FBFAF8] px-3 py-2 text-neutral-600 outline-none transition-colors hover:bg-[#F4F2ED] focus-visible:ring-2 focus-visible:ring-accent-700/30"
               >
-                <option value="none">SELECT COLLECTION</option>
-                {collections.map(c => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
+                <option value="none">Select a collection</option>
+                {collections.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
                 ))}
               </select>
-              <button 
-                onClick={handleBulkPublish}
-                disabled={bulkLoading}
-                className="text-[11px] font-semibold text-[#3E715C] uppercase tracking-widest px-4 hover:bg-accent-50 py-2 rounded-card transition-all"
-              >
+              <AdminButton onClick={handleBulkPublish} disabled={bulkLoading}>
                 Assign
-              </button>
+              </AdminButton>
             </div>
 
             <div className="h-4 w-px bg-neutral-200" />
 
-            <button 
+            <AdminButton
               onClick={handleBulkDelete}
               disabled={bulkLoading}
-              className="flex items-center gap-2 px-6 py-2 bg-[#FBF3F0] text-brand-terracotta rounded-panel text-[11px] font-semibold uppercase tracking-widest hover:bg-brand-terracotta hover:text-white transition-all"
+              className="border-[#E7D3CB] bg-[#FBF3F0] text-brand-terracotta hover:bg-[#F6E4DD]"
             >
-              {bulkLoading ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
-              Destroy
-            </button>
+              {bulkLoading ? (
+                <Loader2 aria-hidden size={14} className="animate-spin" />
+              ) : (
+                <Trash2 aria-hidden size={14} />
+              )}
+              Delete
+            </AdminButton>
           </div>
         </div>
       )}

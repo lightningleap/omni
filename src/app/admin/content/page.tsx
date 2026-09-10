@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import MerchClient from "@/components/admin/MerchClient"
+import { ADMIN_SHELL } from "@/components/admin/ui/primitives"
 
 export default async function ContentPage() {
   const [config, lookbookImages, collections, discoveryItems] = await Promise.all([
@@ -10,7 +11,7 @@ export default async function ContentPage() {
   ])
 
   return (
-    <div className="w-full">
+    <div className={ADMIN_SHELL}>
       <MerchClient 
         initialConfig={config} 
         initialImages={lookbookImages} 

@@ -3,13 +3,18 @@
 import React, { useState, useEffect } from "react";
 import { Zap, X, Check, Inbox } from "lucide-react";
 import { StatusBadge } from "@/components/admin/StatusBadge";
+import OrderCard from "@/components/admin/cards/OrderCard";
+import { AdminCardGrid, AdminViewToggle, useAdminView } from "@/components/admin/ui/views";
+import { AdminCheckbox } from "@/components/admin/ui/checkbox";
 import {
   ADMIN_SHELL,
   AdminButton,
   AdminEmpty,
+  AdminMono,
   AdminPageHeader,
   AdminPanel,
   AdminSearch,
+  AdminSectionHeading,
   AdminTable,
   AdminTableWrap,
   AdminTd,
@@ -43,6 +48,15 @@ type OrderData = {
 export default function OrdersClient({ initialOrders }: { initialOrders: OrderData[] }) {
   const [orders, setOrders] = useState<OrderData[]>(initialOrders);
   const [search, setSearch] = useState("");
+  /**
+   * Presentation only.
+   *
+   * It sits beside the other state rather than above it deliberately: the
+   * search, the selection, the 30-second sync and the drawer are all declared
+   * once and read by both trees, so switching view cannot reset a filter or
+   * drop a selection — there is only ever one of each to reset.
+   */
+  const [view, setView] = useAdminView("orders");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [selectedOrder, setSelectedOrder] = useState<OrderData | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -117,6 +131,10 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderDa
   };
 
   const allSelected = filteredOrders.length > 0 && selectedIds.size === filteredOrders.length;
+  /* Some but not all — the header box shows a dash rather than claiming the
+     whole page is selected. `toggleAll` already selects all from this state,
+     so this is presentation only. */
+  const someSelected = selectedIds.size > 0 && !allSelected;
 
   return (
     <div className={ADMIN_SHELL}>
@@ -162,13 +180,19 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderDa
       />
 
       <AdminPanel>
-        <div style={{ borderColor: '#E8E6E1' }} className="border-b p-3 md:p-4">
-          <AdminSearch
-            value={search}
-            onChange={setSearch}
-            placeholder="Search orders"
-            label="Search orders by id or customer email"
-          />
+        <div
+          style={{ borderColor: '#E8E6E1' }}
+          className="flex items-center gap-3 border-b p-3 md:p-4"
+        >
+          <div className="min-w-0 flex-1">
+            <AdminSearch
+              value={search}
+              onChange={setSearch}
+              placeholder="Search orders"
+              label="Search orders by id or customer email"
+            />
+          </div>
+          <AdminViewToggle view={view} onChange={setView} />
         </div>
 
         {filteredOrders.length === 0 ? (
@@ -181,7 +205,7 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderDa
                 : 'Orders placed in the storefront appear here.'
             }
           />
-        ) : (
+        ) : view === 'list' ? (
           <AdminTableWrap>
             <AdminTable>
               <thead>
@@ -191,15 +215,12 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderDa
                         <div>s with click handlers: unreachable by keyboard and
                         silent to a screen reader, on the control that drives
                         bulk selection. */}
-                    <label className="flex items-center">
-                      <span className="sr-only">Select all orders</span>
-                      <input
-                        type="checkbox"
-                        checked={allSelected}
-                        onChange={toggleAll}
-                        className="h-3.5 w-3.5 cursor-pointer accent-[#2F5646]"
-                      />
-                    </label>
+                    <AdminCheckbox
+                      checked={allSelected}
+                      indeterminate={someSelected}
+                      onChange={toggleAll}
+                      label="Select all orders"
+                    />
                   </AdminTh>
                   <AdminTh>Order</AdminTh>
                   <AdminTh>Customer</AdminTh>
@@ -215,17 +236,13 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderDa
                     onClick={() => setSelectedOrder(order)}
                   >
                     <AdminTd onClick={(e) => e.stopPropagation()}>
-                      <label className="flex items-center">
-                        <span className="sr-only">Select order {order.id.substring(0, 5)}</span>
-                        <input
-                          type="checkbox"
-                          checked={selectedIds.has(order.id)}
-                          onChange={() => toggleOne(order.id)}
-                          className="h-3.5 w-3.5 cursor-pointer accent-[#2F5646]"
-                        />
-                      </label>
+                      <AdminCheckbox
+                        checked={selectedIds.has(order.id)}
+                        onChange={() => toggleOne(order.id)}
+                        label={`Select order ${order.id.substring(0, 5)}`}
+                      />
                     </AdminTd>
-                    <AdminTd className="font-semibold text-ink">#{order.id.substring(0, 5)}</AdminTd>
+                    <AdminTd className="font-semibold text-ink"><AdminMono>#{order.id.substring(0, 5)}</AdminMono></AdminTd>
                     <AdminTd className="max-w-[280px] truncate">{order.user?.email || "Guest"}</AdminTd>
                     <AdminTd className="text-right font-semibold tabular-nums text-ink">
                       ${(order.totalPaid || order.totalAmount).toFixed(2)}
@@ -236,6 +253,21 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderDa
               </tbody>
             </AdminTable>
           </AdminTableWrap>
+        ) : (
+          /* Cards. Wider minimum than the catalogue's — an order card is four
+             lines of text and a total, and a 240px column would break the
+             email onto two lines on almost every order. */
+          <AdminCardGrid min={280} className="p-3 md:p-4">
+            {filteredOrders.map((order) => (
+              <OrderCard
+                key={order.id}
+                order={order}
+                isSelected={selectedIds.has(order.id)}
+                onToggleSelect={() => toggleOne(order.id)}
+                onOpen={() => setSelectedOrder(order)}
+              />
+            ))}
+          </AdminCardGrid>
         )}
       </AdminPanel>
 
@@ -245,7 +277,7 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderDa
            <div className="relative w-full max-w-xl overflow-y-auto bg-white">
               <div className="space-y-5 p-5 md:p-6">
                 <div className="flex items-center justify-between gap-4">
-                  <h2 className="text-[16px] font-semibold text-ink">Order Details</h2>
+                  <AdminSectionHeading>Order details</AdminSectionHeading>
                   <button
                     type="button"
                     onClick={() => setSelectedOrder(null)}
@@ -258,7 +290,7 @@ export default function OrdersClient({ initialOrders }: { initialOrders: OrderDa
                 {/* Simplified manifest for clarity */}
                 <ul style={{ borderColor: '#E8E6E1' }} className="divide-y border-y" >
                   {selectedOrder.items.map(item => (
-                    <li key={item.id} className="flex justify-between gap-4 py-3 text-[13px]">
+                    <li key={item.id} className="type-admin-body flex justify-between gap-4 py-3">
                       <span className="min-w-0 text-neutral-600">{item.name} (x{item.quantity})</span>
                       <span className="shrink-0 font-semibold tabular-nums text-ink">${(item.price * item.quantity).toFixed(2)}</span>
                     </li>

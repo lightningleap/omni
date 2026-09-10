@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import ProductsClient from "@/components/admin/ProductsClient"
+import { ADMIN_SHELL } from "@/components/admin/ui/primitives"
 
 export default async function ProductsPage() {
   const rawProducts = await prisma.product.findMany({
@@ -25,7 +26,7 @@ export default async function ProductsPage() {
   })
 
   return (
-    <div className="space-y-8 font-mono max-w-[1400px] mx-auto w-full">
+    <div className={`${ADMIN_SHELL} space-y-8`}>
       <ProductsClient initialProducts={rawProducts} collections={rawCollections} />
     </div>
   )

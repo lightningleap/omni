@@ -57,10 +57,30 @@ const SPEED = 0.6;
  * the arrows and manual swipe stay usable; wrap logic keeps manual scroll infinite
  * too. Motion is scrollLeft only (compositor-friendly) and respects reduced motion.
  */
-export default function CategoryCircleGrid({ collections }: { collections: Collection[] }) {
+export default function CategoryCircleGrid({
+  collections,
+  audience,
+}: {
+  collections: Collection[];
+  /**
+   * The storefront the shopper is in, appended to every circle's href.
+   *
+   * Without it the rail linked to a bare `/collections/<handle>`, and that page
+   * defaults a missing `audience` to ADULT — deliberately, so a mixed grid never
+   * paints. The consequence was that every KIDS circle asked for Kids themes out
+   * of the Adult catalogue and got nothing back. `pickCollections` has always
+   * appended this for the three featured cards; the rail simply never did.
+   */
+  audience?: string;
+}) {
   const items = collections.slice(0, 18);
   const trackRef = useRef<HTMLDivElement>(null);
-  const dragRef = useRef({ down: false, startX: 0, startScroll: 0, moved: false });
+  /*
+   * `captured` is tracked because pointer capture is now taken LATE — see
+   * `onDragMove`. Releasing a capture that was never taken throws, so the flag
+   * is what `onDragEnd` checks rather than `down`.
+   */
+  const dragRef = useRef({ down: false, startX: 0, startScroll: 0, moved: false, captured: false });
 
   // Why the row pauses is tracked per reason rather than as one flag. A single
   // `paused` boolean has to be un-set by whichever handler happens to fire last,
@@ -142,9 +162,24 @@ export default function CategoryCircleGrid({ collections }: { collections: Colle
     if (e.pointerType !== 'mouse') return;
     const el = trackRef.current;
     if (!el) return;
-    dragRef.current = { down: true, startX: e.clientX, startScroll: el.scrollLeft, moved: false };
+    dragRef.current = { down: true, startX: e.clientX, startScroll: el.scrollLeft, moved: false, captured: false };
     dragPausedRef.current = true;
-    el.setPointerCapture?.(e.pointerId);
+    /*
+     * NO `setPointerCapture` HERE — and this is the whole bug.
+     *
+     * Capturing on pointerdown retargets the pointer stream to this track, and
+     * the browser's COMPATIBILITY MOUSE EVENTS go with it. `click` is dispatched
+     * to the common ancestor of the mousedown and mouseup targets, so with both
+     * retargeted here that ancestor is the track — never the <a> the pointer is
+     * actually over. Every circle rendered a correct href, and clicking one did
+     * nothing at all.
+     *
+     * It only bit a mouse, because the handler returns early for touch and pens,
+     * so the rail worked on a phone and was dead on a desktop.
+     *
+     * Capture is taken in `onDragMove` instead, at the moment a real drag is
+     * recognised. A click never reaches that point, so it stays a click.
+     */
   };
   const onDragMove = (e: ReactPointerEvent) => {
     const d = dragRef.current;
@@ -152,7 +187,13 @@ export default function CategoryCircleGrid({ collections }: { collections: Colle
     const el = trackRef.current;
     if (!el) return;
     const dx = e.clientX - d.startX;
-    if (Math.abs(dx) > 4) d.moved = true;
+    if (!d.moved && Math.abs(dx) > 4) {
+      d.moved = true;
+      // A genuine drag: take the pointer now, so it keeps tracking even if the
+      // cursor leaves the rail mid-throw. This is what pointerdown used to do.
+      el.setPointerCapture?.(e.pointerId);
+      d.captured = true;
+    }
     const period = periodRef.current;
     let target = d.startScroll - dx;
     if (period > 0) {
@@ -163,7 +204,10 @@ export default function CategoryCircleGrid({ collections }: { collections: Colle
     el.scrollLeft = target;
   };
   const onDragEnd = (e: ReactPointerEvent) => {
-    if (dragRef.current.down) trackRef.current?.releasePointerCapture?.(e.pointerId);
+    if (dragRef.current.captured) {
+      trackRef.current?.releasePointerCapture?.(e.pointerId);
+      dragRef.current.captured = false;
+    }
     dragRef.current.down = false;
     // Hand the row back: if the pointer is still over it, hover keeps it paused
     // and releases on the way out. Without this the carousel never restarted.
@@ -217,7 +261,7 @@ export default function CategoryCircleGrid({ collections }: { collections: Colle
             return (
               <Link
                 key={`${c.id}-${i}`}
-                href={`/collections/${c.handle}`}
+                href={audience ? `/collections/${c.handle}?audience=${audience}` : `/collections/${c.handle}`}
                 aria-label={`Shop ${c.name}`}
                 aria-hidden={isClone || undefined}
                 tabIndex={isClone ? -1 : undefined}

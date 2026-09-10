@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma"
 import { isBootstrapAdmin } from "@/lib/admin"
 import { getSessionUser } from "@/lib/auth"
 import CustomersClient from "@/components/admin/CustomersClient"
+import { ADMIN_SHELL } from "@/components/admin/ui/primitives"
 
 export default async function CustomersPage() {
   const { user: currentUser } = await getSessionUser()
@@ -38,7 +39,7 @@ export default async function CustomersPage() {
   }))
 
   return (
-    <div className="space-y-8 font-sans max-w-[1400px] mx-auto w-full">
+    <div className={`${ADMIN_SHELL} space-y-8`}>
       <CustomersClient initialCustomers={safeCustomers} />
     </div>
   )

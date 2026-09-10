@@ -15,15 +15,36 @@ import { Search } from 'lucide-react';
  * re-declaring its own chrome, so the studio has one page header, one panel,
  * one table and one search field, and changing any of them is one edit.
  *
- * ── THE SCALE ───────────────────────────────────────────────────────────────
- * Deliberately tighter than the storefront. A shop page is read at arm's
- * length one section at a time; an orders table is scanned in bulk by someone
- * who works in it all day. Titles cap at 24px, table headers sit at 11px, body
- * rows at 13px — information-dense without being cramped.
+ * ── THE SCALE LIVES IN CSS, NOT HERE ────────────────────────────────────────
+ * The type steps are the `.type-admin-*` classes in `globals.css`, declared in
+ * the same `@layer components` as the storefront's `.type-*` steps — so there
+ * is ONE type system with two registers, and the studio's is legible beside
+ * the shop's rather than buried in a dozen components:
+ *
+ *   .type-admin-title    page title (AdminPageHeader) — 20px, 24px from `md`
+ *   .type-admin-stat     metric tile figure, tabular
+ *   .type-admin-section  panel / section heading — 14px
+ *   .type-admin-body     table rows, field values — 13px
+ *   .type-admin-meta     hints, counts, timestamps — 12px
+ *   .type-admin-label    column + field labels, small caps — 11px
+ *   .type-admin-mono     ids, SKUs, tracking numbers — the ONLY monospace
+ *
+ * The components below compose those classes; none of them restates a size.
+ * That is what lets a step be re-tuned in one place — the previous pass had
+ * the numbers written out in each component, so "titles cap at 24px" was true
+ * of the header and quietly false of three pages that built their own.
+ *
+ * The register is deliberately tighter than the storefront's. A shop page is
+ * read at arm's length one section at a time; an orders table is scanned in
+ * bulk by someone who works in it all day. It is also fixed rather than fluid:
+ * the storefront's `clamp()` steps scale with the viewport, and a back office
+ * wants the same density on a laptop as on a 27" display.
  *
  * Colour comes entirely from `[data-admin-surface]` in `globals.css`, which
  * pins the Adult accent so the back office keeps one identity regardless of
- * which storefront the signed-in admin last browsed.
+ * which storefront the signed-in admin last browsed. That selector also sets
+ * the studio's heading defaults, so an unclassed `<h2>` in the admin gets the
+ * 16px UI step rather than the storefront's 29px editorial one.
  */
 
 /** Container width + gutters. One value, so no two pages align differently. */
@@ -31,6 +52,25 @@ export const ADMIN_SHELL = 'mx-auto w-full max-w-[1440px]';
 
 /** The studio's hairline. Warmer than neutral-200, matching the storefront. */
 export const ADMIN_RULE = '#E8E6E1';
+
+/**
+ * The studio's green, for the handful of places that cannot take a class.
+ *
+ * Recharts renders strokes and gradient stops from props, and the design
+ * canvas is Konva drawing to a `<canvas>` — neither reads Tailwind utilities,
+ * and Konva cannot resolve a `var()` either, because there is no CSSOM on a
+ * canvas context. So a literal is unavoidable; what was avoidable is SIX of
+ * them, which is what `#3E715C` typed into the Analytics chart, the Finance
+ * chart and the design canvas's transform handles had become.
+ *
+ * This mirrors `--accent-700` — the ramp step for a graphic or body text on a
+ * white ground (5.65:1). It is the same declaration style as `ADMIN_RULE`
+ * above, which exists for the same reason: values inline styles need.
+ *
+ * If the palette moves, this moves with it. That is one edit rather than a
+ * grep, which is the whole point.
+ */
+export const ADMIN_ACCENT = '#3E715C';
 
 /**
  * A page header: title, optional live/context line, optional action.
@@ -53,10 +93,10 @@ export function AdminPageHeader({
   return (
     <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
       <div className="min-w-0">
-        <h1 className="text-[20px] font-semibold leading-tight tracking-[-0.02em] text-ink md:text-[24px]">
-          {title}
-        </h1>
-        {meta && <div className="mt-2 flex items-center gap-2 text-[12px] text-neutral-500">{meta}</div>}
+        <h1 className="type-admin-title text-ink">{title}</h1>
+        {meta && (
+          <div className="type-admin-meta mt-2 flex items-center gap-2 text-neutral-500">{meta}</div>
+        )}
       </div>
       {action && <div className="flex shrink-0 flex-wrap items-center gap-2">{action}</div>}
     </header>
@@ -103,7 +143,8 @@ export function AdminStat({
   hint,
   tone = 'default',
 }: {
-  label: string;
+  /** ReactNode, not string: the Finance tiles prefix their label with an icon. */
+  label: React.ReactNode;
   value: React.ReactNode;
   hint?: React.ReactNode;
   /** `accent` for the headline figure of a page; `warn` for costs/negatives. */
@@ -114,11 +155,9 @@ export function AdminStat({
 
   return (
     <AdminPanel padded>
-      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-400">{label}</p>
-      <p className={`mt-2 text-[20px] font-bold leading-none tracking-[-0.02em] tabular-nums md:text-[24px] ${valueTone}`}>
-        {value}
-      </p>
-      {hint && <p className="mt-2 text-[12px] leading-snug text-neutral-400">{hint}</p>}
+      <p className="type-admin-label text-neutral-400">{label}</p>
+      <p className={`type-admin-stat mt-2 ${valueTone}`}>{value}</p>
+      {hint && <p className="type-admin-meta mt-2 text-neutral-400">{hint}</p>}
     </AdminPanel>
   );
 }
@@ -159,7 +198,7 @@ export function AdminSearch({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         style={{ borderColor: ADMIN_RULE }}
-        className="h-10 w-full rounded-card border bg-[#FBFAF8] pl-10 pr-3 text-[13px] text-ink outline-none transition-colors duration-200 placeholder:text-neutral-400 focus:border-accent-700 focus:bg-white focus:ring-2 focus:ring-accent-700/15"
+        className="type-admin-body h-10 w-full rounded-card border bg-[#FBFAF8] pl-10 pr-3 text-ink outline-none transition-colors duration-200 placeholder:text-neutral-400 focus:border-accent-700 focus:bg-white focus:ring-2 focus:ring-accent-700/15"
       />
     </div>
   );
@@ -192,7 +231,7 @@ export function AdminTh({
     <th
       scope="col"
       style={{ borderColor: ADMIN_RULE }}
-      className={`whitespace-nowrap border-b bg-[#FBFAF8] px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.1em] text-neutral-500 ${className}`}
+      className={`type-admin-label whitespace-nowrap border-b bg-[#FBFAF8] px-4 py-3 text-neutral-500 ${className}`}
     >
       {children}
     </th>
@@ -205,7 +244,7 @@ export function AdminTd({
   ...rest
 }: React.TdHTMLAttributes<HTMLTableCellElement>) {
   return (
-    <td className={`px-4 py-3.5 align-middle text-[13px] text-neutral-600 ${className}`} {...rest}>
+    <td className={`type-admin-body px-4 py-3.5 align-middle text-neutral-600 ${className}`} {...rest}>
       {children}
     </td>
   );
@@ -251,8 +290,8 @@ export function AdminEmpty({
   return (
     <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
       {icon && <div className="mb-4 text-neutral-300">{icon}</div>}
-      <p className="text-[14px] font-semibold text-ink">{title}</p>
-      {message && <p className="mt-1.5 max-w-[42ch] text-[12px] leading-relaxed text-neutral-400">{message}</p>}
+      <p className="type-admin-section text-ink">{title}</p>
+      {message && <p className="type-admin-meta mt-1.5 max-w-[42ch] text-neutral-400">{message}</p>}
       {action && <div className="mt-5">{action}</div>}
     </div>
   );
@@ -290,7 +329,7 @@ export function AdminTableSkeleton({ rows = 6, cols = 5 }: { rows?: number; cols
  * tall for a table toolbar; these keep its colour, radius and transition.
  */
 const BTN_BASE =
-  'inline-flex h-9 items-center justify-center gap-2 rounded-card px-3.5 text-[12px] font-semibold whitespace-nowrap transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-700/30 focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50';
+  'type-admin-meta inline-flex h-9 items-center justify-center gap-2 rounded-card px-3.5 font-semibold whitespace-nowrap transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-700/30 focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50';
 
 export function AdminButton({
   variant = 'secondary',
@@ -320,3 +359,135 @@ export const adminButtonClass = (variant: 'primary' | 'secondary' = 'secondary')
       ? 'bg-accent-800 text-white hover:bg-accent-950'
       : 'border border-[#E8E6E1] bg-white text-ink hover:bg-[#FBFAF8]'
   }`;
+
+/**
+ * A heading inside a page — the name of a panel, a form group, a drawer
+ * section.
+ *
+ * Every admin page was rolling its own: `text-lg font-semibold tracking-tight
+ * uppercase italic` in Content, `text-sm font-bold uppercase tracking-widest
+ * italic` in Finance, `text-xl` in one panel and `text-base` in the next. They
+ * are all this now, so a section heading means the same thing on every screen.
+ *
+ * `as` exists because the right heading LEVEL depends on what encloses it —
+ * a panel directly under the page title is an h2, a group inside that panel is
+ * an h3 — and the outline should stay correct without changing the look. The
+ * default is h2, which is what a top-level panel heading is.
+ */
+export function AdminSectionHeading({
+  children,
+  as: Tag = 'h2',
+  className = '',
+}: {
+  children: React.ReactNode;
+  as?: 'h2' | 'h3' | 'h4';
+  className?: string;
+}) {
+  return <Tag className={`type-admin-section text-ink ${className}`}>{children}</Tag>;
+}
+
+/**
+ * Machine strings — order ids, SKUs, Printify ids, tracking numbers.
+ *
+ * The ONLY monospace in the studio. `font-mono` used to be set on the whole
+ * `/admin/analytics` and `/admin/products` pages, which put headings, prose and
+ * buttons in a typewriter face; the ids that actually wanted it were mixed in
+ * with everything that did not. Now the identifier asks for it and nothing
+ * else gets it.
+ */
+export function AdminMono({
+  children,
+  className = '',
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return <span className={`type-admin-mono ${className}`}>{children}</span>;
+}
+
+/**
+ * ── FORM CONTROLS ──────────────────────────────────────────────────────────
+ *
+ * One field chrome, shared by input, select and textarea.
+ *
+ * The admin had at least six: `rounded-card` beside `rounded-panel`, focus
+ * rings at `ring-2`, `ring-4` and none, sizes from `text-xs` to `text-sm`, and
+ * one price input in `font-mono` for no reason a reader could infer. The values
+ * here are the search field's — the one control that was already right — so the
+ * whole studio focuses, rounds and sizes identically.
+ *
+ * Height is set by padding rather than a fixed `h-`, so the same class works on
+ * a one-line input and a multi-line textarea.
+ */
+export const ADMIN_FIELD =
+  'type-admin-body w-full rounded-card border bg-white px-3 py-2.5 text-ink outline-none transition-colors duration-200 placeholder:text-neutral-400 focus:border-accent-700 focus:ring-2 focus:ring-accent-700/15 disabled:cursor-not-allowed disabled:bg-[#FBFAF8] disabled:text-neutral-400';
+
+export function AdminInput({
+  className = '',
+  ...rest
+}: React.InputHTMLAttributes<HTMLInputElement>) {
+  return <input style={{ borderColor: ADMIN_RULE }} className={`${ADMIN_FIELD} ${className}`} {...rest} />;
+}
+
+export function AdminTextarea({
+  className = '',
+  ...rest
+}: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
+  return (
+    <textarea
+      style={{ borderColor: ADMIN_RULE }}
+      className={`${ADMIN_FIELD} resize-y leading-relaxed ${className}`}
+      {...rest}
+    />
+  );
+}
+
+export function AdminSelect({
+  className = '',
+  children,
+  ...rest
+}: React.SelectHTMLAttributes<HTMLSelectElement>) {
+  return (
+    <select style={{ borderColor: ADMIN_RULE }} className={`${ADMIN_FIELD} ${className}`} {...rest}>
+      {children}
+    </select>
+  );
+}
+
+/**
+ * A labelled field.
+ *
+ * The label is a real `<label>` bound to the control by id, which is what most
+ * of these were missing — several were a `<p>` sitting above an unlabelled
+ * input, so a screen reader announced "edit text, blank". `hint` is the line of
+ * guidance underneath, and it is `aria-describedby`-linked rather than merely
+ * adjacent.
+ */
+export function AdminField({
+  label,
+  htmlFor,
+  hint,
+  children,
+  className = '',
+}: {
+  label: React.ReactNode;
+  /** Must match the `id` of the control passed as `children`. */
+  htmlFor: string;
+  hint?: React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={`space-y-1.5 ${className}`}>
+      <label htmlFor={htmlFor} className="type-admin-label block text-neutral-500">
+        {label}
+      </label>
+      {children}
+      {hint && (
+        <p id={`${htmlFor}-hint`} className="type-admin-meta text-neutral-400">
+          {hint}
+        </p>
+      )}
+    </div>
+  );
+}

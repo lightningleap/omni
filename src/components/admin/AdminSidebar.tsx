@@ -116,22 +116,32 @@ export default function AdminSidebar({}: { user?: unknown }) {
 
             It renders `role="img"` with `aria-label="UNRWLY"`, so the heading
             keeps an accessible name without a separate text node. */}
-        {/* The mark is a mask filled with `currentColor`, so this off-white is
-            what paints it — the same tone as the labels below, so the brand
-            block and the navigation read as one light column. */}
-        <h1 className="text-[#F4F2ED]">
+        {/* The mark is a mask filled with `currentColor`, so this colour is
+            what paints it — white, so the brand reads at full strength against
+            the green rail.
+
+            This class only started working once the heading colour moved into
+            `@layer base` in globals.css. It used to be declared unlayered, and
+            unlayered CSS outranks every cascade layer — including
+            `@layer utilities`, where Tailwind's `text-*` classes live — so the
+            h1 took the dark heading ink and the logo rendered near-black on the
+            green. Worth knowing before moving that rule back. */}
+        <h1 className="text-white">
           <BrandMark size="md" mode="adult" tone="inherit" />
         </h1>
-        <p className="mt-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#F4F2ED]/85">
+        <p className="type-admin-label mt-2 text-[#F4F2ED]/85">
           Management Studio
         </p>
       </div>
 
       {/* Navigation */}
-      <nav aria-label="Management Studio" className="flex-1 overflow-y-auto px-3 pb-4">
-        <p className="px-2 pb-2 pt-1 text-[10px] font-medium uppercase tracking-[0.14em] text-[#F4F2ED]/75">
-          Management
-        </p>
+      {/* The "Management" group label is gone. It named a group of one — every
+          item in the rail was under it — so it labelled nothing, and it sat two
+          lines below "Management Studio" repeating most of that word. The brand
+          block's `pb-5` is now the only gap above the first item, which is the
+          spacing the rest of the studio uses between a header and its content;
+          the nav keeps `pt-1` so the "Home" plate is not flush against it. */}
+      <nav aria-label="Management Studio" className="flex-1 overflow-y-auto px-3 pb-4 pt-1">
         <ul className="space-y-0.5">
           {menuItems.map((item) => {
             // `/admin` must match exactly or it would light up on every child
@@ -170,22 +180,48 @@ export default function AdminSidebar({}: { user?: unknown }) {
         </ul>
       </nav>
 
-      {/* Bottom actions — same two, same behaviour */}
-      <div className="border-t border-white/25 px-3 py-3">
+      {/* ── BOTTOM ACTIONS ───────────────────────────────────────────────
+          Same two, same routes, same handlers — but they were one
+          undifferentiated stack: identical weight, colour and hover, sitting
+          flush against each other so they read as a pair of equals. They are
+          not equals. "View Store" is what an admin reaches for a dozen times a
+          day to check their work on the shop; "Log Out" is pressed once.
+
+          View Store takes the cream plate — the same `#F4F2ED` on `accent-800`
+          the ACTIVE NAV ITEM uses. That matters: it is this rail's established
+          way of lifting something out of the green, so the CTA introduces no
+          new colour, and the one pairing already proven legible here is the one
+          it reuses. It cannot be confused with the active-page plate either —
+          that one is left-aligned in the list and bleeds off the right edge
+          (`-mr-3 rounded-l-panel`), while this is an inset, centred, fully
+          rounded button sitting below the footer rule.
+
+          `rounded-card` rather than the rail's `rounded-panel`, because that is
+          the radius every other button in the studio uses; this is a button,
+          not a plate.
+
+          Log Out steps back — muted to 75% and its icon to 70%, brightening on
+          hover — and the 16px above it is what separates the two. A second rule
+          under a footer that already has a `border-t` would be one line too
+          many. */}
+      <div className="border-t border-white/25 px-3 pb-3 pt-3.5">
         <Link
           href="/"
           onClick={close}
-          className="flex items-center gap-3 rounded-panel px-3 py-2.5 text-[13px] font-medium text-[#F4F2ED] transition-colors duration-200 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+          /* The focus ring is white on a 2px offset of the rail's own green,
+             because a `ring-white/60` — what every other control in here uses —
+             is invisible against a cream fill. */
+          className="flex items-center justify-center gap-2 rounded-card bg-[#F4F2ED] px-3 py-2.5 text-[13px] font-semibold text-accent-800 transition-colors duration-200 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-accent-600"
         >
-          <TrendingUp aria-hidden size={16} strokeWidth={1.75} className="text-[#F4F2ED]/85" />
+          <TrendingUp aria-hidden size={16} strokeWidth={2} />
           View Store
         </Link>
         <button
           type="button"
           onClick={() => signOutAction()}
-          className="flex w-full items-center gap-3 rounded-panel px-3 py-2.5 text-[13px] font-medium text-[#F4F2ED] transition-colors duration-200 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+          className="mt-4 flex w-full items-center gap-3 rounded-panel px-3 py-2.5 text-[13px] font-medium text-[#F4F2ED]/75 transition-colors duration-200 hover:bg-white/20 hover:text-[#F4F2ED] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
         >
-          <LogOut aria-hidden size={16} strokeWidth={1.75} className="text-[#F4F2ED]/85" />
+          <LogOut aria-hidden size={16} strokeWidth={1.75} className="text-[#F4F2ED]/70" />
           Log Out
         </button>
       </div>
@@ -210,7 +246,7 @@ export default function AdminSidebar({}: { user?: unknown }) {
         {/* tone="inherit" — the mark is a mask filled with currentColor, so
             this colour is what paints it. Left on the default accent tone it
             would render the logo green on the logo green and disappear. */}
-        <span className="text-[#F4F2ED]">
+        <span className="text-white">
           <BrandMark size="sm" mode="adult" tone="inherit" />
         </span>
       </div>

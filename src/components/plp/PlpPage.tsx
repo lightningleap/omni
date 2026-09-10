@@ -4,7 +4,7 @@ import PlpClient from '@/components/plp/PlpClient';
 import { getShopCategory } from '@/data/shopCategories';
 import { getFilterConfig } from '@/filters';
 import { NEW_FOR_DAYS } from '@/filters/shared';
-import { resolveProductAttributes } from '@/utils/plp/productAttributes';
+import { matchesAnyKeyword, resolveProductAttributes } from '@/utils/plp/productAttributes';
 import { ETSY_LISTINGS, ETSY_LISTINGS_BY_PRINTIFY_ID } from '@/data/etsyListings';
 import { parseFilterState } from '@/utils/plp/filterUrl';
 import type { PlpProduct, ShopAudience } from '@/types/plp';
@@ -53,7 +53,24 @@ export async function getCatalogue(
    * whole audience catalogue. Omitted → the full catalogue, which is what the
    * category pages and the virtual "New Arrivals" handle both want.
    */
-  options?: { collectionId?: string },
+  options?: {
+    collectionId?: string;
+    /**
+     * Ids of several collections, for a Browse Collections section that spans
+     * more than one product type — "Home & Desk" is home-decor + stationery +
+     * pillows + rugs + towels. Applied in the WHERE clause, so a section that
+     * resolves this way costs exactly what a single-collection page costs.
+     */
+    collectionIds?: string[];
+    /**
+     * Whole-token matches against the Etsy listing TITLE, for a section that
+     * describes a theme the database has no column for. Applied after the
+     * query, because the title lives in the static Etsy registry rather than
+     * in Postgres — the same registry every card already reads its name and
+     * price from, so this adds no fetch.
+     */
+    titleKeywords?: string[];
+  },
 ): Promise<PlpProduct[]> {
   const listings = ETSY_LISTINGS_BY_PRINTIFY_ID[audience];
   const etsyPrintifyIds = ETSY_LISTINGS[audience].map((l) => l.printifyId);
@@ -66,6 +83,9 @@ export async function getCatalogue(
           audience: audience === 'kids' ? 'KIDS' : 'ADULT',
           printifyId: { in: etsyPrintifyIds },
           ...(options?.collectionId ? { collectionId: options.collectionId } : {}),
+          ...(options?.collectionIds?.length
+            ? { collectionId: { in: options.collectionIds } }
+            : {}),
         },
         include: { collection: { select: { name: true } } },
         orderBy: { createdAt: 'desc' },
@@ -81,6 +101,13 @@ export async function getCatalogue(
       // in this audience's listings cannot produce a card, so an Adult listing
       // can never attach itself to a Kids row even if the ids ever collided.
       .filter((p) => listings.has(String(p.printifyId)))
+      // A themed Browse Collections section, matched on the listing title.
+      // Runs before the map so a narrowed section does no work per excluded row.
+      .filter((p) =>
+        options?.titleKeywords?.length
+          ? matchesAnyKeyword(listings.get(String(p.printifyId))!.title, options.titleKeywords)
+          : true,
+      )
       .map((p) => {
         // Non-null by construction — filtered on this same lookup above.
         const listing = listings.get(String(p.printifyId))!;

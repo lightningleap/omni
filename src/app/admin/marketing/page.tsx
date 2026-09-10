@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import FlashSaleForm from "@/components/admin/FlashSaleForm"
+import { ADMIN_SHELL, AdminPageHeader } from "@/components/admin/ui/primitives"
 
 export default async function MarketingPage() {
   const config = await prisma.storeConfig.findUnique({
@@ -7,25 +8,26 @@ export default async function MarketingPage() {
   })
 
   return (
-    <div className="space-y-12 max-w-5xl mx-auto py-16 px-8 mb-20">
-      <header className="flex justify-between items-end mb-16 border-b border-[#EFEDE8] pb-10">
-        <div className="space-y-2">
-          <h1 className="text-[24px] font-semibold tracking-[-0.02em] text-ink leading-tight">Marketing Protocol</h1>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-neutral-400 ml-1">Campaign Management // Global Triggers // FOMO Engine</p>
-        </div>
-        <div className="bg-white border border-[#E8E6E1] px-5 py-2.5 rounded-full flex items-center gap-2.5">
-          <div className="w-2 h-2 bg-accent-600 rounded-full animate-pulse" />
-          <span className="text-[8px] font-semibold uppercase tracking-widest text-neutral-500">Creative Engine: <span className="text-accent-700">Syncing</span></span>
-        </div>
-      </header>
-      
-      <div className="bg-[#FBFAF8] border border-[#EFEDE8] rounded-panel p-4">
-        <FlashSaleForm initialData={config as any} />
-      </div>
+    /* This page used to set its own everything: a 5xl container where the
+       rest of the studio is 1440px, 64px of vertical padding where the rest
+       has none, a 16px-deep bespoke header rule, an 8px status chip, and a
+       footer whose only content was a developer in-joke. It is the same shell
+       and the same header as every other section now. */
+    <div className={`${ADMIN_SHELL} space-y-8`}>
+      <AdminPageHeader
+        title="Marketing"
+        meta="Campaign management, global triggers and the countdown engine."
+        action={
+          <div className="flex items-center gap-2 rounded-card border border-[#E8E6E1] bg-white px-4 py-2">
+            <div className="h-2 w-2 animate-pulse rounded-full bg-accent-600" />
+            <span className="type-admin-label text-neutral-500">
+              Creative engine: <span className="text-accent-700">syncing</span>
+            </span>
+          </div>
+        }
+      />
 
-      <footer className="pt-12 border-t border-[#EFEDE8] flex justify-center">
-        <p className="text-[10px] font-sans text-neutral-300">"Flash: Stickered // Font: Stylish // Admin: Pruned."</p>
-      </footer>
+      <FlashSaleForm initialData={config as any} />
     </div>
   )
 }

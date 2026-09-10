@@ -1,8 +1,9 @@
 import ProductCreatorClient from "@/components/admin/ProductCreatorClient"
+import { ADMIN_SHELL } from "@/components/admin/ui/primitives"
 
 export default function NewProductPage() {
   return (
-    <div className="font-sans max-w-[1400px] mx-auto w-full">
+    <div className={ADMIN_SHELL}>
       <ProductCreatorClient />
     </div>
   )

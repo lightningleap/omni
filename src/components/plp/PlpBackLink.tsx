@@ -31,7 +31,7 @@ export default function PlpBackLink({
   return (
     <Link
       href={parent.href}
-      className="type-caption group/back mb-2 inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] text-neutral-500 transition-colors duration-200 ease-out hover:text-accent-ink focus-visible:text-accent-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
+      className="type-caption group/back mb-1.5 inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.18em] text-neutral-500 transition-colors duration-200 ease-out hover:text-accent-ink focus-visible:text-accent-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
     >
       <ArrowLeft
         aria-hidden

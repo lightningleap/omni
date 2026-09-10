@@ -4,6 +4,24 @@ import React, { useState, useTransition, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Trash2, Plus, Loader2, FolderTree } from "lucide-react"
 import { createCollection, deleteCollection } from "@/app/actions/admin/products"
+import CollectionCard from "@/components/admin/cards/CollectionCard"
+import { AdminCardGrid, AdminViewToggle, useAdminView } from "@/components/admin/ui/views"
+import {
+  ADMIN_RULE,
+  AdminButton,
+  AdminEmpty,
+  AdminField,
+  AdminInput,
+  AdminPageHeader,
+  AdminPanel,
+  AdminSectionHeading,
+  AdminTable,
+  AdminTableWrap,
+  AdminTd,
+  AdminTextarea,
+  AdminTh,
+  AdminTr,
+} from "@/components/admin/ui/primitives"
 
 type CollectionData = {
   id: string;
@@ -11,6 +29,9 @@ type CollectionData = {
   description: string | null;
   handle: string;
   productCount: number;
+  /** Optional on the model, and most collections have none — the card draws a
+   *  branded placeholder rather than a broken image when it is absent. */
+  imageUrl?: string | null;
 }
 
 export default function CollectionsClient({ initialCollections }: { initialCollections: CollectionData[] }) {
@@ -21,6 +42,9 @@ export default function CollectionsClient({ initialCollections }: { initialColle
   const [newColName, setNewColName] = useState("")
   const [newColDesc, setNewColDesc] = useState("")
   const [loadingIds, setLoadingIds] = useState<Set<string>>(new Set())
+  // Presentation only — both views render the same `collections` array and
+  // call the same `handleDelete`.
+  const [view, setView] = useAdminView("collections")
 
   // Sync state when props change (revalidation)
   useEffect(() => {
@@ -61,121 +85,146 @@ export default function CollectionsClient({ initialCollections }: { initialColle
   }
 
   return (
-    <div className="space-y-8 font-sans text-neutral-900 max-w-[1400px] pb-24">
-      {/* Header */}
-      <div className="flex justify-between items-end">
-        <div>
-          <h2 className="text-[24px] font-semibold tracking-[-0.02em] text-ink">Collections</h2>
-          <p className="text-sm text-neutral-500 mt-1">Organize and curate your product catalog into thematic groups.</p>
-        </div>
-      </div>
+    <div className="space-y-6">
+      <AdminPageHeader
+        title="Collections"
+        meta="Organise the catalogue into thematic groups."
+      />
 
-      {/* Creation Sleek Card */}
-      <div className="bg-white border border-[#E8E6E1] rounded-panel p-8 space-y-6 transition-all">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-accent-50 text-accent-700 rounded-card">
-            <FolderTree size={20} />
+      {/* The create form. Its two fields were an unlabelled input and textarea
+          at `rounded-panel` with a `ring-2 ring-accent-500/20` focus, beside a
+          search field one panel away at `rounded-card` with
+          `ring-accent-700/15` — AdminField and AdminInput are both now. */}
+      <AdminPanel padded>
+        <div className="mb-5 flex items-center gap-3">
+          <div className="rounded-card bg-accent-50 p-2 text-accent-700">
+            <FolderTree aria-hidden size={16} />
           </div>
-          <h3 className="text-sm font-bold text-neutral-900 tracking-tight">Create New Collection</h3>
+          <AdminSectionHeading>New collection</AdminSectionHeading>
         </div>
-        <form onSubmit={handleCreate} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form onSubmit={handleCreate} className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Collection Name</label>
-              <input 
-                type="text" 
-                placeholder="e.g. Summer Essentials" 
+            <AdminField label="Collection name" htmlFor="new-collection-name">
+              <AdminInput
+                id="new-collection-name"
+                type="text"
+                placeholder="e.g. Summer Essentials"
                 value={newColName}
-                onChange={e => setNewColName(e.target.value)}
+                onChange={(e) => setNewColName(e.target.value)}
                 disabled={isCreating}
-                className="w-full bg-[#FBFAF8] border border-[#E8E6E1] rounded-panel text-sm font-bold text-neutral-900 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-800 transition-all placeholder:text-neutral-300"
               />
-            </div>
-            <button 
+            </AdminField>
+            <AdminButton
               type="submit"
+              variant="primary"
               disabled={isCreating || !newColName.trim()}
-              className="w-full bg-accent-800 text-white font-bold text-xs py-3.5 rounded-panel flex items-center justify-center gap-2 hover:bg-accent-950 transition-all disabled:opacity-50"
+              className="w-full"
             >
-              {isCreating ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
-              Initialize Collection
-            </button>
+              {isCreating ? (
+                <Loader2 aria-hidden size={14} className="animate-spin" />
+              ) : (
+                <Plus aria-hidden size={14} />
+              )}
+              Create collection
+            </AdminButton>
           </div>
-          <div className="space-y-2">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Description</label>
-            <textarea 
-              placeholder="Provide a brief summary for this collection..." 
+          <AdminField label="Description" htmlFor="new-collection-description">
+            <AdminTextarea
+              id="new-collection-description"
+              placeholder="A brief summary for this collection…"
               value={newColDesc}
-              onChange={e => setNewColDesc(e.target.value)}
+              onChange={(e) => setNewColDesc(e.target.value)}
               disabled={isCreating}
               rows={4}
-              className="w-full bg-[#FBFAF8] border border-[#E8E6E1] rounded-panel text-sm font-medium text-neutral-600 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-800 transition-all resize-none placeholder:text-neutral-300"
             />
-          </div>
+          </AdminField>
         </form>
-      </div>
+      </AdminPanel>
 
-      {/* Active Collections Data Table */}
-      <div className="bg-white rounded-panel border border-[#E8E6E1] overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-[#FBFAF8] border-b border-[#EFEDE8]">
-                <th className="p-5 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Collection</th>
-                <th className="p-5 text-xs font-semibold text-neutral-500 uppercase tracking-wider text-center">Products</th>
-                <th className="p-5 text-xs font-semibold text-neutral-500 uppercase tracking-wider">Description</th>
-                <th className="p-5 text-xs font-semibold text-neutral-500 uppercase tracking-wider text-right">Delete</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#EFEDE8]">
-              {collections.map((col) => {
-                const isDeleting = loadingIds.has(col.id);
-
-                return (
-                  <tr key={col.id} className="group hover:bg-[#FBFAF8] transition-all duration-200">
-                    <td className="p-5">
-                      <div className="flex flex-col">
-                        <span className="text-sm font-bold text-neutral-900 group-hover:text-accent-700 transition-colors tracking-tight">{col.name}</span>
-                        <span className="text-[10px] text-neutral-400 font-medium mt-0.5 uppercase tracking-widest">/{col.handle}</span>
-                      </div>
-                    </td>
-                    <td className="p-5 text-center">
-                      <span className="inline-flex items-center px-3 py-1 bg-accent-50 text-accent-800 text-[10px] font-bold rounded-full border border-accent-100">
-                        {col.productCount} Items
-                      </span>
-                    </td>
-                    <td className="p-5">
-                      <span className="text-xs text-neutral-500 font-medium line-clamp-1 max-w-[300px]">
-                        {col.description || "—"}
-                      </span>
-                    </td>
-                    <td className="p-5 text-right">
-                      <button 
-                        disabled={isDeleting}
-                        onClick={() => handleDelete(col.id)}
-                        className="p-2.5 rounded-panel bg-[#FBF3F0] text-brand-terracotta hover:bg-[#FBF3F0] transition-all disabled:opacity-50"
-                      >
-                        {isDeleting ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={16} />}
-                      </button>
-                    </td>
-                  </tr>
-                )
-              })}
-              {collections.length === 0 && (
-                <tr>
-                  <td colSpan={4} className="p-20 text-center">
-                    <div className="flex flex-col items-center gap-3">
-                      <div className="w-16 h-16 bg-[#FBFAF8] rounded-full flex items-center justify-center border border-[#EFEDE8]">
-                        <FolderTree size={24} className="text-neutral-300" />
-                      </div>
-                      <p className="text-sm font-semibold text-neutral-400">No active collections found.</p>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+      <AdminPanel>
+        <div
+          style={{ borderColor: ADMIN_RULE }}
+          className="flex items-center justify-between gap-3 border-b px-4 py-3"
+        >
+          <span className="type-admin-meta text-neutral-500">
+            {collections.length} {collections.length === 1 ? "collection" : "collections"}
+          </span>
+          <AdminViewToggle view={view} onChange={setView} />
         </div>
-      </div>
+
+        {collections.length === 0 ? (
+          <AdminEmpty
+            icon={<FolderTree aria-hidden size={24} />}
+            title="No collections yet"
+            message="Create one above and it becomes available to every product."
+          />
+        ) : view === 'list' ? (
+          <AdminTableWrap>
+            <AdminTable>
+              <thead>
+                <tr>
+                  <AdminTh>Collection</AdminTh>
+                  <AdminTh className="text-center">Products</AdminTh>
+                  <AdminTh>Description</AdminTh>
+                  <AdminTh className="text-right">Delete</AdminTh>
+                </tr>
+              </thead>
+              <tbody>
+                {collections.map((col) => {
+                  const isDeleting = loadingIds.has(col.id);
+
+                  return (
+                    <AdminTr key={col.id} className="group">
+                      <AdminTd>
+                        <div className="flex flex-col">
+                          <span className="font-semibold text-ink transition-colors group-hover:text-accent-700">
+                            {col.name}
+                          </span>
+                          <span className="type-admin-meta mt-0.5 text-neutral-400">/{col.handle}</span>
+                        </div>
+                      </AdminTd>
+                      <AdminTd className="text-center">
+                        <span className="type-admin-meta inline-flex items-center rounded-card border border-accent-100 bg-accent-50 px-2 py-0.5 font-semibold tabular-nums text-accent-800">
+                          {col.productCount}
+                        </span>
+                      </AdminTd>
+                      <AdminTd>
+                        <span className="line-clamp-1 max-w-[300px]">{col.description || "—"}</span>
+                      </AdminTd>
+                      <AdminTd className="text-right">
+                        <button
+                          type="button"
+                          disabled={isDeleting}
+                          onClick={() => handleDelete(col.id)}
+                          aria-label={`Delete the ${col.name} collection`}
+                          className="rounded-card bg-[#FBF3F0] p-2 text-brand-terracotta transition-colors hover:bg-[#F6E4DD] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-700/30 disabled:opacity-50"
+                        >
+                          {isDeleting ? (
+                            <Loader2 aria-hidden size={14} className="animate-spin" />
+                          ) : (
+                            <Trash2 aria-hidden size={14} />
+                          )}
+                        </button>
+                      </AdminTd>
+                    </AdminTr>
+                  );
+                })}
+              </tbody>
+            </AdminTable>
+          </AdminTableWrap>
+        ) : (
+          <AdminCardGrid min={240} className="p-3 md:p-4">
+            {collections.map((col) => (
+              <CollectionCard
+                key={col.id}
+                collection={col}
+                isDeleting={loadingIds.has(col.id)}
+                onDelete={() => handleDelete(col.id)}
+              />
+            ))}
+          </AdminCardGrid>
+        )}
+      </AdminPanel>
     </div>
   )
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -109,10 +109,23 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
   const searchParams = useSearchParams();
 
   // ── Storefront mode ──────────────────────────────────────────────────────
-  // The toggle drives global state, not a route: selecting a mode re-renders
-  // every dynamic homepage section in place — no navigation, no refresh — and
-  // the choice persists across refreshes and return visits (localStorage).
+  // The persisted selection of Adult vs Kids. Switching it is a departure —
+  // see `switchStore` — but the value itself is what every dynamic section on
+  // the homepage renders from, and it survives refreshes and return visits.
   const { mode, setMode } = useHomepageMode();
+
+  /*
+   * Set for the duration of a deliberate storefront switch — see `switchStore`.
+   *
+   * Without it the switch undoes itself. Leaving `/collections/x?audience=adult`
+   * for the Kids homepage is an async client transition, and until it lands this
+   * component keeps re-rendering with the OLD url still in `searchParams`. The
+   * adoption effect below would read `audience=adult` off that stale url and
+   * immediately `setMode('adult')` again — the toggle snaps back and the shopper
+   * arrives on the homepage in the storefront they just left. This is exactly
+   * the state/route race the brief warns about.
+   */
+  const switchingRef = useRef(false);
 
   // Collection routes filter server-side on an `audience` query param, so while
   // we're on one the URL wins: the toggle can never show a mode the page isn't
@@ -120,12 +133,31 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
   const audienceParam = searchParams.get('audience')?.toLowerCase();
   const urlMode: HomepageMode | null =
     audienceParam === 'kids' ? 'kids' : audienceParam === 'adult' ? 'adult' : null;
+
+  // Mid-switch this url is the one being LEFT, so for the length of the
+  // transition the toggle still shows the storefront being departed. That is
+  // deliberate rather than unhandled: preferring the store here would mean
+  // reading `switchingRef` during render, and a ref is not reactive — React
+  // cannot re-render on it, and `react-hooks/refs` rejects it outright. Holding
+  // it in state instead would need clearing from an effect, which is its own
+  // lint violation and a worse bug if the clear is ever missed (the url would
+  // stop driving the toggle for the rest of the session). The lag is a few
+  // hundred milliseconds of a page transition and corrects itself on arrival;
+  // the reversion the guard below prevents was permanent.
   const storeMode: HomepageMode = urlMode ?? mode;
 
   // Arriving on an audience-scoped URL (a shared link, say) adopts that mode
   // globally, so the rest of the site follows the page the visitor landed on.
   useEffect(() => {
-    if (urlMode) setMode(urlMode);
+    // No `audience` in the url means either an ordinary page or the homepage we
+    // were heading for, so any switch in flight has completed. Nothing left to
+    // suppress, and the guard clears itself rather than needing a timer.
+    if (!urlMode) {
+      switchingRef.current = false;
+      return;
+    }
+    if (switchingRef.current) return;
+    setMode(urlMode);
   }, [urlMode, setMode]);
 
   // The reverse case: a collection route with no `?audience=` renders every
@@ -140,17 +172,40 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }, [urlMode, pathname, searchParams, mode, router]);
 
+  /*
+   * ── SWITCHING STOREFRONT IS A DEPARTURE, NOT A FILTER ─────────────────────
+   * This used to change state in place and, on a collection route, rewrite the
+   * `audience` param — so a shopper reading an Adult product page who pressed
+   * Kids stayed on that Adult product, and a Kids collection became the Adult
+   * cut of the same collection. Adult and Kids are two shops; asking for the
+   * other one is not a filter on the page you are reading.
+   *
+   * So every switch now lands on the storefront's home page. There is exactly
+   * one such route — `/` renders whichever mode the store holds, and no
+   * `/adult` or `/kids` index exists — so the destination is `/` and the mode
+   * decides what it renders. No new route is invented, and the URL rewriting
+   * this used to do is gone: `/` never carries an `audience` param.
+   *
+   * Already on `/`? Then no navigation. `/` in Kids mode IS the Kids home page,
+   * and pushing the url we are already on would only add a history entry and
+   * cut short the crossfade the homepage plays between the two storefronts.
+   *
+   * Both toggles — the desktop strip and the mobile drawer — call this, so
+   * there is one switching path for the whole site.
+   */
   const switchStore = (next: HomepageMode) => {
     if (next === storeMode) return;
+
+    switchingRef.current = true;
     setMode(next);
-    // On a collection route the audience also lives in the URL because the
-    // server filters on it — keep the two in step. `replace`, not `push`, so
-    // flipping the toggle doesn't pile up history entries.
-    if (pathname?.startsWith('/collections')) {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('audience', next);
-      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-    }
+
+    // The drawer used to stay open on purpose, because the menu behind it
+    // re-labelled in place and closing it would have hidden the change. Now the
+    // switch navigates, so an open drawer would just cover the page it sent the
+    // shopper to.
+    setIsMobileMenuOpen(false);
+
+    if (pathname !== '/') router.push('/');
   };
 
   // Stripe Success Detector
@@ -309,10 +364,10 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
                   size={18}
                   strokeWidth={1.8}
                   fill={wishlistCount > 0 ? "currentColor" : "none"}
-                  className={`transition-colors duration-200 ${wishlistCount > 0 ? 'text-[#C56A4E]' : 'text-accent-950'} group-hover:text-white`}
+                  className={`transition-colors duration-200 ${wishlistCount > 0 ? 'text-accent-700' : 'text-accent-950'} group-hover:text-white`}
                 />
                 {wishlistCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#C56A4E] text-[8px] font-bold text-white">
+                  <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent-700 text-[8px] font-bold text-white">
                     {wishlistCount}
                   </span>
                 )}
@@ -328,7 +383,7 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
               <span className="relative">
                 <ShoppingBag size={18} strokeWidth={1.8} className="text-accent-950 transition-colors duration-200 group-hover:text-white" />
                 {itemCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#C56A4E] text-[8px] font-bold text-white">
+                  <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent-700 text-[8px] font-bold text-white">
                     {itemCount}
                   </span>
                 )}
@@ -374,9 +429,10 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
             </div>
 
             <div className="flex flex-col gap-8 overflow-y-auto pb-12">
-              {/* Store switch — same control as the desktop strip, full width.
-                  The drawer stays open: the menu below re-labels in place, so
-                  closing it would hide the very change the toggle just made. */}
+              {/* Store switch — same control and same handler as the desktop
+                  strip, full width. It now closes the drawer and leaves for the
+                  other storefront's home page, so the shopper sees where they
+                  landed instead of the menu they pressed it in. */}
               <StoreToggle mode={storeMode} onSwitch={switchStore} className="w-full" />
 
               {/* About — first, above the shop navigation. On a phone the
@@ -458,7 +514,7 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
                     await signOutAction();
                     setIsMobileMenuOpen(false);
                   }}
-                  className="type-button col-span-2 h-12 text-[10px] text-rose-500 uppercase tracking-widest"
+                  className="type-button col-span-2 h-12 text-[10px] uppercase tracking-widest text-brand-terracotta"
                 >
                   Terminate Session
                 </button>

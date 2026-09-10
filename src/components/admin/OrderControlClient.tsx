@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Search } from "lucide-react";
 import OrderDetailDrawer from "./OrderDetailDrawer";
+import { StatusBadge } from "@/components/admin/StatusBadge";
 
 type OrderData = {
   id: string;
@@ -25,16 +26,9 @@ export default function OrderControlClient({ initialOrders }: { initialOrders: O
     (o.user?.email && o.user.email.toLowerCase().includes(search.toLowerCase()))
   );
 
-  const getStatusColor = (status: string) => {
-    switch(status) {
-      case 'PAID': return 'text-accent-700 border-accent-200/30 bg-accent-600/10';
-      case 'SHIPPED': return 'text-blue-500 border-blue-500/30 bg-blue-500/10';
-      case 'CANCELLED': return 'text-brand-terracotta border-brand-terracotta/30 bg-brand-terracotta/10';
-      case 'PROCESSING': return 'text-yellow-500 border-yellow-500/30 bg-yellow-500/10';
-      case 'PENDING': return 'text-neutral-300 border-neutral-500/30 bg-neutral-500/10';
-      default: return 'text-neutral-400 border-white/20';
-    }
-  };
+  // `getStatusColor` lived here: a second status palette in stock blue-500 and
+  // yellow-500. Both call sites render the shared `StatusBadge` now, so the map
+  // had no readers left.
 
   return (
     <div className="space-y-12 font-sans text-neutral-900">
@@ -97,14 +91,7 @@ export default function OrderControlClient({ initialOrders }: { initialOrders: O
                     ${order.totalAmount.toFixed(2)}
                   </td>
                   <td className="p-6">
-                    <span className={`text-[9px] uppercase tracking-[0.2em] px-3 py-1.5 rounded-card border font-semibold ${
-                      order.status === 'PAID' ? 'bg-accent-50 text-accent-700 border-accent-200' : 
-                      order.status === 'PROCESSING' ? 'bg-amber-50 text-amber-600 border-amber-100' :
-                      order.status === 'SHIPPED' ? 'bg-blue-50 text-blue-600 border-blue-100' :
-                      'bg-[#FBFAF8] text-neutral-500 border-[#EFEDE8]'
-                    }`}>
-                      {order.status}
-                    </span>
+                    <StatusBadge status={order.status} />
                   </td>
                 </tr>
               ))}
