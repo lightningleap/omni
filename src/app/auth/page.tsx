@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { signInAction, signUpAction } from '@/app/auth/auth-actions';
 import { motion } from 'framer-motion';
 import { Mail, Lock, ArrowRight, User, Loader2, AlertCircle } from 'lucide-react';
+import BrandMark from '@/components/BrandMark';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import { useFormStatus } from 'react-dom';
@@ -13,22 +14,22 @@ import { useFormStatus } from 'react-dom';
  * of the parent <form>. This automatically resets when the server action
  * completes or redirects — no manual state management needed.
  */
-function SubmitButton({ isLogin }: { isLogin: boolean }) {
+function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
     <button
       type="submit"
       disabled={pending}
-      className="w-full bg-ink text-white font-semibold py-5 rounded-2xl flex items-center justify-center gap-3 hover:bg-neutral-800 transition-all shadow-lg shadow-neutral-200 active:scale-[0.98] uppercase tracking-widest text-[11px] disabled:opacity-50"
+      className="type-button flex h-[54px] w-full items-center justify-center gap-2 rounded-full bg-accent px-8 text-[13px] uppercase leading-none tracking-[0.12em] text-accent-on transition-[background-color,transform] duration-200 ease-out hover:bg-accent-950 hover:text-accent-on-strong active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
     >
       {pending ? (
         <>
-          <Loader2 size={16} className="animate-spin" /> Handshaking...
+          <Loader2 size={16} className="animate-spin" /> Please wait
         </>
       ) : (
         <>
-          {isLogin ? 'Access Dashboard' : 'Initialize Identity'} <ArrowRight size={16} />
+          Continue <ArrowRight size={16} />
         </>
       )}
     </button>
@@ -66,10 +67,10 @@ function AuthContent() {
       >
         {/* Branding */}
         <motion.div variants={itemVariants} className="text-center mb-10 space-y-2">
-          <h1 className="type-h2 text-ink">Unrwly</h1>
-          <p className="type-label text-neutral-400">
-            {isLogin ? 'Command Center Access' : 'Identity Initialization'}
-          </p>
+          <h1 className="flex justify-center text-ink">
+            <BrandMark size="md" />
+          </h1>
+          <p className="type-label text-neutral-400">Sign in / Register</p>
         </motion.div>
 
         {/* The Card */}
@@ -102,7 +103,7 @@ function AuthContent() {
             <div className="space-y-6">
               {!isLogin && (
                 <div className="space-y-2">
-                  <label className="text-[10px] font-semibold uppercase tracking-widest text-neutral-500 ml-1">Full Identity Name</label>
+                  <label className="text-[10px] font-semibold uppercase tracking-widest text-neutral-500 ml-1">Full name</label>
                   <div className="relative group">
                     <User className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300 group-focus-within:text-accent-700 transition-colors" size={18} />
                     <input
@@ -117,7 +118,7 @@ function AuthContent() {
               )}
 
               <div className="space-y-2">
-                <label className="text-[10px] font-semibold uppercase tracking-widest text-neutral-500 ml-1">Email Identity</label>
+                <label className="text-[10px] font-semibold uppercase tracking-widest text-neutral-500 ml-1">Email</label>
                 <div className="relative group">
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300 group-focus-within:text-accent-700 transition-colors" size={18} />
                   <input
@@ -131,7 +132,7 @@ function AuthContent() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-semibold uppercase tracking-widest text-neutral-500 ml-1">Security Key</label>
+                <label className="text-[10px] font-semibold uppercase tracking-widest text-neutral-500 ml-1">Password</label>
                 <div className="relative group">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300 group-focus-within:text-accent-700 transition-colors" size={18} />
                   <input
@@ -145,7 +146,7 @@ function AuthContent() {
               </div>
             </div>
 
-            <SubmitButton isLogin={isLogin} />
+            <SubmitButton />
           </form>
 
           <div className="mt-10 pt-8 border-t border-neutral-100 flex flex-col items-center gap-4">
@@ -153,7 +154,7 @@ function AuthContent() {
               onClick={() => setIsLogin(!isLogin)}
               className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 hover:text-ink transition-colors"
             >
-              {isLogin ? "Need a new identity? Initialize" : "Already verified? Access Center"}
+              {isLogin ? 'Need an account? Register' : 'Already have an account? Sign in'}
             </button>
           </div>
         </motion.div>

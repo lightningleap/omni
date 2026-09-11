@@ -125,16 +125,6 @@ export interface BrandPresence {
   legacy: {
     label: string;
     title: string;
-    body: string;
-    ctaLabel: string;
-  };
-  /** Copy for the review section. */
-  reviewSection: {
-    label: string;
-    title: string;
-    subtitle: string;
-    /** Etsy's own wording for the aggregate, kept because it is precise. */
-    summaryLabel: string;
     ctaLabel: string;
   };
   /** Copy for the Follow UNRWLY block. */

@@ -98,7 +98,7 @@ export default function CommunitySection() {
       <section aria-label="Join the UNRWLY community" className="py-16 md:py-20">
         <div className="mx-auto max-w-[1440px] px-4 md:px-12">
           <SectionHeader
-            title="Wear It. Share It. Get Featured."
+            title="UNRWLY IRL"
             subtitle={
               <>
                 Send us a photo of yours. Tag <span className="text-neutral-700">@Unrwly</span> or use{' '}

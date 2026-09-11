@@ -47,7 +47,6 @@ export const kidsHomepage: HomepageContent = {
   browseCollections: {
     section: {
       title: 'Browse Collections',
-      subtitle: 'Characters, creatures and big ideas — every design made for every kid.',
     },
     items: [
       {
@@ -107,9 +106,7 @@ export const kidsHomepage: HomepageContent = {
   // the page. Each strip inside still carries its own category heading, which is
   // what a shopper actually navigates by.
   productFeed: {
-    section: {
-      label: 'The Collection',
-    },
+    section: {},
   },
 
   // ── NAVIGATION ──────────────────────────────────────────────────────────

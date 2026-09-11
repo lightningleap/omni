@@ -125,7 +125,7 @@ const SECTIONS: (ProductCategorySectionDef & { keywords: string[]; matchOrder: n
     // Named for what it is. The shop also sells notebooks, a pennant, a dress
     // and lounge pants; inventing a "Hats & Accessories" home for a journal
     // would be a worse answer than one honest strip at the end.
-    title: 'More from the Studio',
+    title: 'More to Love',
     rows: 1,
     matchOrder: 99,
     keywords: [],

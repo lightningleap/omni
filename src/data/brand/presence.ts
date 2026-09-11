@@ -98,17 +98,7 @@ export const adultPresence: BrandPresence = {
   legacy: {
     label: 'Our Etsy Record',
     title: 'Real People. Real Orders. Real Reviews.',
-    body:
-      'UNRWLY has been drawing original designs and shipping them to customers through Etsy since long before this site existed. Same studio, same hands, same artwork — this is simply its own front door.',
     ctaLabel: 'View Our Etsy Shop',
-  },
-
-  reviewSection: {
-    label: 'Loved on Etsy',
-    title: 'A Little Love From Etsy',
-    subtitle: 'Real customers. Real purchases. Real opinions.',
-    summaryLabel: 'Average item review',
-    ctaLabel: 'View More Reviews on Etsy',
   },
 
   follow: {
@@ -172,17 +162,7 @@ export const kidsPresence: BrandPresence = {
   legacy: {
     label: 'Our Etsy Record',
     title: 'Real People. Real Orders. Real Reviews.',
-    body:
-      'UNRWLY Kids is the little-human half of the studio — the same hand-drawn artwork, the same person behind it, newly open on Etsy and already going out to real families.',
     ctaLabel: 'View Our Kids Etsy Shop',
-  },
-
-  reviewSection: {
-    label: 'Loved on Etsy',
-    title: 'A Little Love From Etsy',
-    subtitle: 'Real customers. Real purchases. Real opinions.',
-    summaryLabel: 'Average item review',
-    ctaLabel: 'View More Reviews on Etsy',
   },
 
   // Named for the shop the visitor is actually in. Etsy and Pinterest above are

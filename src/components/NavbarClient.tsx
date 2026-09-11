@@ -323,7 +323,7 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
               const input = (e.currentTarget.elements.namedItem('q') as HTMLInputElement).value;
               if (input.trim()) router.push(`/collections?q=${encodeURIComponent(input.trim())}`);
             }}
-            className="group/search hidden h-11 min-w-0 flex-1 items-center rounded-full border border-[rgb(var(--accent-shade-rgb)/0.10)] bg-white transition-[border-color,box-shadow] duration-200 ease-out hover:border-[rgb(var(--accent-shade-rgb)/0.18)] focus-within:border-accent-800 focus-within:ring-2 focus-within:ring-accent-800/10 md:flex"
+            className="group/search hidden h-10 min-w-0 flex-1 items-center rounded-full border border-[rgb(var(--accent-shade-rgb)/0.10)] md:max-w-[300px] lg:max-w-[380px] bg-white transition-[border-color,box-shadow] duration-200 ease-out hover:border-[rgb(var(--accent-shade-rgb)/0.18)] focus-within:border-accent-800 focus-within:ring-2 focus-within:ring-accent-800/10 md:flex"
           >
             <div className="pl-4 text-[#8a93a6] transition-colors duration-200 group-focus-within/search:text-accent-800">
               <Search size={18} strokeWidth={1.8} />
@@ -351,10 +351,16 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
             {/* Profile */}
             <button
               onClick={() => user ? router.push(isAdmin ? '/admin/products' : '/account') : router.push('/auth')}
-              aria-label="Profile"
-              className="group hidden sm:flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 ease-out hover:bg-accent-800 hover:scale-[1.02]"
+              aria-label={user ? 'Account' : 'Sign in'}
+              className="group hidden sm:flex h-10 min-w-10 items-center justify-center gap-2 rounded-full px-2.5 transition-all duration-200 ease-out hover:bg-accent-800 hover:scale-[1.02] lg:px-3"
             >
-              <User size={18} strokeWidth={1.8} className="text-accent-950 transition-colors duration-200 group-hover:text-white" />
+              <User size={18} strokeWidth={1.8} className="shrink-0 text-accent-950 transition-colors duration-200 group-hover:text-white" />
+              <span
+                aria-hidden
+                className="type-nav hidden whitespace-nowrap text-[13px] uppercase tracking-[0.1em] text-accent-950 transition-colors duration-200 group-hover:text-white lg:inline"
+              >
+                {user ? 'Account' : 'Sign in'}
+              </span>
             </button>
 
             {/* Wishlist */}

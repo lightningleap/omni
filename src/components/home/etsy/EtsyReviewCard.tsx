@@ -68,7 +68,7 @@ export default function EtsyReviewCard({
        * for the caption beneath. Stars wrapping is the one thing in here that
        * must never happen, and a proportional column alone would allow it in
        * this half-width placement. Both numbers move with the type scale. */}
-      <div className="grid gap-6 @md:gap-8 @md:grid-cols-[minmax(136px,0.8fr)_minmax(0,2fr)]">
+      <div className="grid gap-6 @md:gap-8 @md:grid-cols-[minmax(136px,184px)_minmax(0,1fr)]">
         {/* ── SUMMARY ──────────────────────────────────────────────────────────
             The aggregate, stated the way the marketplace states it: the score, the
             count it is averaged over, and what it is an average OF. "5.0 (8)" is
@@ -112,7 +112,7 @@ export default function EtsyReviewCard({
               The 620px measure is ~62 characters at this size — the readable
               range for a paragraph. No clamping and no truncation: the whole
               review is always shown, however long it runs. */}
-          <blockquote className="type-review mt-3 max-w-[560px] text-[16px] text-ink">
+          <blockquote className="type-review mt-3 max-w-[720px] text-[16px] text-ink">
             <p>“{quote}”</p>
           </blockquote>
 

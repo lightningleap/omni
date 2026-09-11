@@ -17,7 +17,7 @@ export default function WishlistClient({ user }: { user?: any }) {
         <div className="w-20 h-20 bg-surface rounded-full flex items-center justify-center mb-8 border border-hairline">
           <Heart size={32} className="text-neutral-300" />
         </div>
-        <h1 className="type-h2 mb-4 text-ink">Your Wishlist is Empty</h1>
+        <h1 className="type-h2 mb-4 text-ink">My Favorites is Empty</h1>
         <p className="type-body mb-8 max-w-md text-neutral-500">Save your favorite items here to keep track of them and buy them later.</p>
         <Link 
           href="/collections"
@@ -33,8 +33,16 @@ export default function WishlistClient({ user }: { user?: any }) {
     <div className="min-h-screen pt-12 pb-20 px-4 md:px-12">
       <div className="max-w-7xl mx-auto">
         <div className="mb-12">
+          {!user && (
+            <Link
+              href="/auth"
+              className="type-label mb-3 inline-block text-neutral-500 underline underline-offset-4 transition-colors duration-200 hover:text-accent-ink"
+            >
+              Sign in to share
+            </Link>
+          )}
           <h1 className="type-h2 mb-2 text-ink">
-            Wishlist
+            My Favorites
           </h1>
           <p className="type-label text-neutral-500">
             {wishlistCount} {wishlistCount === 1 ? 'Item' : 'Items'} Saved

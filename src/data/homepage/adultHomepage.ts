@@ -57,7 +57,6 @@ export const adultHomepage: HomepageContent = {
   browseCollections: {
     section: {
       title: 'Browse Collections',
-      subtitle: 'Every UNRWLY edit, from statement prints to the everyday essentials.',
     },
     items: [
       {
@@ -138,9 +137,7 @@ export const adultHomepage: HomepageContent = {
   // ── MAIN PRODUCT FEED ───────────────────────────────────────────────────
   productFeed: {
     section: {
-      label: 'The Collection',
       title: 'Fresh From the Studio',
-      subtitle: 'Every piece printed to order, packed by hand, and sent from our small studio.',
     },
   },
 

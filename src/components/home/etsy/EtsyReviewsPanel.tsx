@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import EtsyReviewCard from '@/components/home/etsy/EtsyReviewCard';
 import { useBrandPresence } from '@/store/useHomepageMode';
 
@@ -45,7 +45,7 @@ import { useBrandPresence } from '@/store/useHomepageMode';
  * selected. This component never branches on the audience itself.
  */
 export default function EtsyReviewsPanel() {
-  const { reviews, stats, reviewSection, reviewsUrl, shopName } = useBrandPresence();
+  const { reviews, stats, shopName } = useBrandPresence();
 
   const [index, setIndex] = useState(0);
 
@@ -66,36 +66,11 @@ export default function EtsyReviewsPanel() {
 
   return (
     <section aria-label="Customer reviews from Etsy" className="@container">
-      {/* Heading and its arrows. Side by side once the column is wide enough to
-          hold both without crushing the title; stacked before that. */}
-      <div className="mb-5 flex flex-col gap-4 @lg:flex-row @lg:items-end @lg:justify-between">
-        <div>
-          <p className="type-label text-neutral-500">{reviewSection.label}</p>
-          <h2 style={{ color: 'var(--color-ink)' }} className="type-section-title mt-3 text-[20px]">
-            {reviewSection.title}
-          </h2>
-          <p className="type-section-subtitle mt-2 max-w-[460px] text-neutral-500">
-            {reviewSection.subtitle}
-          </p>
-        </div>
-
-        {many && (
-          <div className="flex shrink-0 items-center gap-2">
-            <button type="button" onClick={() => step(-1)} aria-label="Previous review" className={arrow}>
-              <ChevronLeft size={17} strokeWidth={2.25} />
-            </button>
-            <button type="button" onClick={() => step(1)} aria-label="Next review" className={arrow}>
-              <ChevronRight size={17} strokeWidth={2.25} />
-            </button>
-          </div>
-        )}
-      </div>
-
       {/* Keyed so paging remounts the card: assistive tech re-announces the
           incoming review rather than reading a half-swapped one. */}
       <EtsyReviewCard key={review.id} review={review} stats={stats} shopName={shopName} />
 
-      <div className="mt-4 flex flex-col gap-3 @2xl:flex-row @2xl:items-center @2xl:justify-between">
+      <div className="mt-4 flex flex-col gap-3 @lg:flex-row @lg:items-center @lg:justify-between">
         {/* States what is actually on screen against what the shop actually
             has. A shop with one review says "1 review on Etsy" rather than
             borrowing a carousel's "1 of 5" — and where fewer reviews are
@@ -110,22 +85,21 @@ export default function EtsyReviewsPanel() {
               : `${stats.reviewCount} reviews on etsy.com/shop/${shopName}`}
         </p>
 
-        {/* Straight to the reviews on Etsy, not the shop front — the link is
-            only worth anything if the claim can be checked immediately. */}
-        <a
-          href={reviewsUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={`${reviewSection.ctaLabel} — opens etsy.com/shop/${shopName} in a new tab`}
-          className="type-button group inline-flex h-10 w-full items-center justify-center gap-2 rounded-full border border-neutral-300 px-6 text-[12px] uppercase leading-none tracking-[0.12em] text-ink transition-[background-color,border-color] duration-[250ms] ease-out hover:border-neutral-400 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 @2xl:w-auto"
-        >
-          {reviewSection.ctaLabel}
-          <ArrowUpRight
-            size={15}
-            strokeWidth={2}
-            className="transition-transform duration-[250ms] ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transition-none"
-          />
-        </a>
+        {/* Paging sits opposite the count, which is the line that says which
+            review you are on — the control and its readout on one row. It used
+            to sit above the card opposite the panel's heading; that heading is
+            gone, and leaving the arrows up there left them floating over an
+            empty row. Only rendered when there is more than one review. */}
+        {many && (
+          <div className="flex shrink-0 items-center gap-2">
+            <button type="button" onClick={() => step(-1)} aria-label="Previous review" className={arrow}>
+              <ChevronLeft size={17} strokeWidth={2.25} />
+            </button>
+            <button type="button" onClick={() => step(1)} aria-label="Next review" className={arrow}>
+              <ChevronRight size={17} strokeWidth={2.25} />
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );
