@@ -21,6 +21,7 @@ import {
   AdminTr,
 } from "@/components/admin/ui/primitives";
 import { setUserRole } from "@/app/actions/admin/customers";
+import { inviteAdmin } from "@/app/actions/admin/invites";
 import { Role } from "@prisma/client";
 
 type CustomerData = {
@@ -46,6 +47,29 @@ export default function CustomersClient({ initialCustomers }: { initialCustomers
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [roleError, setRoleError] = useState<string | null>(null);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [isInviting, setIsInviting] = useState(false);
+  const [inviteNote, setInviteNote] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const sendInvite = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inviteEmail.trim()) return;
+
+    setIsInviting(true);
+    setInviteNote(null);
+    try {
+      const body = new FormData();
+      body.append("email", inviteEmail.trim());
+      const result = await inviteAdmin(body);
+
+      setInviteNote({ ok: result.success, text: result.message });
+      if (result.success) setInviteEmail("");
+    } catch {
+      setInviteNote({ ok: false, text: "The invite could not be sent." });
+    } finally {
+      setIsInviting(false);
+    }
+  };
 
   const changeRole = async (userId: string, role: Role) => {
     setSavingId(userId);

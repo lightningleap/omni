@@ -58,79 +58,21 @@ export const adultHomepage: HomepageContent = {
     section: {
       title: 'Browse Collections',
     },
+    // These are the collections that actually exist in the catalogue, with the
+    // handles the database uses. The previous list was written by hand —
+    // "Witchy & Gothic", "Mugs & Drinkware", "On Sale" — and none of those rows
+    // were ever created, so all but one card led to a "Collection Coming Soon"
+    // page. Anything added here has to match a real `Collection.handle`.
     items: [
-      {
-        id: 'all',
-        name: 'All',
-        handle: 'all',
-        imageUrl: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=400&q=80',
-      },
-      {
-        id: 'on-sale',
-        name: 'On Sale',
-        handle: 'sale',
-        imageUrl: 'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=400&q=80',
-      },
-      {
-        id: 'french-with-attitude',
-        name: 'French with Attitude',
-        handle: 'french-with-attitude',
-        imageUrl: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&q=80',
-      },
-      {
-        id: 'vintage-botanical',
-        name: 'Vintage Botanical',
-        handle: 'vintage-botanical',
-        imageUrl: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&q=80',
-      },
-      {
-        id: 'wildlife-and-oddities',
-        name: 'Wildlife & Oddities',
-        handle: 'wildlife-and-oddities',
-        imageUrl: 'https://images.unsplash.com/photo-1477884213360-7e9d7dcc1e48?w=400&q=80',
-      },
-      {
-        id: 'feminist-and-unfiltered',
-        name: 'Feminist & Unfiltered',
-        handle: 'feminist-and-unfiltered',
-        imageUrl: 'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=400&q=80',
-      },
-      {
-        id: 'witchy-and-gothic',
-        name: 'Witchy & Gothic',
-        handle: 'witchy-and-gothic',
-        imageUrl: 'https://images.unsplash.com/photo-1509557965875-b88c97052f0e?w=400&q=80',
-      },
-      {
-        id: 'self-love-statements',
-        name: 'Self-Love Statements',
-        handle: 'self-love-statements',
-        imageUrl: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=400&q=80',
-      },
-      {
-        id: 'totes-and-travel-bags',
-        name: 'Totes & Travel Bags',
-        handle: 'totes-and-travel-bags',
-        imageUrl: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=400&q=80',
-      },
-      {
-        id: 'mugs-and-drinkware',
-        name: 'Mugs & Drinkware',
-        handle: 'mugs-and-drinkware',
-        imageUrl: 'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=400&q=80',
-      },
-      {
-        id: 'hats-and-accessories',
-        name: 'Hats & Accessories',
-        handle: 'hats-and-accessories',
-        imageUrl: 'https://images.unsplash.com/photo-1543589077-47d81606c1bf?w=400&q=80',
-      },
-      {
-        id: 'home-and-desk',
-        name: 'Home & Desk',
-        handle: 'home-and-desk',
-        imageUrl: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&q=80',
-      },
+      { id: 'all',            name: 'All',              handle: 'all' },
+      { id: 'womens',         name: "Women's",          handle: 'women-s' },
+      { id: 'mugs',           name: 'Mugs',             handle: 'mugs' },
+      { id: 'bags',           name: 'Bags',             handle: 'bags' },
+      { id: 'hats',           name: 'Hats',             handle: 'hats' },
+      { id: 'stationery',     name: 'Stationery',       handle: 'stationery' },
+      { id: 'home-decor',     name: 'Home Decor',       handle: 'home-decor' },
+      { id: 'bottles',        name: 'Bottles',          handle: 'bottles' },
+      { id: 'pillows',        name: 'Pillows & Covers', handle: 'pillows-covers' },
     ],
   },
 

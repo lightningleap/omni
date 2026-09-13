@@ -48,55 +48,17 @@ export const kidsHomepage: HomepageContent = {
     section: {
       title: 'Browse Collections',
     },
+    // These are the collections that actually exist in the catalogue, with the
+    // handles the database uses. The previous list was written by hand —
+    // "Witchy & Gothic", "Mugs & Drinkware", "On Sale" — and none of those rows
+    // were ever created, so all but one card led to a "Collection Coming Soon"
+    // page. Anything added here has to match a real `Collection.handle`.
     items: [
-      {
-        id: 'all',
-        name: 'All',
-        handle: 'all',
-        imageUrl: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?w=400&q=80',
-      },
-      {
-        id: 'dinosaur-world',
-        name: 'Dinosaur World',
-        handle: 'dinosaur-world',
-        imageUrl: 'https://images.unsplash.com/photo-1519331379826-f10be5486c6f?w=400&q=80',
-      },
-      {
-        id: 'capybara-club',
-        name: 'Capybara Club',
-        handle: 'capybara-club',
-        imageUrl: 'https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=400&q=80',
-      },
-      {
-        id: 'cats-and-mischief',
-        name: 'Cats & Mischief',
-        handle: 'cats-and-mischief',
-        imageUrl: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&q=80',
-      },
-      {
-        id: 'imagination-and-positivity',
-        name: 'Imagination & Positivity',
-        handle: 'imagination-and-positivity',
-        imageUrl: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=400&q=80',
-      },
-      {
-        id: 'tiger-tales',
-        name: 'Tiger Tales',
-        handle: 'tiger-tales',
-        imageUrl: 'https://images.unsplash.com/photo-1500259783852-0ca9ce8a64dc?w=400&q=80',
-      },
-      {
-        id: 'woodland-friends',
-        name: 'Woodland Friends',
-        handle: 'woodland-friends',
-        imageUrl: 'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=400&q=80',
-      },
-      {
-        id: 'halloween',
-        name: 'Halloween',
-        handle: 'halloween',
-        imageUrl: 'https://images.unsplash.com/photo-1509557965875-b88c97052f0e?w=400&q=80',
-      },
+      { id: 'all',    name: 'All',   handle: 'all' },
+      { id: 'kids',   name: "Kid's", handle: 'kid-s' },
+      { id: 'bags',   name: 'Bags',  handle: 'bags' },
+      { id: 'mugs',   name: 'Mugs',  handle: 'mugs' },
+      { id: 'hats',   name: 'Hats',  handle: 'hats' },
     ],
   },
 
