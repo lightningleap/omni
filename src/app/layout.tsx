@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Providers } from "@/components/Providers";
 import ConditionalStorefrontLayout from "@/components/ConditionalStorefrontLayout";
+import Script from "next/script";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { getSessionUser } from "@/lib/auth";
 
@@ -118,7 +119,18 @@ export default async function RootLayout({
         {/* Google Analytics Integration with Global User Parameters & User-ID */}
         {gaId && (
           <>
-            <script
+            {/* `next/script`, not a bare <script>.
+                React never executes a raw <script> rendered by a component on
+                the client, so on every client-side navigation these gtag
+                parameters were silently skipped — the tag only ever ran on a
+                full document load. React 19 warns about it now, which is what
+                surfaced it.
+
+                `beforeInteractive` preserves the intent stated above: these
+                globals must be set BEFORE GoogleAnalytics initialises. */}
+            <Script
+              id="ga-user-params"
+              strategy="beforeInteractive"
               dangerouslySetInnerHTML={{
                 __html: `
                   window.dataLayer = window.dataLayer || [];

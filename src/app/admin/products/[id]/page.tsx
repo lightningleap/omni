@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
 import ProductEditorClient from "@/components/admin/ProductEditorClient"
 import { fetchPrintifyMockups } from "@/lib/printify"
+import { ADMIN_SHELL } from "@/components/admin/ui/primitives"
 
 export default async function ProductEditorPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
@@ -35,7 +36,7 @@ export default async function ProductEditorPage({ params }: { params: Promise<{ 
   }
 
   return (
-    <div className="w-full">
+    <div className={ADMIN_SHELL}>
       <ProductEditorClient product={productData} collections={collections} mockups={mockups} />
     </div>
   )

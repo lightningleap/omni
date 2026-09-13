@@ -145,7 +145,7 @@ export default function ProductCategorySection({
           language. Colour is set inline to beat the global unlayered h1–h6 rule. */}
       <h3
         id={`category-${id}`}
-        style={{ color: '#1A1A1A' }}
+        style={{ color: 'var(--color-ink)' }}
         className="type-section-title mb-5 md:mb-6"
       >
         {title}

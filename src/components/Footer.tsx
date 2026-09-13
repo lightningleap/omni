@@ -30,10 +30,10 @@ const Footer = () => {
           {/* Column 1: Brand */}
           <div className="space-y-8">
             {/* Same mark as the header and the mobile drawer — see BrandMark. */}
-            <Link href="/" aria-label={`${storeName} — home`} className="inline-block text-[#1A1A1A]">
+            <Link href="/" aria-label={`${storeName} — home`} className="inline-block text-ink">
               <BrandMark size="lg" />
             </Link>
-            <p className="type-body text-[#334155] max-w-[320px]">
+            <p className="type-body text-neutral-500 max-w-[320px]">
               {storeName} is a small, artist-owned studio. Every design is drawn by hand,
               printed to order on premium material.
             </p>
@@ -49,13 +49,13 @@ const Footer = () => {
           <div className="space-y-8">
             <ul className="space-y-5">
               {/* Same label as the header link — "About", one destination. */}
-              <li><Link href="/meet-unrwly" className="type-caption text-slate-500 uppercase tracking-[0.18em] transition-colors hover:text-[#1A1A1A]">About</Link></li>
-              <li><Link href="/faq" className="type-caption text-slate-500 uppercase tracking-[0.18em] transition-colors hover:text-[#1A1A1A]">FAQ</Link></li>
-              <li><Link href="/contact" className="type-caption text-slate-500 uppercase tracking-[0.18em] transition-colors hover:text-[#1A1A1A]">Connect with Us</Link></li>
-              <li><Link href="/policies/refund-policy" className="type-caption text-slate-500 uppercase tracking-[0.18em] transition-colors hover:text-[#1A1A1A]">Returns & Store Policies</Link></li>
+              <li><Link href="/meet-unrwly" className="type-caption text-slate-500 uppercase tracking-[0.18em] transition-colors hover:text-ink">About</Link></li>
+              <li><Link href="/faq" className="type-caption text-slate-500 uppercase tracking-[0.18em] transition-colors hover:text-ink">FAQ</Link></li>
+              <li><Link href="/contact" className="type-caption text-slate-500 uppercase tracking-[0.18em] transition-colors hover:text-ink">Connect with Us</Link></li>
+              <li><Link href="/policies/refund-policy" className="type-caption text-slate-500 uppercase tracking-[0.18em] transition-colors hover:text-ink">Returns & Store Policies</Link></li>
               {/* Last in the list. Points at the FAQ, which has no AI entry yet —
                   the honest destination for that link until that answer is written. */}
-              <li><Link href="/faq" className="type-caption text-slate-500 uppercase tracking-[0.18em] transition-colors hover:text-[#1A1A1A]">How We Use AI</Link></li>
+              <li><Link href="/faq" className="type-caption text-slate-500 uppercase tracking-[0.18em] transition-colors hover:text-ink">How We Use AI</Link></li>
             </ul>
           </div>
         </div>
@@ -66,10 +66,10 @@ const Footer = () => {
             &copy; {new Date().getFullYear()} {storeName}. ALL RIGHTS RESERVED.
           </p>
           <div className="flex flex-wrap justify-center gap-x-8 gap-y-4">
-            <Link href="/policies/privacy-policy" className="text-gray-400 hover:text-black transition-colors type-caption text-[11px] uppercase tracking-[0.18em]">Privacy Policy</Link>
-            <Link href="/policies/terms-of-service" className="text-gray-400 hover:text-black transition-colors type-caption text-[11px] uppercase tracking-[0.18em]">Terms of Service</Link>
-            <Link href="/policies/shipping-policy" className="text-gray-400 hover:text-black transition-colors type-caption text-[11px] uppercase tracking-[0.18em]">Shipping Policy</Link>
-            <Link href="/policies/refund-policy" className="text-gray-400 hover:text-black transition-colors type-caption text-[11px] uppercase tracking-[0.18em]">Refund Policy</Link>
+            <Link href="/policies/privacy-policy" className="text-gray-400 hover:text-ink transition-colors type-caption text-[11px] uppercase tracking-[0.18em]">Privacy Policy</Link>
+            <Link href="/policies/terms-of-service" className="text-gray-400 hover:text-ink transition-colors type-caption text-[11px] uppercase tracking-[0.18em]">Terms of Service</Link>
+            <Link href="/policies/shipping-policy" className="text-gray-400 hover:text-ink transition-colors type-caption text-[11px] uppercase tracking-[0.18em]">Shipping Policy</Link>
+            <Link href="/policies/refund-policy" className="text-gray-400 hover:text-ink transition-colors type-caption text-[11px] uppercase tracking-[0.18em]">Refund Policy</Link>
           </div>
         </div>
       </div>

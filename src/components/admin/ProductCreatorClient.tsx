@@ -5,13 +5,23 @@ import Image from "next/image"
 import Link from "next/link"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Loader2, Sparkles, Search, Check, AlertCircle } from "lucide-react"
+import { ArrowLeft, Loader2, Sparkles, Check, AlertCircle } from "lucide-react"
 import { getDesignBlueprints, getBlueprintCanvas, createDesignedProduct } from "@/app/actions/admin/products"
+import {
+  AdminButton,
+  AdminField,
+  AdminInput,
+  AdminMono,
+  AdminPageHeader,
+  AdminSearch,
+  AdminSectionHeading,
+  AdminTextarea,
+} from "@/components/admin/ui/primitives"
 
 const DesignEditor = dynamic(() => import("./DesignEditor"), {
   ssr: false,
   loading: () => (
-    <div className="flex items-center justify-center py-24 text-slate-400 text-sm font-bold gap-3">
+    <div className="type-admin-body flex items-center justify-center gap-3 py-24 text-neutral-400">
       <Loader2 className="animate-spin" size={18} /> Loading design canvas...
     </div>
   ),
@@ -185,41 +195,44 @@ export default function ProductCreatorClient() {
   // ---------- SUCCESS: real Printify mockups ----------
   if (result) {
     return (
-      <div className="space-y-8 p-4">
-        <div className="flex flex-col items-center text-center gap-2 pt-4">
-          <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center">
-            <Check size={28} className="text-emerald-600" />
+      <div className="space-y-8">
+        <div className="flex flex-col items-center gap-2 pt-4 text-center">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent-100">
+            <Check aria-hidden size={26} className="text-accent-700" />
           </div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Product created!</h1>
-          <p className="text-sm text-slate-500 font-medium max-w-md">
-            Here are the real mockups Printify generated for your design. Saved to your store as a draft.
+          <h1 className="type-admin-title text-ink">Product created</h1>
+          <p className="type-admin-body max-w-md text-neutral-500">
+            These are the mockups Printify generated for your design. It is saved to your store as a draft.
           </p>
         </div>
 
         {result.mockups.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
             {result.mockups.map((src, i) => (
-              <div key={i} className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+              <div key={i} className="bg-white border border-[#E8E6E1] rounded-panel overflow-hidden">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={src} alt={`Mockup ${i + 1}`} className="w-full aspect-square object-contain bg-slate-50" />
+                <img src={src} alt={`Mockup ${i + 1}`} className="w-full aspect-square object-contain bg-[#FBFAF8]" />
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-center text-sm text-slate-400">Mockups are still generating — check the product in a moment.</p>
+          <p className="type-admin-body text-center text-neutral-400">Mockups are still generating — check the product in a moment.</p>
         )}
 
         <div className="flex items-center justify-center gap-3">
-          <button onClick={() => router.push(`/admin/products/${result.productId}`)}
-            className="px-6 py-3 bg-accent-800 text-white rounded-2xl text-sm font-black uppercase tracking-widest hover:bg-accent-950 transition-all">
-            Open in Products
-          </button>
-          <button onClick={() => {
-            setResult(null); setBlueprint(null); setSides(null); setCounts({}); setTitle(""); setDescription("")
-          }}
-            className="px-6 py-3 bg-white border border-slate-200 text-slate-700 rounded-2xl text-sm font-black uppercase tracking-widest hover:bg-slate-50 transition-all">
-            Create Another
-          </button>
+          <AdminButton
+            variant="primary"
+            onClick={() => router.push(`/admin/products/${result.productId}`)}
+          >
+            Open in products
+          </AdminButton>
+          <AdminButton
+            onClick={() => {
+              setResult(null); setBlueprint(null); setSides(null); setCounts({}); setTitle(""); setDescription("")
+            }}
+          >
+            Create another
+          </AdminButton>
         </div>
       </div>
     )
@@ -228,36 +241,41 @@ export default function ProductCreatorClient() {
   // ---------- STEP 1: pick product type ----------
   if (!blueprint) {
     return (
-      <div className="space-y-8 p-4">
+      <div className="space-y-6">
         <Header step={1} />
-        <div className="relative max-w-md">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-          <input value={search} onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search product types (t-shirt, mug, hoodie...)"
-            className="w-full bg-white border border-slate-200 text-sm text-slate-900 pl-12 pr-4 py-3.5 rounded-2xl focus:outline-none focus:ring-4 focus:ring-accent-50 placeholder:text-slate-400 font-medium" />
+        <div className="max-w-md">
+          <AdminSearch
+            value={search}
+            onChange={setSearch}
+            placeholder="Search product types (t-shirt, mug, hoodie…)"
+            label="Search Printify product types"
+          />
         </div>
 
         {loadingBps && (
-          <div className="flex items-center gap-3 text-slate-400 text-sm font-bold py-20 justify-center">
-            <Loader2 className="animate-spin" size={18} /> Loading product catalog...
+          <div className="type-admin-body flex items-center justify-center gap-3 py-20 text-neutral-400">
+            <Loader2 aria-hidden className="animate-spin" size={16} /> Loading product catalogue…
           </div>
         )}
         {bpError && (
-          <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 flex items-center gap-3 text-rose-800 text-sm">
-            <AlertCircle size={18} /> {bpError}
+          <div
+            role="alert"
+            className="type-admin-body flex items-center gap-3 rounded-card border border-[#E7D3CB] bg-[#FBF3F0] p-3 text-brand-terracotta"
+          >
+            <AlertCircle aria-hidden size={16} /> {bpError}
           </div>
         )}
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
           {filtered.map((b) => (
             <button key={b.id} onClick={() => pickBlueprint(b)}
-              className="group text-left bg-white border border-slate-200 rounded-2xl overflow-hidden hover:border-accent-600 hover:shadow-lg transition-all">
-              <div className="aspect-square relative bg-slate-50 flex items-center justify-center">
-                {b.image ? <Image src={b.image} alt={b.title} fill className="object-contain p-4" /> : <Sparkles className="text-slate-200" size={32} />}
+              className="group text-left bg-white border border-[#E8E6E1] rounded-panel overflow-hidden hover:border-accent-600 transition-all">
+              <div className="aspect-square relative bg-[#FBFAF8] flex items-center justify-center">
+                {b.image ? <Image src={b.image} alt={b.title} fill className="object-contain p-4" /> : <Sparkles className="text-neutral-200" size={32} />}
               </div>
-              <div className="p-3 border-t border-slate-100">
-                <p className="text-xs font-bold text-slate-900 leading-tight line-clamp-2">{b.title}</p>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">{b.brand}</p>
+              <div className="border-t border-[#EFEDE8] p-3">
+                <p className="type-admin-body line-clamp-2 font-semibold leading-tight text-ink">{b.title}</p>
+                <p className="type-admin-label mt-1 text-neutral-400">{b.brand}</p>
               </div>
             </button>
           ))}
@@ -268,24 +286,27 @@ export default function ProductCreatorClient() {
 
   // ---------- STEP 2: design + details ----------
   return (
-    <div className="space-y-6 p-4">
+    <div className="space-y-6">
       <Header step={2} onBack={() => { setBlueprint(null); setSides(null) }} backLabel={blueprint.title} />
 
       {error && (
-        <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 flex items-center gap-3 text-rose-800 text-sm font-bold">
-          <AlertCircle size={18} /> {error}
+        <div
+          role="alert"
+          className="type-admin-body flex items-center gap-3 rounded-card border border-[#E7D3CB] bg-[#FBF3F0] p-3 font-semibold text-brand-terracotta"
+        >
+          <AlertCircle aria-hidden size={16} /> {error}
         </div>
       )}
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Canvas */}
-        <div className="xl:col-span-2 bg-white border border-slate-200 rounded-3xl shadow-sm p-6">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-sm font-bold text-slate-900">Design Canvas</span>
+        <div className="xl:col-span-2 bg-white border border-[#E8E6E1] rounded-panel p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <AdminSectionHeading>Design canvas</AdminSectionHeading>
             {sides && (
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+              <AdminMono className="text-neutral-400">
                 {(() => { const s = sides.find((x) => x.position === activeSide); return s ? `${s.width}×${s.height}px` : "" })()}
-              </span>
+              </AdminMono>
             )}
           </div>
 
@@ -294,17 +315,17 @@ export default function ProductCreatorClient() {
             <div className="flex flex-wrap gap-2 mb-5">
               {sides.map((s) => (
                 <button key={s.position} onClick={() => setActiveSide(s.position)}
-                  className={`px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-2 ${activeSide === s.position ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}>
+                  className={`type-admin-meta flex items-center gap-2 rounded-card px-3 py-1.5 font-semibold transition-colors ${activeSide === s.position ? "bg-ink text-white" : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200"}`}>
                   {label(s.position)}
-                  {(counts[s.position] || 0) > 0 && <span className={`w-1.5 h-1.5 rounded-full ${activeSide === s.position ? "bg-emerald-400" : "bg-emerald-500"}`} />}
+                  {(counts[s.position] || 0) > 0 && <span className={`w-1.5 h-1.5 rounded-full ${activeSide === s.position ? "bg-accent-500" : "bg-accent-700"}`} />}
                 </button>
               ))}
             </div>
           )}
 
           {loadingArea || !sides ? (
-            <div className="flex items-center justify-center py-24 text-slate-400 text-sm font-bold gap-3">
-              <Loader2 className="animate-spin" size={18} /> Loading print area...
+            <div className="type-admin-body flex items-center justify-center gap-3 py-24 text-neutral-400">
+              <Loader2 aria-hidden className="animate-spin" size={16} /> Loading print area…
             </div>
           ) : (
             sides.map((s) => (
@@ -325,12 +346,12 @@ export default function ProductCreatorClient() {
         {/* Details */}
         <div className="space-y-6">
           {/* Live preview: design placed on the real product photo */}
-          <div className="bg-white border border-slate-200 rounded-3xl shadow-sm p-6">
+          <div className="bg-white border border-[#E8E6E1] rounded-panel p-6">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-bold text-slate-900">Preview on product</span>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{label(activeSide || "front")}</span>
+              <AdminSectionHeading>Preview on product</AdminSectionHeading>
+              <span className="type-admin-label text-neutral-400">{label(activeSide || "front")}</span>
             </div>
-            <div className="relative aspect-square w-full max-w-[300px] mx-auto bg-slate-50 rounded-2xl overflow-hidden flex items-center justify-center">
+            <div className="relative aspect-square w-full max-w-[300px] mx-auto bg-[#FBFAF8] rounded-panel overflow-hidden flex items-center justify-center">
               {/front/i.test(activeSide) && blueprint.image ? (
                 <>
                   <img src={blueprint.image} alt="" className="w-full h-full object-contain" />
@@ -343,28 +364,28 @@ export default function ProductCreatorClient() {
               ) : preview ? (
                 <img src={preview} alt="" className="max-w-[70%] max-h-[70%] object-contain" />
               ) : (
-                <span className="text-[11px] text-slate-400 font-medium">Add a design to preview it</span>
+                <span className="type-admin-meta text-neutral-400">Add a design to preview it</span>
               )}
             </div>
-            <p className="text-[10px] text-slate-400 font-medium mt-2 text-center">
+            <p className="type-admin-meta mt-2 text-center text-neutral-400">
               Approximate placement — Printify generates the exact mockup on creation.
             </p>
           </div>
 
           {/* Colors & Sizes */}
           {(colors.length > 0 || sizes.length > 0) && (
-            <div className="bg-white border border-slate-200 rounded-3xl shadow-sm p-6 space-y-5">
+            <div className="bg-white border border-[#E8E6E1] rounded-panel p-6 space-y-5">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-bold text-slate-900">Colors &amp; Sizes</span>
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{selectedVariantIds.length} variants</span>
+                <AdminSectionHeading>Colours and sizes</AdminSectionHeading>
+                <span className="type-admin-label text-neutral-400">{selectedVariantIds.length} variants</span>
               </div>
 
               {colors.length > 0 && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Colors</label>
-                    <button onClick={() => setSelColors(new Set(selColors.size === colors.length ? [] : colors))}
-                      className="text-[10px] font-bold text-accent-700 uppercase tracking-wider hover:text-accent-800">
+                    <span className="type-admin-label text-neutral-500">Colours</span>
+                    <button type="button" onClick={() => setSelColors(new Set(selColors.size === colors.length ? [] : colors))}
+                      className="type-admin-label text-accent-700 hover:text-accent-800">
                       {selColors.size === colors.length ? "Clear" : "All"}
                     </button>
                   </div>
@@ -373,7 +394,7 @@ export default function ProductCreatorClient() {
                       const on = selColors.has(c)
                       return (
                         <button key={c} title={c} onClick={() => toggle(selColors, c, setSelColors)}
-                          className={`flex items-center gap-1.5 pl-1.5 pr-2.5 py-1 rounded-full border text-xs font-semibold transition-all ${on ? "border-accent-700 bg-accent-50 text-slate-900" : "border-slate-200 text-slate-500 hover:border-slate-300"}`}>
+                          className={`type-admin-meta flex items-center gap-1.5 rounded-card border py-1 pl-1.5 pr-2.5 font-semibold transition-colors ${on ? "border-accent-700 bg-accent-50 text-ink" : "border-[#E8E6E1] text-neutral-500 hover:border-neutral-300"}`}>
                           <span className="w-4 h-4 rounded-full border border-black/10" style={{ background: swatch(c) }} />
                           {c}
                         </button>
@@ -386,9 +407,9 @@ export default function ProductCreatorClient() {
               {sizes.length > 0 && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Sizes</label>
-                    <button onClick={() => setSelSizes(new Set(selSizes.size === sizes.length ? [] : sizes))}
-                      className="text-[10px] font-bold text-accent-700 uppercase tracking-wider hover:text-accent-800">
+                    <span className="type-admin-label text-neutral-500">Sizes</span>
+                    <button type="button" onClick={() => setSelSizes(new Set(selSizes.size === sizes.length ? [] : sizes))}
+                      className="type-admin-label text-accent-700 hover:text-accent-800">
                       {selSizes.size === sizes.length ? "Clear" : "All"}
                     </button>
                   </div>
@@ -397,7 +418,7 @@ export default function ProductCreatorClient() {
                       const on = selSizes.has(s)
                       return (
                         <button key={s} onClick={() => toggle(selSizes, s, setSelSizes)}
-                          className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${on ? "border-slate-900 bg-slate-900 text-white" : "border-slate-200 text-slate-500 hover:border-slate-300"}`}>
+                          className={`type-admin-meta rounded-card border px-3 py-1.5 font-semibold transition-colors ${on ? "border-ink bg-ink text-white" : "border-[#E8E6E1] text-neutral-500 hover:border-neutral-300"}`}>
                           {s}
                         </button>
                       )
@@ -408,39 +429,63 @@ export default function ProductCreatorClient() {
             </div>
           )}
 
-          <div className="bg-white border border-slate-200 rounded-3xl shadow-sm p-6 space-y-5">
-            <span className="text-sm font-bold text-slate-900">Product Details</span>
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Name</label>
-              <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Vintage Sunset Tee"
-                className="w-full bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-900 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-accent-500/10 focus:border-accent-700" />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Description</label>
-              <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="Short product description..."
-                className="w-full bg-white border border-slate-200 rounded-xl text-sm text-slate-700 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-accent-500/10 focus:border-accent-700 resize-none" />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Retail Price (USD)</label>
+          <div className="bg-white border border-[#E8E6E1] rounded-panel p-6 space-y-5">
+            <AdminSectionHeading>Product details</AdminSectionHeading>
+            <AdminField label="Name" htmlFor="new-product-title">
+              <AdminInput
+                id="new-product-title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g. Vintage Sunset Tee"
+                className="font-semibold"
+              />
+            </AdminField>
+            <AdminField label="Description" htmlFor="new-product-description">
+              <AdminTextarea
+                id="new-product-description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={3}
+                placeholder="Short product description…"
+              />
+            </AdminField>
+            <AdminField
+              label="Retail price (USD)"
+              htmlFor="new-product-price"
+              hint={`Est. Stripe fees ${formatUSD(stripeFees)} · base cost is set after creation`}
+            >
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
-                <input type="number" value={price} onChange={(e) => setPrice(parseFloat(e.target.value) || 0)}
-                  className="w-full bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-900 pl-8 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-accent-500/10 focus:border-accent-700 font-mono" />
+                <span className="type-admin-body pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400">$</span>
+                <AdminInput
+                  id="new-product-price"
+                  type="number"
+                  step="0.01"
+                  value={price}
+                  onChange={(e) => setPrice(parseFloat(e.target.value) || 0)}
+                  className="pl-7 font-semibold tabular-nums"
+                />
               </div>
-              <p className="text-[10px] text-slate-400 font-medium">Est. Stripe fees {formatUSD(stripeFees)} · base cost set after creation</p>
-            </div>
+            </AdminField>
           </div>
 
-          <button onClick={handleCreate} disabled={creating || totalLayers === 0 || !title.trim() || (variants.length > 0 && selectedVariantIds.length === 0)}
-            className="w-full py-4 bg-accent-800 text-white rounded-2xl text-sm font-black uppercase tracking-widest hover:bg-accent-950 transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed">
-            {creating ? <Loader2 size={18} className="animate-spin" /> : <Check size={18} />}
-            {creating ? "Creating on Printify..." : "Create Product"}
-          </button>
+          <AdminButton
+            variant="primary"
+            onClick={handleCreate}
+            disabled={creating || totalLayers === 0 || !title.trim() || (variants.length > 0 && selectedVariantIds.length === 0)}
+            className="h-11 w-full"
+          >
+            {creating ? (
+              <Loader2 aria-hidden size={15} className="animate-spin" />
+            ) : (
+              <Check aria-hidden size={15} />
+            )}
+            {creating ? "Creating on Printify…" : "Create product"}
+          </AdminButton>
           {totalLayers === 0 && (
-            <p className="text-center text-[11px] text-slate-400 font-medium">Add an image, text, or shape to enable creation.</p>
+            <p className="type-admin-meta text-center text-neutral-400">Add an image, text or shape to enable creation.</p>
           )}
-          <p className="text-center text-[11px] text-slate-400 font-medium">
-            All designed sides are flattened and sent to Printify, which generates the real mockups. Saved as a DRAFT.
+          <p className="type-admin-meta text-center text-neutral-400">
+            Every designed side is flattened and sent to Printify, which generates the real mockups. Saved as a draft.
           </p>
         </div>
       </div>
@@ -448,26 +493,41 @@ export default function ProductCreatorClient() {
   )
 }
 
+/**
+ * The wizard's header.
+ *
+ * It used to hand-roll a page title (24px) with an eyebrow under it at
+ * `text-xs font-bold uppercase tracking-widest` — a step that exists nowhere
+ * else in the studio. It is AdminPageHeader now, so the Design Studio's title
+ * sits at exactly the height and weight of every other page's, and the step
+ * indicator uses the meta slot that already exists for exactly this.
+ */
 function Header({ step, onBack, backLabel }: { step: number; onBack?: () => void; backLabel?: string }) {
   return (
-    <div className="flex items-center justify-between">
-      <div className="space-y-1">
-        {onBack ? (
-          <button onClick={onBack} className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-900 mb-1">
-            <ArrowLeft size={16} /> {backLabel || "Back"}
-          </button>
-        ) : (
-          <Link href="/admin/products" className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-900 mb-1">
-            <ArrowLeft size={16} /> Products
-          </Link>
-        )}
-        <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-          <Sparkles size={22} className="text-accent-700" /> Design Studio
-        </h1>
-        <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">
-          {step === 1 ? "Step 1 — Choose a product" : "Step 2 — Design it"}
-        </p>
-      </div>
-    </div>
+    <AdminPageHeader
+      title="Design Studio"
+      meta={
+        <>
+          {onBack ? (
+            <button
+              type="button"
+              onClick={onBack}
+              className="inline-flex items-center gap-1.5 transition-colors hover:text-ink"
+            >
+              <ArrowLeft aria-hidden size={13} /> {backLabel || "Back"}
+            </button>
+          ) : (
+            <Link
+              href="/admin/products"
+              className="inline-flex items-center gap-1.5 transition-colors hover:text-ink"
+            >
+              <ArrowLeft aria-hidden size={13} /> Products
+            </Link>
+          )}
+          <span aria-hidden className="text-neutral-300">·</span>
+          <span>{step === 1 ? "Step 1 — choose a product" : "Step 2 — design it"}</span>
+        </>
+      }
+    />
   )
 }

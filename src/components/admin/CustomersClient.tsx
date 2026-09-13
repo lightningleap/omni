@@ -1,8 +1,25 @@
 "use client";
 
 import React, { useState } from "react";
-import { Search, DollarSign, Users, Star, Lock, Mail, Loader2 } from "lucide-react";
+import { DollarSign, Users, Star } from "lucide-react";
 import CustomerProfileDrawer from "./CustomerProfileDrawer";
+import CustomerCard from "@/components/admin/cards/CustomerCard";
+import { CustomerRoleControl } from "@/components/admin/CustomerRoleControl";
+import { AdminCardGrid, AdminViewToggle, useAdminView } from "@/components/admin/ui/views";
+import { AdminCheckbox } from "@/components/admin/ui/checkbox";
+import {
+  ADMIN_RULE,
+  AdminEmpty,
+  AdminPageHeader,
+  AdminPanel,
+  AdminSearch,
+  AdminStat,
+  AdminTable,
+  AdminTableWrap,
+  AdminTd,
+  AdminTh,
+  AdminTr,
+} from "@/components/admin/ui/primitives";
 import { setUserRole } from "@/app/actions/admin/customers";
 import { inviteAdmin } from "@/app/actions/admin/invites";
 import { Role } from "@prisma/client";
@@ -22,6 +39,10 @@ type CustomerData = {
 
 export default function CustomersClient({ initialCustomers }: { initialCustomers: CustomerData[] }) {
   const [search, setSearch] = useState("");
+  // Presentation only. Search, selection, the drawer and the role handler
+  // below are declared once and read by whichever tree renders, so switching
+  // view cannot reset any of them — there is nothing per-view to reset.
+  const [view, setView] = useAdminView("customers");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [savingId, setSavingId] = useState<string | null>(null);
@@ -77,6 +98,14 @@ export default function CustomersClient({ initialCustomers }: { initialCustomers
     (c.name && c.name.toLowerCase().includes(search.toLowerCase()))
   );
 
+  // Named once rather than re-deriving `selectedIds.size === filtered.length &&
+  // filtered.length > 0` inline in both the header cell's class and its content.
+  const allSelected = filteredCustomers.length > 0 && selectedIds.size === filteredCustomers.length;
+  /* Some but not all — the header box shows a dash rather than claiming the
+     whole page is selected. `toggleAll` already selects all from this state,
+     so this is presentation only. */
+  const someSelected = selectedIds.size > 0 && !allSelected;
+
   const toggleAll = () => {
     if (selectedIds.size === filteredCustomers.length) {
       setSelectedIds(new Set());
@@ -85,8 +114,7 @@ export default function CustomersClient({ initialCustomers }: { initialCustomers
     }
   };
 
-  const toggleOne = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
+  const toggleOne = (id: string) => {
     const newSet = new Set(selectedIds);
     if (newSet.has(id)) newSet.delete(id);
     else newSet.add(id);
@@ -94,180 +122,177 @@ export default function CustomersClient({ initialCustomers }: { initialCustomers
   };
 
   return (
-    <div className="space-y-8 font-sans max-w-[1400px] mx-auto">
-      {/* PAGE HEADER */}
-      <div className="flex flex-wrap justify-between items-start gap-4">
-        <h1 className="text-2xl font-bold text-slate-900">Customers</h1>
+    <div className="space-y-6">
+      <AdminPageHeader title="Customers" />
 
-        {/* Invite an admin by email. The person does not need an account first —
-            if they have none, the email carries a link that creates one. */}
-        <div className="flex flex-col items-end gap-1.5">
-          <form onSubmit={sendInvite} className="flex items-center gap-2">
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
-              <input
-                type="email"
-                value={inviteEmail}
-                onChange={(e) => setInviteEmail(e.target.value)}
-                placeholder="teammate@email.com"
-                className="w-64 bg-white border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-accent-500/30 focus:border-accent-700 transition"
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={isInviting || !inviteEmail.trim()}
-              className="bg-accent-800 text-white text-[11px] font-bold uppercase tracking-widest px-4 py-2.5 rounded-lg hover:bg-accent-950 disabled:opacity-40 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-2"
-            >
-              {isInviting && <Loader2 size={12} className="animate-spin" />}
-              {isInviting ? "Sending" : "Invite admin"}
-            </button>
-          </form>
-          {inviteNote && (
-            <p className={`text-xs font-medium max-w-md text-right ${inviteNote.ok ? "text-accent-700" : "text-rose-600"}`}>
-              {inviteNote.text}
-            </p>
-          )}
-        </div>
+      {/* Three tiles that were three copies of the same hand-built card, on a
+          `text-xs font-bold uppercase tracking-wider` label the studio uses
+          nowhere else. AdminStat, like Finance and Analytics. */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <AdminStat
+          label={
+            <>
+              <Users aria-hidden size={13} className="mr-1.5 inline align-[-2px]" />
+              Total customers
+            </>
+          }
+          value={totalCustomers.toLocaleString()}
+        />
+        <AdminStat
+          label={
+            <>
+              <DollarSign aria-hidden size={13} className="mr-1.5 inline align-[-2px]" />
+              Average order value
+            </>
+          }
+          value={`$${aov.toFixed(2)}`}
+        />
+        <AdminStat
+          label={
+            <>
+              <Star aria-hidden size={13} className="mr-1.5 inline align-[-2px] text-amber-500" />
+              Active VIPs
+            </>
+          }
+          value={activeVips}
+        />
       </div>
 
-      {/* LTV DASHBOARD STATS */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-2">
-           <div className="flex items-center gap-2 text-slate-500">
-              <Users size={16} />
-              <span className="text-xs font-bold uppercase tracking-wider">Total Customers</span>
-           </div>
-           <p className="text-3xl font-bold text-slate-900">{totalCustomers.toLocaleString()}</p>
-        </div>
-        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-2">
-           <div className="flex items-center gap-2 text-slate-500">
-              <DollarSign size={16} />
-              <span className="text-xs font-bold uppercase tracking-wider">Average Order Value (AOV)</span>
-           </div>
-           <p className="text-3xl font-bold text-slate-900">${aov.toFixed(2)}</p>
-        </div>
-        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-2">
-           <div className="flex items-center gap-2 text-slate-500">
-              <Star size={16} className="text-amber-500" />
-              <span className="text-xs font-bold uppercase tracking-wider text-amber-600">Active VIPs</span>
-           </div>
-           <p className="text-3xl font-bold text-slate-900">{activeVips}</p>
-        </div>
-      </div>
-
-      {/* RESOURCE LIST CARD */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-        {/* Filter Bar */}
-        <div className="p-4 border-b border-slate-100 bg-white">
-          <div className="relative group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-accent-700 transition-colors" size={16} />
-            <input
-              type="text"
-              placeholder="Search customers"
+      <AdminPanel>
+        <div style={{ borderColor: ADMIN_RULE }} className="flex items-center gap-3 border-b p-4">
+          <div className="min-w-0 flex-1">
+            <AdminSearch
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 text-sm text-slate-900 pl-10 pr-4 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-700 transition-all placeholder:text-slate-400"
+              onChange={setSearch}
+              placeholder="Search customers…"
+              label="Search customers by name or email"
             />
           </div>
+          <AdminViewToggle view={view} onChange={setView} />
         </div>
 
-        {/* DATA TABLE */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="bg-slate-50/50 text-[11px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100">
-                <th className="px-6 py-4 w-12 text-center">
-                   <div 
-                    className={`w-4 h-4 border rounded cursor-pointer mx-auto flex items-center justify-center transition-all ${selectedIds.size === filteredCustomers.length && filteredCustomers.length > 0 ? 'bg-accent-800 border-accent-800' : 'bg-white border-slate-300'}`}
-                    onClick={toggleAll}
-                  >
-                    {selectedIds.size === filteredCustomers.length && filteredCustomers.length > 0 && <div className="w-1.5 h-px bg-white rotate-45" />}
-                  </div>
-                </th>
-                <th className="px-4 py-4">Customer</th>
-                <th className="px-4 py-4">Role</th>
-                <th className="px-4 py-4">Orders</th>
-                <th className="px-4 py-4 text-right">LTV (Spent)</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filteredCustomers.map((customer) => {
-                const isSelected = selectedIds.has(customer.id);
-                
-                return (
-                  <tr 
-                    key={customer.id} 
-                    onClick={() => setSelectedUserId(customer.id)}
-                    className={`group hover:bg-slate-50 cursor-pointer transition-colors ${isSelected ? 'bg-accent-50/30' : ''}`}
-                  >
-                    <td className="px-6 py-4" onClick={(e) => toggleOne(customer.id, e)}>
-                       <div className={`w-4 h-4 border rounded transition-all mx-auto flex items-center justify-center ${isSelected ? 'bg-accent-800 border-accent-800' : 'bg-white border-slate-300'}`}>
-                          {isSelected && <div className="w-1.5 h-px bg-white rotate-45" />}
-                       </div>
-                    </td>
-                    <td className="px-4 py-4">
-                       <div className="flex flex-col">
-                          <span className="text-sm font-bold text-slate-900">{customer.name || "Guest Customer"}</span>
-                          <span className="text-xs text-slate-500 font-medium">{customer.email}</span>
-                       </div>
-                    </td>
-                    <td className="px-4 py-4">
-                       {customer.pinned || customer.isSelf ? (
-                          <span
-                            title={customer.pinned
-                              ? "Pinned as an admin in ADMIN_EMAILS — change it there"
-                              : "You cannot change your own role"}
-                            className="bg-rose-50 text-rose-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-rose-100 uppercase tracking-wider inline-flex items-center gap-1"
-                          >
-                            <Lock className="w-2.5 h-2.5" />
-                            {customer.role}
+        {filteredCustomers.length === 0 ? (
+          <AdminEmpty
+            title="No customers match that search"
+            message="Clear the search to see every account."
+          />
+        ) : view === "list" ? (
+          <AdminTableWrap>
+            <AdminTable>
+              <thead>
+                <tr>
+                  <AdminTh className="w-12 text-center">
+                    <AdminCheckbox
+                      className="mx-auto"
+                      checked={allSelected}
+                      indeterminate={someSelected}
+                      onChange={toggleAll}
+                      label={allSelected ? "Clear selection" : "Select all customers"}
+                    />
+                  </AdminTh>
+                  <AdminTh>Customer</AdminTh>
+                  <AdminTh>Role</AdminTh>
+                  <AdminTh>Orders</AdminTh>
+                  <AdminTh className="text-right">Lifetime value</AdminTh>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredCustomers.map((customer) => {
+                  const isSelected = selectedIds.has(customer.id);
+
+                  return (
+                    <AdminTr
+                      key={customer.id}
+                      interactive
+                      onClick={() => setSelectedUserId(customer.id)}
+                      className={isSelected ? "bg-accent-50/30" : ""}
+                    >
+                      {/* The cell keeps its own click-to-toggle so the whole
+                          column stays a hit area. The checkbox stops the click
+                          before it reaches here, so the two never double-fire. */}
+                      <AdminTd
+                        className="text-center"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleOne(customer.id);
+                        }}
+                      >
+                        <AdminCheckbox
+                          checked={isSelected}
+                          onChange={() => toggleOne(customer.id)}
+                          label={`Select ${customer.name || customer.email}`}
+                        />
+                      </AdminTd>
+                      <AdminTd>
+                        <div className="flex flex-col">
+                          <span className="font-semibold text-ink">
+                            {customer.name || "Guest customer"}
                           </span>
-                       ) : (
-                          <select
-                            value={customer.role}
-                            disabled={savingId === customer.id}
-                            onClick={(e) => e.stopPropagation()}
-                            onChange={(e) => changeRole(customer.id, e.target.value as Role)}
-                            className={`text-[11px] font-bold rounded-full border px-2 py-1 cursor-pointer disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-accent-500 ${
-                              customer.role === "ADMIN"
-                                ? "bg-rose-50 text-rose-700 border-rose-100"
-                                : customer.role === "VIP"
-                                ? "bg-[#FFF5D1] text-[#4F4700] border-[#FBE9B3]"
-                                : "bg-white text-slate-600 border-slate-200"
-                            }`}
-                          >
-                            <option value="CUSTOMER">Customer</option>
-                            <option value="VIP">VIP</option>
-                            <option value="ADMIN">Admin</option>
-                          </select>
-                       )}
-                    </td>
-                    <td className="px-4 py-4 text-sm text-slate-600 font-medium">
-                      {customer.ordersCount} orders
-                    </td>
-                    <td className="px-4 py-4 text-sm font-bold text-slate-900 text-right">
-                      ${customer.totalSpent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                          <span className="type-admin-meta text-neutral-500">{customer.email}</span>
+                        </div>
+                      </AdminTd>
+                      <AdminTd>
+                        <CustomerRoleControl
+                          customer={customer}
+                          saving={savingId === customer.id}
+                          onChange={(role) => changeRole(customer.id, role)}
+                        />
+                      </AdminTd>
+                      <AdminTd className="tabular-nums">{customer.ordersCount}</AdminTd>
+                      <AdminTd className="text-right font-semibold tabular-nums text-ink">
+                        $
+                        {customer.totalSpent.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </AdminTd>
+                    </AdminTr>
+                  );
+                })}
+              </tbody>
+            </AdminTable>
+          </AdminTableWrap>
+        ) : (
+          /* Wider minimum than the catalogue's tiles: a customer card carries
+             an email, which is the longest unbreakable string in the studio,
+             plus a role select and a two-up figure block. */
+          <AdminCardGrid min={280} className="p-3 md:p-4">
+            {filteredCustomers.map((customer) => (
+              <CustomerCard
+                key={customer.id}
+                customer={customer}
+                isSelected={selectedIds.has(customer.id)}
+                onToggleSelect={() => toggleOne(customer.id)}
+                onOpen={() => setSelectedUserId(customer.id)}
+                saving={savingId === customer.id}
+                onChangeRole={(role) => changeRole(customer.id, role)}
+              />
+            ))}
+          </AdminCardGrid>
+        )}
+
+        <div
+          style={{ borderColor: ADMIN_RULE }}
+          className="type-admin-meta flex items-center justify-between border-t bg-[#FBFAF8] px-4 py-3 text-neutral-500"
+        >
+          <span>Showing {filteredCustomers.length} customers</span>
+          {roleError && <span className="font-semibold text-brand-terracotta">{roleError}</span>}
         </div>
-        
-        <div className="p-4 border-t border-slate-100 bg-slate-50/30 flex justify-between items-center text-xs text-slate-500 font-medium">
-           <span>Showing {filteredCustomers.length} customers</span>
-           {roleError && <span className="text-rose-600 font-semibold">{roleError}</span>}
-        </div>
-      </div>
+      </AdminPanel>
 
       {/* PROFILE DRAWER */}
       {selectedUserId && (
         <div className="fixed inset-0 z-50 flex justify-end">
-           <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setSelectedUserId(null)} />
-           <div className="relative w-full max-w-4xl bg-[#F6F6F7] shadow-2xl overflow-y-auto animate-in slide-in-from-right duration-300 border-l border-slate-200">
-              <CustomerProfileDrawer userId={selectedUserId} onClose={() => setSelectedUserId(null)} />
-           </div>
+          <div
+            className="absolute inset-0 bg-ink/40 backdrop-blur-sm"
+            onClick={() => setSelectedUserId(null)}
+          />
+          <div
+            style={{ borderColor: ADMIN_RULE }}
+            className="animate-in slide-in-from-right relative w-full max-w-4xl overflow-y-auto border-l bg-surface duration-300"
+          >
+            <CustomerProfileDrawer userId={selectedUserId} onClose={() => setSelectedUserId(null)} />
+          </div>
         </div>
       )}
     </div>

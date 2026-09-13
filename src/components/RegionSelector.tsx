@@ -77,7 +77,7 @@ export default function RegionSelector({
       transition={{ duration: 0.2, ease: 'easeOut' }}
       role="dialog"
       aria-label="Shopping region"
-      className={`z-50 w-[320px] max-w-[calc(100vw-2rem)] rounded-[16px] border border-[rgb(var(--accent-shade-rgb)/0.06)] bg-white p-5 shadow-[0_18px_44px_rgb(var(--accent-shade-rgb)/0.16)] ${
+      className={`z-50 w-[320px] max-w-[calc(100vw-2rem)] rounded-modal border border-[rgb(var(--accent-shade-rgb)/0.06)] bg-white p-5 shadow-[0_18px_44px_rgb(var(--accent-shade-rgb)/0.16)] ${
         isDrawer ? 'relative mt-3 w-full' : 'absolute right-0 top-[calc(100%+8px)]'
       }`}
     >

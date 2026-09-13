@@ -60,6 +60,15 @@ export const ETSY_LISTINGS: EtsyListingsByMode = {
       "etsyUrl": "https://www.etsy.com/listing/4542384206/witch-graphic-distressed-baseball-cap"
     },
     {
+      "printifyId": "6734a9f0d5dddaccc8031c6e",
+      "etsyListingId": "4568337420",
+      "title": "Oui Mais Non Mug, Mug with French Attitude, French Girl Cup",
+      "displayTitle": "Oui Mais Non Mug",
+      "price": 25,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/09/20260903205753-1f1a7da2-1b5a-6bda-b9e8-2ef884719de7.png",
+      "etsyUrl": "https://www.etsy.com/listing/4568337420/oui-mais-non-mug-mug-with-french"
+    },
+    {
       "printifyId": "6738cf6f7463389a39063a82",
       "etsyListingId": "4524942730",
       "title": "Yes But No (Oui Mais Non) Sturdy Tote Bag",
@@ -67,6 +76,15 @@ export const ETSY_LISTINGS: EtsyListingsByMode = {
       "price": 20.13,
       "image": "https://images.printify.com/mockup/6738cf6f7463389a39063a82/103599/100877/yes-but-no-oui-mais-non-sturdy-tote-bag.jpg?camera_label=front",
       "etsyUrl": "https://www.etsy.com/listing/4524942730/yes-but-no-oui-mais-non-sturdy-tote-bag"
+    },
+    {
+      "printifyId": "673a2f1562184cafce09d830",
+      "etsyListingId": "4569060676",
+      "title": "Oui Mais Non Square Pillow Case, Pink Pop Decor, Pillow with French attitude",
+      "displayTitle": "Oui Mais Non Square Pillow Case",
+      "price": 25.99,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/09/20260904182220-1f1a88d9-0fde-6760-9858-5a54525c6785.png",
+      "etsyUrl": "https://www.etsy.com/listing/4569060676/oui-mais-non-square-pillow-case-pink-pop"
     },
     {
       "printifyId": "6746427fb62661e916095ec2",
@@ -91,7 +109,7 @@ export const ETSY_LISTINGS: EtsyListingsByMode = {
       "etsyListingId": "4519742069",
       "title": "Floral Heart Tank Top, Red Botanical Graphic Tank, Womens Romantic Summer Shirt, Comfort Colors Tank",
       "displayTitle": "Floral Heart Tank Top",
-      "price": 21.76,
+      "price": 23.1,
       "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/07/20260715213830-1f180958-5b8a-6a18-ba4f-c2e0348dcdc2.png",
       "etsyUrl": "https://www.etsy.com/listing/4519742069/floral-heart-tank-top-red-botanical"
     },
@@ -106,21 +124,12 @@ export const ETSY_LISTINGS: EtsyListingsByMode = {
     },
     {
       "printifyId": "688d1bec099f0be04a0c96e9",
-      "etsyListingId": "4520905142",
+      "etsyListingId": "4566072080",
       "title": "Classic Cap with Leaping Fox Design, Gift for Animal Lovers, Casual Summer Hat, Everyday Wear, Unique Gift, Original design",
       "displayTitle": "Classic Cap with Leaping Fox Design",
       "price": 29.99,
       "image": "https://images.printify.com/mockup/688d1bec099f0be04a0c96e9/105380/102307/classic-cap-with-leaping-fox-design-gift-for-animal-lovers-casual-summer-hat-everyday-wear-unique-gift-original-design.jpg?camera_label=front",
-      "etsyUrl": "https://www.etsy.com/listing/4520905142/classic-cap-with-leaping-fox-design-gift"
-    },
-    {
-      "printifyId": "68af1a4cc80547a2fc014bd6",
-      "etsyListingId": "4506117053",
-      "title": "Serval Cat Illustration Tee | Wild Serval Cat Graphic Shirt, Animal Lover",
-      "displayTitle": "Serval Cat Illustration Tee",
-      "price": 25.99,
-      "image": "https://images.printify.com/mockup/68af1a4cc80547a2fc014bd6/21753/97933/serval-cat-illustration-tee-wild-serval-cat-graphic-shirt-animal-lover.jpg?camera_label=front",
-      "etsyUrl": "https://www.etsy.com/listing/4506117053/unisex-serval-cat-art-tee-hand-drawn"
+      "etsyUrl": "https://www.etsy.com/listing/4566072080/classic-cap-with-leaping-fox-design-gift"
     },
     {
       "printifyId": "68b221a94e5b73c183084fea",
@@ -150,6 +159,15 @@ export const ETSY_LISTINGS: EtsyListingsByMode = {
       "etsyUrl": "https://www.etsy.com/listing/4509322693/vintage-tropical-adventure-t-shirt"
     },
     {
+      "printifyId": "68defaf81f4e70b96d04d6a5",
+      "etsyListingId": "4559516365",
+      "title": "Bird Tee | Unisex Shoebill Graphic Tshirt",
+      "displayTitle": "Bird Tee",
+      "price": 25,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260820181129-1f19cc29-0f89-6746-bc67-6e44332df7a7.png",
+      "etsyUrl": "https://www.etsy.com/listing/4559516365/bird-tee-unisex-shoebill-graphic-tshirt"
+    },
+    {
       "printifyId": "68defbdaf6050b9ad00da18e",
       "etsyListingId": "4530447352",
       "title": "Je t'adore Skeleton Hands heart Tee | Women's Boxy Tee",
@@ -159,11 +177,20 @@ export const ETSY_LISTINGS: EtsyListingsByMode = {
       "etsyUrl": "https://www.etsy.com/listing/4530447352/je-tadore-skeleton-hands-heart-tee"
     },
     {
+      "printifyId": "68f280e1fecc80c6bb0757d6",
+      "etsyListingId": "4555965994",
+      "title": "Je t'adore Skeleton Hands T-Shirt, Je t'adore Graphic Shirt, Spooky Love , Gothic Valentine's Gift",
+      "displayTitle": "Je t'adore Skeleton Hands T-Shirt",
+      "price": 25,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260814194610-1f19818c-caf4-6b58-816c-86d2a06b4581.png",
+      "etsyUrl": "https://www.etsy.com/listing/4555965994/je-tadore-skeleton-hands-t-shirt-je"
+    },
+    {
       "printifyId": "690787a53fb2b41f910b63f8",
       "etsyListingId": "4545798492",
       "title": "Wildflower Heart Shirt | Botanical Graphic Tee | Vintage Flower Shirt | UNRWLY Original Art",
       "displayTitle": "Wildflower Heart Shirt",
-      "price": 25,
+      "price": 32,
       "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/07/20260728213820-1f18acca-6c14-6706-a1ad-ba8f5baede8c.png",
       "etsyUrl": "https://www.etsy.com/listing/4545798492/wildflower-heart-shirt-botanical-graphic"
     },
@@ -199,18 +226,18 @@ export const ETSY_LISTINGS: EtsyListingsByMode = {
       "etsyListingId": "4506152743",
       "title": "My Other Bag Is Also Not A Birkin Bag Tote Bag | Canvas Tote, Funny Quote",
       "displayTitle": "My Other Bag Is Also Not A Birkin Bag Tote Bag",
-      "price": 20.99,
+      "price": 19.99,
       "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/05/20260526232134-1f15959a-2e76-68f8-9843-e24443384d1c.png",
-      "etsyUrl": "https://www.etsy.com/listing/4506152743/my-other-bag-is-also-not-a-birkin-bag"
+      "etsyUrl": "https://www.etsy.com/listing/4506152743/canvas-tote-bag-funny-slogan-dry-humor"
     },
     {
       "printifyId": "6934f3c22e3cac24640afccd",
-      "etsyListingId": "4506152841",
-      "title": "Fueled by Coffee and Feminist rage Artsy Tote",
-      "displayTitle": "Fueled by Coffee and Feminist rage Artsy Tote",
+      "etsyListingId": "4568309954",
+      "title": "Spooky Feminist Artsy Tote | Fueled by Coffee and Feminist Rage",
+      "displayTitle": "Spooky Feminist Artsy Tote",
       "price": 20.99,
-      "image": "https://images.printify.com/mockup/6934f3c22e3cac24640afccd/101409/93895/fueled-by-coffee-and-feminist-rage-artsy-tote.jpg?camera_label=front",
-      "etsyUrl": "https://www.etsy.com/listing/4506152841/fueled-by-coffee-and-feminist-rage-artsy"
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/09/20260903172256-1f1a7bc1-aa59-6c1a-91cb-06cb93951e00.png",
+      "etsyUrl": "https://www.etsy.com/listing/4568309954/spooky-feminist-artsy-tote-fueled-by"
     },
     {
       "printifyId": "6941b5f5892a23a4d60b704b",
@@ -238,6 +265,24 @@ export const ETSY_LISTINGS: EtsyListingsByMode = {
       "price": 16.99,
       "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/05/20260527022704-1f159738-cefa-62c6-ae62-2e9971714f70.png",
       "etsyUrl": "https://www.etsy.com/listing/4511898195/rainbow-moth-15oz-mug-graphic-coffee-tea"
+    },
+    {
+      "printifyId": "69ae39e721886ed909085119",
+      "etsyListingId": "4560834850",
+      "title": "Floral Blue Green Fold Art Mug | Ceramic Cottage Core Mugr",
+      "displayTitle": "Floral Blue Green Fold Art Mug",
+      "price": 16.99,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260822213527-1f19e716-4620-6338-b366-aa57f35f3cbe.png",
+      "etsyUrl": "https://www.etsy.com/listing/4560834850/floral-blue-green-fold-art-mug-ceramic"
+    },
+    {
+      "printifyId": "69e640a3c58e3af9180b7a15",
+      "etsyListingId": "4555921743",
+      "title": "Iconic Hat | Women's Washed Mesh-Back Cap",
+      "displayTitle": "Iconic Hat",
+      "price": 29.78,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260813174807-1f1973f2-4865-6856-8442-fa16a0fa74fe.png",
+      "etsyUrl": "https://www.etsy.com/listing/4555921743/iconic-hat-womens-washed-mesh-back-cap"
     },
     {
       "printifyId": "69fbb8f7ff28e7d4030abf48",
@@ -280,7 +325,7 @@ export const ETSY_LISTINGS: EtsyListingsByMode = {
       "etsyListingId": "4512351887",
       "title": "je t'adore Tee | French Phrase T-Shirt, Minimal Typography Shirt",
       "displayTitle": "je t'adore Tee",
-      "price": 26,
+      "price": 24.99,
       "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/05/20260527212352-1f15a125-bdb6-650e-9c0d-3e675096a568.png",
       "etsyUrl": "https://www.etsy.com/listing/4512351887/je-tadore-tee-french-phrase-t-shirt"
     },
@@ -335,7 +380,7 @@ export const ETSY_LISTINGS: EtsyListingsByMode = {
       "title": "Shine Bright Tote Bag | Inspirational Quote All-Over Print",
       "displayTitle": "Shine Bright Tote Bag",
       "price": 25.99,
-      "image": "https://images.printify.com/mockup/6a2071eff75ca55a1a0055a9/103599/100877/shine-bright-tote-bag-inspirational-quote-all-over-print.jpg?camera_label=front",
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/09/20260901010559-1f1a5a14-ae0e-669a-9f15-4a9482624a9c.png",
       "etsyUrl": "https://www.etsy.com/listing/4515904350/shine-bright-tote-bag-inspirational"
     },
     {
@@ -433,7 +478,7 @@ export const ETSY_LISTINGS: EtsyListingsByMode = {
       "etsyListingId": "4522804313",
       "title": "Embrace the Chaos Tank Top | Original Art for Women Racerback",
       "displayTitle": "Embrace the Chaos Tank Top",
-      "price": 21.18,
+      "price": 22.02,
       "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/07/20260730003100-1f18badf-05b7-6788-8c0e-7ef5b120c7fe.png",
       "etsyUrl": "https://www.etsy.com/listing/4522804313/embrace-the-chaos-tank-top-original-art"
     },
@@ -460,8 +505,8 @@ export const ETSY_LISTINGS: EtsyListingsByMode = {
       "etsyListingId": "4528922962",
       "title": "Mother of Chickens T-Shirt, Hand-Drawn Chicken Mom Tee, Backyard Chicken Keeper Gift",
       "displayTitle": "Mother of Chickens T-Shirt",
-      "price": 16.03,
-      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/07/20260721214144-1f1854cf-7c71-6da4-ba3b-1a27c67d6701.png",
+      "price": 28,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/09/20260903202801-1f1a7d5f-5b95-62ba-bfc8-1a81828fa8f6.png",
       "etsyUrl": "https://www.etsy.com/listing/4528922962/mother-of-chickens-t-shirt-hand-drawn"
     },
     {
@@ -636,6 +681,15 @@ export const ETSY_LISTINGS: EtsyListingsByMode = {
       "etsyUrl": "https://www.etsy.com/listing/4553612979/floral-anatomical-heart-t-shirt-original"
     },
     {
+      "printifyId": "6a7b297d0abb5853c803a71a",
+      "etsyListingId": "4558790761",
+      "title": "Girls Will be Girls Cotton Canvas Tote Bag",
+      "displayTitle": "Girls Will be Girls Cotton Canvas Tote Bag",
+      "price": 20.99,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260819155405-1f19be63-4af6-69e2-8e47-76468da7ea73.png",
+      "etsyUrl": "https://www.etsy.com/listing/4558790761/girls-will-be-girls-cotton-canvas-tote"
+    },
+    {
       "printifyId": "6a7b297dcd62cf828a04f589",
       "etsyListingId": "4554539082",
       "title": "Girls Will Be Girls Hoodie | Girls Humor Pullover",
@@ -661,6 +715,114 @@ export const ETSY_LISTINGS: EtsyListingsByMode = {
       "price": 39,
       "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260812164309-1f1966ce-682e-61e6-b117-760bab38aa7e.png",
       "etsyUrl": "https://www.etsy.com/listing/4554614507/oui-mais-non-sweatshirt-french-girl"
+    },
+    {
+      "printifyId": "6a7ca89e69e941bd4408b72e",
+      "etsyListingId": "4555156152",
+      "title": "Watercolor Wildflower Bouquet T-Shirt | Floral Nature Tee",
+      "displayTitle": "Watercolor Wildflower Bouquet T-Shirt",
+      "price": 25,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260812205742-1f196907-63c4-67be-bb58-860bf4c9a587.png",
+      "etsyUrl": "https://www.etsy.com/listing/4555156152/watercolor-wildflower-bouquet-t-shirt"
+    },
+    {
+      "printifyId": "6a80af555a9ba1478b0b321a",
+      "etsyListingId": "4558306723",
+      "title": "Vintage Floral Rose Illustration T-Shirt | Botanical Flower Tee",
+      "displayTitle": "Vintage Floral Rose Illustration T-Shirt",
+      "price": 25,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260818210959-1f19b492-bc2a-6756-a3f3-263eae3a486f.png",
+      "etsyUrl": "https://www.etsy.com/listing/4558306723/vintage-floral-rose-illustration-t-shirt"
+    },
+    {
+      "printifyId": "6a89c7b0f9a20418530f4471",
+      "etsyListingId": "4560966783",
+      "title": "Mother of Chickens Hoodie, Hand-Drawn Chicken Mom Tee, Backyard Chicken Keeper Gift",
+      "displayTitle": "Mother of Chickens Hoodie",
+      "price": 46.99,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260823054404-1f19eb5a-642b-6fe2-b7ec-02cd669b172b.png",
+      "etsyUrl": "https://www.etsy.com/listing/4560966783/mother-of-chickens-hoodie-hand-drawn"
+    },
+    {
+      "printifyId": "6a8a8eb7ff587c144f080ef8",
+      "etsyListingId": "4563789024",
+      "title": "Hand Drawn Ghosts Notebook | Halloween Journal | Ghost Lover Journal",
+      "displayTitle": "Hand Drawn Ghosts Notebook",
+      "price": 21.99,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260827170107-1f1a238e-50f9-67f0-8061-1a2c2026e5c3.png",
+      "etsyUrl": "https://www.etsy.com/listing/4563789024/hand-drawn-ghosts-notebook-halloween"
+    },
+    {
+      "printifyId": "6a8b0cda0df7c85d93002faf",
+      "etsyListingId": "4506117053",
+      "title": "Serval Cat Illustration Tee | Wild Serval Cat Graphic Shirt, Animal Lover",
+      "displayTitle": "Serval Cat Illustration Tee",
+      "price": 25.11,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260823154042-1f19f08f-f7f5-6c2a-8198-ae2d6b5e885d.png",
+      "etsyUrl": "https://www.etsy.com/listing/4506117053/unisex-serval-cat-art-tee-hand-drawn"
+    },
+    {
+      "printifyId": "6a8fc074c6c4d0e76105ee40",
+      "etsyListingId": "4563688596",
+      "title": "Dolly Parton Quote Tank | Floral Dolly Portrait",
+      "displayTitle": "Dolly Parton Quote Tank",
+      "price": 28,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260827193949-1f1a24f1-0bb1-6490-b593-4eec0954e677.png",
+      "etsyUrl": "https://www.etsy.com/listing/4563688596/dolly-parton-quote-tank-floral-dolly"
+    },
+    {
+      "printifyId": "6a903104e342daa90e007625",
+      "etsyListingId": "4563675335",
+      "title": "Dolly Parton Quote Tank | Floral Dolly Portrait Tee",
+      "displayTitle": "Dolly Parton Quote Tank",
+      "price": 28.5,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260827195244-1f1a250d-ecae-6058-9324-0229626f955d.png",
+      "etsyUrl": "https://www.etsy.com/listing/4563675335/dolly-parton-quote-tank-floral-dolly"
+    },
+    {
+      "printifyId": "6a90812b73eb5ed6900c3813",
+      "etsyListingId": "4563925030",
+      "title": "Dolly Parton Quote Tank | Floral Dolly Portrait Tee",
+      "displayTitle": "Dolly Parton Quote Tank",
+      "price": 28.5,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260827204824-1f1a258a-5a01-6bd8-91a6-6ee5f4cddd01.png",
+      "etsyUrl": "https://www.etsy.com/listing/4563925030/dolly-parton-quote-tank-floral-dolly"
+    },
+    {
+      "printifyId": "6a936b95c4829efd01086ed0",
+      "etsyListingId": "4565427805",
+      "title": "Embrace The Chaos Notebook | Botanical Woman Spiral Bound Journal | Self-love Era",
+      "displayTitle": "Embrace The Chaos Notebook",
+      "price": 21.99,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260830150938-1f1a484d-18d3-6572-9e21-629567318ddd.png",
+      "etsyUrl": "https://www.etsy.com/listing/4565427805/embrace-the-chaos-notebook-botanical"
+    },
+    {
+      "printifyId": "6a944a1a1830d8c3d30d3f32",
+      "etsyListingId": "4565471846",
+      "title": "Embrace The Chaos Notebook | Botanical Woman Spiral Bound Journal (Grey) | Self-love Era",
+      "displayTitle": "Embrace The Chaos Notebook",
+      "price": 21.99,
+      "image": "https://images.printify.com/mockup/6a944a1a1830d8c3d30d3f32/65224/7236/embrace-the-chaos-notebook-botanical-woman-spiral-bound-journal-grey-self-love-era.jpg?camera_label=front",
+      "etsyUrl": "https://www.etsy.com/listing/4565471846/copy-of-embrace-the-chaos-notebook"
+    },
+    {
+      "printifyId": "6a95a183343c08f10307e2cc",
+      "etsyListingId": "4566138499",
+      "title": "Leaping Fox Tee | Joie de Vivre Fox Tshirt | French Saying Top",
+      "displayTitle": "Leaping Fox Tee",
+      "price": 26.5,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260831175639-1f1a5655-134d-63d0-81d8-fe62a7c42f99.png",
+      "etsyUrl": "https://www.etsy.com/listing/4566138499/leaping-fox-tee-joie-de-vivre-fox-tshirt"
+    },
+    {
+      "printifyId": "6a95b63b78fb79747c08c660",
+      "etsyListingId": "4566152979",
+      "title": "Halloween Cat Mg | Hat On Vibes On Cup",
+      "displayTitle": "Halloween Cat Mg",
+      "price": 16.99,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260831180846-1f1a5670-29b5-6544-bbff-fe62a7c42f99.png",
+      "etsyUrl": "https://www.etsy.com/listing/4566152979/halloween-cat-mg-hat-on-vibes-on-cup"
     }
   ],
   "kids": [
@@ -674,24 +836,6 @@ export const ETSY_LISTINGS: EtsyListingsByMode = {
       "etsyUrl": "https://www.etsy.com/listing/4506116841/rainbowsaurus-toddler-tee-cute-purple"
     },
     {
-      "printifyId": "6a086b01b7acc2cf22068357",
-      "etsyListingId": "4506127054",
-      "title": "I Love You Saurus toddler T-Shirt | Cute Pink Dinosaur Valentine design",
-      "displayTitle": "I Love You Saurus toddler T-Shirt",
-      "price": 22.99,
-      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/07/20260712172510-1f17e16a-28ad-6958-bbab-8e68f5bcdcc9.png",
-      "etsyUrl": "https://www.etsy.com/listing/4506127054/toddler-dinosaur-valentine-shirt-pink"
-    },
-    {
-      "printifyId": "6a087cbb7f210439d40703dd",
-      "etsyListingId": "4506154800",
-      "title": "Astro-Saurus Dinosaur Toddler Tee | Space Dino Kids Shirt",
-      "displayTitle": "Astro-Saurus Dinosaur Toddler Tee",
-      "price": 20.5,
-      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/05/20260526143535-1f159102-8651-61aa-8fa2-1223a3c143e9.png",
-      "etsyUrl": "https://www.etsy.com/listing/4506154800/astro-saurus-dinosaur-toddler-tee-space"
-    },
-    {
       "printifyId": "6a087d9c51e2b3a2d802d7d0",
       "etsyListingId": "4506156428",
       "title": "Plantosaurus Dinosaur Tee | Toddler T-Shirt, Cute Plant Dino Graphic",
@@ -703,11 +847,11 @@ export const ETSY_LISTINGS: EtsyListingsByMode = {
     {
       "printifyId": "6a087e8ceeb1cc67a707379a",
       "etsyListingId": "4506152273",
-      "title": "Astronaut Riding Unicorn Kids Tee | The Sky Is Not The Limit",
-      "displayTitle": "Astronaut Riding Unicorn Kids Tee",
-      "price": 18.99,
-      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/05/20260520203408-1f1548b4-0c74-69c2-97d7-8a33b4e50931.png",
-      "etsyUrl": "https://www.etsy.com/listing/4506152273/astronaut-riding-unicorn-kids-tee-the"
+      "title": "Astronaut Unicorn Kids Tee | The Sky Is Not The Limit Tshirt",
+      "displayTitle": "Astronaut Unicorn Kids Tee",
+      "price": 19.5,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260820145130-1f19ca6a-13b2-6f0e-a23d-7e27ab444213.png",
+      "etsyUrl": "https://www.etsy.com/listing/4506152273/astronaut-unicorn-kids-tee-the-sky-is"
     },
     {
       "printifyId": "6a0ba88d56c75ac490100d99",
@@ -748,20 +892,11 @@ export const ETSY_LISTINGS: EtsyListingsByMode = {
     {
       "printifyId": "6a1668c9b57fcd0c400fba65",
       "etsyListingId": "4512096689",
-      "title": "Kids Fox Shirt, Joie de Vivre Youth Graphic Tee, Hand Drawn Woodland Animal Shirt, French Kids T-Shirt",
+      "title": "Kids Fox Shirt, Joie de Vivre Graphic Tee, Hand Drawn Woodland Animal Shirt, French Kids T-Shirt",
       "displayTitle": "Kids Fox Shirt",
       "price": 29.99,
       "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/07/20260712181254-1f17e1d4-db85-6da4-9384-96e319587ddf.png",
-      "etsyUrl": "https://www.etsy.com/listing/4512096689/kids-fox-shirt-joie-de-vivre-youth"
-    },
-    {
-      "printifyId": "6a17574933108491c709efa7",
-      "etsyListingId": "4512329828",
-      "title": "Magic Hair Day Toddler Tee | Cute Kids Graphic, Positive Slogan",
-      "displayTitle": "Magic Hair Day Toddler Tee",
-      "price": 20.5,
-      "image": "https://images.printify.com/mockup/6a17574933108491c709efa7/116464/99191/magic-hair-day-toddler-tee-cute-kids-graphic-positive-slogan.jpg?camera_label=front",
-      "etsyUrl": "https://www.etsy.com/listing/4512329828/toddler-tee-hand-drawn-graphic-combed"
+      "etsyUrl": "https://www.etsy.com/listing/4512096689/kids-fox-shirt-hand-drawn-woodland"
     },
     {
       "printifyId": "6a17934d4dfc88b2080ff1cf",
@@ -793,11 +928,11 @@ export const ETSY_LISTINGS: EtsyListingsByMode = {
     {
       "printifyId": "6a187913bb9dc25bbe07b8b3",
       "etsyListingId": "4512782131",
-      "title": "Flower Child Toddler Tee | Cute Girl on Leaf, Butterflies",
-      "displayTitle": "Flower Child Toddler Tee",
-      "price": 22.99,
-      "image": "https://images.printify.com/mockup/6a187913bb9dc25bbe07b8b3/21477/99191/flower-child-toddler-tee-cute-girl-on-leaf-butterflies.jpg?camera_label=front",
-      "etsyUrl": "https://www.etsy.com/listing/4512782131/flower-child-toddler-tee-cute-girl-on"
+      "title": "Forest Spirir Toddler Tee | Cute Mushroom Girl on Leaf",
+      "displayTitle": "Forest Spirir Toddler Tee",
+      "price": 21.25,
+      "image": "https://images.printify.com/mockup/6a187913bb9dc25bbe07b8b3/21477/99191/forest-spirir-toddler-tee-cute-mushroom-girl-on-leaf.jpg?camera_label=front",
+      "etsyUrl": "https://www.etsy.com/listing/4512782131/toddler-girl-tee-whimsical-garden"
     },
     {
       "printifyId": "6a189eeb6b650ce2880b4d9b",
@@ -807,6 +942,15 @@ export const ETSY_LISTINGS: EtsyListingsByMode = {
       "price": 28.99,
       "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/05/20260528222222-1f15ae3b-2909-66e0-90ca-8668953500e7.png",
       "etsyUrl": "https://www.etsy.com/listing/4512858572/colorful-mosaic-hearts-youth-tee-rainbow"
+    },
+    {
+      "printifyId": "6a18a01be885dc0b1f0573a5",
+      "etsyListingId": "4562629688",
+      "title": "Adorable Ghost Print Girls' Sleeveless dress, Fall Dress, Birthday Gift, Playwear, Cute Casual Dress, Kids Fashion",
+      "displayTitle": "Adorable Ghost Print Girls' Sleeveless dress",
+      "price": 30,
+      "image": "https://images.printify.com/mockup/6a18a01be885dc0b1f0573a5/79710/46079/adorable-ghost-print-girls-sleeveless-dress-fall-dress-birthday-gift-playwear-cute-casual-dress-kids-fashion.jpg?camera_label=front",
+      "etsyUrl": "https://www.etsy.com/listing/4562629688/adorable-ghost-print-girls-sleeveless"
     },
     {
       "printifyId": "6a18a01fb5a887488d0eaf12",
@@ -890,15 +1034,6 @@ export const ETSY_LISTINGS: EtsyListingsByMode = {
       "etsyUrl": "https://www.etsy.com/listing/4522330128/omasaurus-dinosaur-illustration-mug"
     },
     {
-      "printifyId": "6a2b63b14b2d21212403d74d",
-      "etsyListingId": "4530616731",
-      "title": "Pixel Blue Dino pattern Kids Tee | Retro pixel art dinosaur shirt",
-      "displayTitle": "Pixel Blue Dino pattern Kids Tee",
-      "price": 19.78,
-      "image": "https://images.printify.com/mockup/6a2b63b14b2d21212403d74d/38287/101379/pixel-blue-dino-pattern-kids-tee-retro-pixel-art-dinosaur-shirt.jpg?camera_label=front",
-      "etsyUrl": "https://www.etsy.com/listing/4530616731/pixel-blue-dino-pattern-kids-tee-retro"
-    },
-    {
       "printifyId": "6a2b64899d3025bcef01ec14",
       "etsyListingId": "4530656367",
       "title": "Grumpy Cat Sketch toddler tee | Cute cat illustration, 'Meow means Meow'",
@@ -926,22 +1061,13 @@ export const ETSY_LISTINGS: EtsyListingsByMode = {
       "etsyUrl": "https://www.etsy.com/listing/4521321108/youth-soccer-jersey-tee-us-capybara-kid"
     },
     {
-      "printifyId": "6a2e1a4fa4bf9acfe9031237",
-      "etsyListingId": "4521609066",
-      "title": "Beach Capybara with Flamingos Youth Tee | Pool Float, Palm Tree, Sunny Summer Design",
-      "displayTitle": "Beach Capybara with Flamingos Youth Tee",
-      "price": 20,
-      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/07/20260712155630-1f17e0a3-f8e6-6312-a4c0-4668386699bb.png",
-      "etsyUrl": "https://www.etsy.com/listing/4521609066/beach-capybara-with-flamingos-youth-tee"
-    },
-    {
       "printifyId": "6a2edc87b795ecdd0f019592",
       "etsyListingId": "4521816655",
-      "title": "Don't Worry Be Capy capybara Youth Tee | Cute Animal Graphic",
-      "displayTitle": "Don't Worry Be Capy capybara Youth Tee",
+      "title": "Capybara Kids Tee| Capybara gift | Dont Worry Be Capy",
+      "displayTitle": "Capybara Kids Tee",
       "price": 20,
-      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/06/20260614171606-1f16814b-aa1e-6774-9cb6-4ecf1fa417a0.png",
-      "etsyUrl": "https://www.etsy.com/listing/4521816655/dont-worry-be-capy-capybara-youth-tee"
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260820143428-1f19ca43-fe59-67b4-84ca-eeecec526a9c.png",
+      "etsyUrl": "https://www.etsy.com/listing/4521816655/youth-capybara-graphic-tee-dont-worry-be"
     },
     {
       "printifyId": "6a3032502467430e2e0c2921",
@@ -1059,6 +1185,114 @@ export const ETSY_LISTINGS: EtsyListingsByMode = {
       "price": 21.33,
       "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260812142625-1f19659c-ca83-65b8-a9a9-5e26fae33d61.png",
       "etsyUrl": "https://www.etsy.com/listing/4554536837/do-not-disturb-infant-bodysuit-pink"
+    },
+    {
+      "printifyId": "6a7f506759942e96470552e2",
+      "etsyListingId": "4555939530",
+      "title": "Tiny But Mighty poison frog Kids Tee | Cute frog lineup,",
+      "displayTitle": "Tiny But Mighty poison frog Kids Tee",
+      "price": 19,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260814174924-1f198087-cc05-6804-85a9-1680a1fa4d8d.png",
+      "etsyUrl": "https://www.etsy.com/listing/4555939530/tiny-but-mighty-poison-frog-kids-tee"
+    },
+    {
+      "printifyId": "6a821fb47ceab81a9108d011",
+      "etsyListingId": "4558164777",
+      "title": "Tropical Frog Leaf Trio Toddler Tee | Rainforest Animal Illustration",
+      "displayTitle": "Tropical Frog Leaf Trio Toddler Tee",
+      "price": 18,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260818164643-1f19b246-48d9-6f16-b602-8ed11411e5f4.png",
+      "etsyUrl": "https://www.etsy.com/listing/4558164777/tropical-frog-leaf-trio-toddler-tee"
+    },
+    {
+      "printifyId": "6a822165ba4c7976cc0ff5fa",
+      "etsyListingId": "4558178672",
+      "title": "Tropical Jungle Poison Dart Frog Kids Tee | Poison Frogs Illustration",
+      "displayTitle": "Tropical Jungle Poison Dart Frog Kids Tee",
+      "price": 19,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260818162037-1f19b20b-eed1-6756-9806-bed7cad78972.png",
+      "etsyUrl": "https://www.etsy.com/listing/4558178672/tropical-jungle-poison-dart-frog-kids"
+    },
+    {
+      "printifyId": "6a8221f43cd9ad859b0dafe7",
+      "etsyListingId": "4558225961",
+      "title": "Tropical Frogs Illustration Hoodie | Kids Nature Rainforest Design",
+      "displayTitle": "Tropical Frogs Illustration Hoodie",
+      "price": 42.99,
+      "image": "https://images.printify.com/mockup/6a8221f43cd9ad859b0dafe7/43917/107813/tropical-frogs-illustration-hoodie-kids-nature-rainforest-design.jpg?camera_label=front",
+      "etsyUrl": "https://www.etsy.com/listing/4558225961/tropical-frogs-illustration-hoodie-kids"
+    },
+    {
+      "printifyId": "6a85d8904fdd63ffce100051",
+      "etsyListingId": "4530616731",
+      "title": "Blue Dino Pixel Kids Tee | Retro pixel art dinosaur shirt",
+      "displayTitle": "Blue Dino Pixel Kids Tee",
+      "price": 21.5,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260819174826-1f19bf62-e610-6cd4-83c0-2e8837bd7811.png",
+      "etsyUrl": "https://www.etsy.com/listing/4530616731/blue-dino-pixel-kids-tee-retro-pixel-art"
+    },
+    {
+      "printifyId": "6a8650c297b1191541048c00",
+      "etsyListingId": "4521609066",
+      "title": "Capybara Youth Tee | The Capy Life Tshirt",
+      "displayTitle": "Capybara Youth Tee",
+      "price": 19,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260820141805-1f19ca1f-6248-6466-a088-7af4ec31c829.png",
+      "etsyUrl": "https://www.etsy.com/listing/4521609066/capybara-youth-tee-the-capy-life-tshirt"
+    },
+    {
+      "printifyId": "6a8b9146e1c348e060091c2d",
+      "etsyListingId": "4561665267",
+      "title": "Astronaut Dinosaur Toddler Tee | Space Dino Kids T-Shirt",
+      "displayTitle": "Astronaut Dinosaur Toddler Tee",
+      "price": 23.99,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260824123348-1f19fb80-e31a-630e-8343-3aa9fdf51c19.png",
+      "etsyUrl": "https://www.etsy.com/listing/4561665267/astronaut-dinosaur-toddler-tee-space"
+    },
+    {
+      "printifyId": "6a8b916084f258fc07014504",
+      "etsyListingId": "4506154800",
+      "title": "Astro-Saurus Dinosaur Toddler Tee | Space Dino Kids Shirt",
+      "displayTitle": "Astro-Saurus Dinosaur Toddler Tee",
+      "price": 13.96,
+      "image": "https://images.printify.com/mockup/6a8b916084f258fc07014504/71235/99201/astro-saurus-dinosaur-toddler-tee-space-dino-kids-shirt.jpg?camera_label=front",
+      "etsyUrl": "https://www.etsy.com/listing/4506154800/astro-saurus-dinosaur-toddler-tee-space"
+    },
+    {
+      "printifyId": "6a8ce9aa6ef05e0e0f09eaa6",
+      "etsyListingId": "4506127054",
+      "title": "Dino Heart Toddler T-Shirt |  I Love You Saurus Kid Tee",
+      "displayTitle": "Dino Heart Toddler T-Shirt",
+      "price": 29.5,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/08/20260825011310-1f1a0222-36fb-63ea-9ce9-6aa96fed5b43.jpg",
+      "etsyUrl": "https://www.etsy.com/listing/4506127054/toddler-dinosaur-valentine-shirt-pink"
+    },
+    {
+      "printifyId": "6a9456a1d3576cd14e0cba86",
+      "etsyListingId": "4566396303",
+      "title": "Polar Bear Mama and Cub T-Shirt | Arctic Animals Kids Tee",
+      "displayTitle": "Polar Bear Mama and Cub T-Shirt",
+      "price": 20.8,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/09/20260901021145-1f1a5aa7-ae01-68e4-9299-d6f57c2c30ec.png",
+      "etsyUrl": "https://www.etsy.com/listing/4566396303/sleeping-polar-bear-mama-and-cub-t-shirt"
+    },
+    {
+      "printifyId": "6a95dbfaf9f093a7d4025b93",
+      "etsyListingId": "4566693402",
+      "title": "Tiger Eating Donut Youth Tee | Cute Kawaii Dessert Tshirt",
+      "displayTitle": "Tiger Eating Donut Youth Tee",
+      "price": 20.38,
+      "image": "https://d123s6f1z9g2wk.cloudfront.net/files/2026/09/20260901134547-1f1a60b6-fa10-63f6-bd5d-52dcf5832d04.png",
+      "etsyUrl": "https://www.etsy.com/listing/4566693402/tiger-eating-donut-youth-tee-cute-kawaii"
+    },
+    {
+      "printifyId": "6a9b1ba96ab5112aba081684",
+      "etsyListingId": "4512329828",
+      "title": "Magic Hair Day Toddler Tee | Cute Kids Graphic, Positive Slogan",
+      "displayTitle": "Magic Hair Day Toddler Tee",
+      "price": 14.8,
+      "image": "https://images.printify.com/mockup/6a9b1ba96ab5112aba081684/61520/94623/magic-hair-day-toddler-tee-cute-kids-graphic-positive-slogan.jpg?camera_label=front",
+      "etsyUrl": "https://www.etsy.com/listing/4512329828/toddler-tee-hand-drawn-graphic-combed"
     }
   ]
 };

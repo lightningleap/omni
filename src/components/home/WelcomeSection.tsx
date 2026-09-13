@@ -91,7 +91,7 @@ export default function WelcomeSection({ studioImage }: { studioImage?: string |
                 existed to separate it from the wordmark above. Without that the
                 badge would sit 8px further from the heading than it was
                 designed to. */}
-            <motion.h1 {...fadeUp(0.12)} className="type-h2 mt-5 uppercase" style={{ color: '#1A1A1A' }}>
+            <motion.h1 {...fadeUp(0.12)} className="type-h2 mt-5 uppercase" style={{ color: 'var(--color-ink)' }}>
               {welcome.title}
               <span
                 className={`type-h3 block normal-case text-neutral-600${welcome.title ? ' mt-2' : ''}`}
@@ -112,7 +112,7 @@ export default function WelcomeSection({ studioImage }: { studioImage?: string |
                 longer than the measure still wraps normally, which is what
                 keeps this from overflowing on a phone. */}
             {welcome.tagline && (
-              <motion.p {...fadeUp(0.2)} className="type-body mt-6 max-w-[640px] whitespace-pre-line text-[#334155]">
+              <motion.p {...fadeUp(0.2)} className="type-body mt-6 max-w-[640px] whitespace-pre-line text-neutral-500">
                 {welcome.tagline}
               </motion.p>
             )}
@@ -129,7 +129,7 @@ export default function WelcomeSection({ studioImage }: { studioImage?: string |
               {welcome.secondaryCta && (
                 <Link
                   href={welcome.secondaryCta.href}
-                  className="type-button group/meet inline-flex h-[54px] items-center justify-center gap-2 rounded-full border border-neutral-300 px-8 text-[13px] uppercase tracking-[0.12em] text-[#1A1A1A] transition-[background-color,border-color] duration-[250ms] ease-out hover:border-neutral-400 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
+                  className="type-button group/meet inline-flex h-[54px] items-center justify-center gap-2 rounded-full border border-neutral-300 px-8 text-[13px] uppercase tracking-[0.12em] text-ink transition-[background-color,border-color] duration-[250ms] ease-out hover:border-neutral-400 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
                 >
                   {welcome.secondaryCta.label}
                   <ArrowRight size={16} strokeWidth={2} className="transition-transform duration-[250ms] ease-out group-hover/meet:translate-x-1 motion-reduce:transition-none" />
@@ -163,7 +163,7 @@ export default function WelcomeSection({ studioImage }: { studioImage?: string |
                 dressing it up would make it read as a banner. */}
             <motion.div
               {...fadeUp(0.2)}
-              className="relative aspect-[4/3] w-full max-w-[500px] overflow-hidden rounded-[6px] bg-[#F1F1EF] shadow-[0_2px_10px_-6px_rgba(20,20,25,0.18)] lg:ml-auto"
+              className="relative aspect-[4/3] w-full max-w-[500px] overflow-hidden rounded-card bg-[#F1F1EF] shadow-[0_2px_10px_-6px_rgba(20,20,25,0.18)] lg:ml-auto"
             >
               <Image
                 src={studioImage ?? STUDIO_FALLBACK}

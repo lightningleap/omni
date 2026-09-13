@@ -4,6 +4,15 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { updateMarketingSettings } from "@/app/actions/marketing";
 import { Loader2, Zap, BellRing } from "lucide-react";
+import {
+  ADMIN_RULE,
+  AdminButton,
+  AdminField,
+  AdminInput,
+  AdminMono,
+  AdminPanel,
+  AdminSectionHeading,
+} from "@/components/admin/ui/primitives";
 
 interface FlashSaleFormProps {
   initialData: {
@@ -70,188 +79,200 @@ export default function FlashSaleForm({ initialData }: FlashSaleFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-12 text-slate-900">
-      
-      {/* SECTION 1: FLASH SALE */}
-      <div className="space-y-8 bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm">
-        <div className="flex items-center gap-4 mb-2">
-          <Zap className="text-[#D97757]" size={24} />
-          <h2 className="text-2xl font-serif italic font-black tracking-tighter lowercase text-slate-900">Flash Sale Protocol</h2>
+    /* Two settings panels and a save bar. Everything here was set in a
+       lowercase, tracking-tighter register that exists nowhere else in the
+       studio — 24px lowercase panel headings, `text-[11px] font-bold
+       tracking-tighter lowercase` field labels, 40px panel padding, 20px input
+       padding, and a submit button at 10px uppercase on 0.4em tracking. It is
+       the shared panel, field and button now. */
+    <form onSubmit={handleSubmit} className="space-y-6 text-ink">
+      {/* ── FLASH SALE ─────────────────────────────────────────────────── */}
+      <AdminPanel padded className="space-y-5">
+        <div className="flex items-center gap-2.5">
+          <Zap aria-hidden className="text-brand-terracotta" size={16} />
+          <AdminSectionHeading>Flash sale</AdminSectionHeading>
         </div>
 
-        <div className="flex items-center justify-between border border-slate-100 p-8 bg-slate-50/50 rounded-3xl">
-          <div className="space-y-1">
-            <label className="text-sm font-serif italic font-bold tracking-tighter lowercase text-slate-900">
-              Enable Flash Sale
-            </label>
-            <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">
-              Activates the vertical "Creative Sticker" on storefront
+        <div
+          style={{ borderColor: ADMIN_RULE }}
+          className="flex items-center justify-between gap-4 rounded-card border bg-[#FBFAF8] p-4"
+        >
+          <div>
+            <p className="type-admin-body font-semibold text-ink">Enable flash sale</p>
+            <p className="type-admin-meta text-neutral-500">
+              Shows the vertical sale sticker on the storefront.
             </p>
           </div>
           <button
             type="button"
             onClick={() => setActive(!active)}
-            className={`relative w-14 h-7 rounded-full transition-colors duration-300 border-2 ${
-              active ? "bg-[#D97757] border-[#D97757]" : "bg-slate-200 border-slate-300"
+            role="switch"
+            aria-checked={active}
+            aria-label="Enable flash sale"
+            className={`relative h-6 w-11 shrink-0 rounded-full border transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-700/30 focus-visible:ring-offset-1 ${
+              active
+                ? "border-brand-terracotta bg-brand-terracotta"
+                : "border-neutral-300 bg-neutral-200"
             }`}
           >
             <span
-              className={`absolute top-[2px] left-[2px] bg-white w-5 h-5 rounded-full shadow-md transition-transform duration-300 ${
-                active ? "translate-x-7" : "translate-x-0"
+              className={`absolute left-[2px] top-[2px] h-5 w-5 rounded-full bg-white transition-transform duration-200 ${
+                active ? "translate-x-5" : "translate-x-0"
               }`}
             />
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="space-y-3">
-            <label className="text-[11px] font-serif italic font-bold tracking-tighter lowercase text-slate-500 block ml-2">
-              Announcement Message
-            </label>
-            <input
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <AdminField label="Announcement message" htmlFor="flash-message">
+            <AdminInput
+              id="flash-message"
               type="text"
               required
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="w-full bg-slate-50/50 border border-slate-100 text-sm font-medium px-6 py-5 text-slate-900 focus:outline-none focus:ring-4 focus:ring-[#D97757]/5 focus:border-[#D97757] focus:bg-white transition-all rounded-3xl"
-              placeholder="e.g. SUMMER VAULT UNLOCKED"
+              placeholder="e.g. Summer vault unlocked"
             />
-          </div>
+          </AdminField>
 
-          <div className="space-y-3">
-            <label className="text-[11px] font-serif italic font-bold tracking-tighter lowercase text-slate-500 block ml-2">
-              End Date & Time
-            </label>
-            <input
+          <AdminField label="Ends at" htmlFor="flash-ends-at">
+            <AdminInput
+              id="flash-ends-at"
               type="datetime-local"
               required={active}
               value={endsAt}
               onChange={(e) => setEndsAt(e.target.value)}
-              className="w-full bg-slate-50/50 border border-slate-100 text-sm font-medium px-6 py-5 text-slate-900 focus:outline-none focus:ring-4 focus:ring-[#D97757]/5 focus:border-[#D97757] focus:bg-white transition-all rounded-3xl"
             />
-          </div>
+          </AdminField>
         </div>
 
-        <div className="bg-slate-50 border border-slate-100 rounded-[2.5rem] p-10 flex justify-end">
-          <div className="bg-[#FFF5F2] w-full max-w-xs p-6 shadow-[-10px_0_30px_rgba(0,0,0,0.05)] rounded-l-2xl border-l-2 border-t-2 border-b-2 border-[#FADED7] flex flex-col gap-3 text-left">
-            <div className="space-y-1">
+        {/* The storefront preview. It keeps its own terracotta register, because
+            it is a picture of the storefront sticker rather than a piece of
+            admin chrome — but the label above it is the studio's. */}
+        <div>
+          <p className="type-admin-label mb-2 text-neutral-500">Storefront preview</p>
+          <div
+            style={{ borderColor: ADMIN_RULE }}
+            className="flex justify-end rounded-card border bg-[#FBFAF8] p-6"
+          >
+            <div className="flex w-full max-w-xs flex-col gap-3 rounded-l-2xl border-b-2 border-l-2 border-t-2 border-brand-terracotta/25 bg-[#FFF5F2] p-5 text-left">
               <div className="flex items-center gap-2">
-                <Zap size={14} className="text-[#D97757] fill-[#D97757]/20" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#D97757]/60">Studio Preview</span>
+                <Zap aria-hidden size={13} className="fill-brand-terracotta/20 text-brand-terracotta" />
+                <span className="type-admin-label text-brand-terracotta/60">Live sticker</span>
               </div>
-              <h2 className="text-xl font-serif italic font-black tracking-tighter text-[#D97757] lowercase leading-[1.1]">
-                {message || "creative protocol message"}
-              </h2>
-            </div>
-
-            <div className="flex items-center gap-3 border-t border-[#FADED7] pt-4">
-              <div className="flex items-baseline gap-1">
-                <span className="text-sm font-mono font-bold text-[#D97757]">00</span>
-                <span className="text-[9px] font-serif italic text-[#D97757]/60">d</span>
-              </div>
-              <div className="w-px h-3 bg-[#FADED7]" />
-              <div className="flex items-baseline gap-1">
-                <span className="text-sm font-mono font-bold text-[#D97757] animate-pulse">00</span>
-                <span className="text-[9px] font-serif italic text-[#D97757]/60">s</span>
+              <p className="type-admin-section text-brand-terracotta">
+                {message || "Your announcement message"}
+              </p>
+              <div className="flex items-center gap-3 border-t border-brand-terracotta/25 pt-3">
+                <div className="flex items-baseline gap-1">
+                  <AdminMono className="font-semibold text-brand-terracotta">00</AdminMono>
+                  <span className="type-admin-meta text-brand-terracotta/60">d</span>
+                </div>
+                <div className="h-3 w-px bg-brand-terracotta/25" />
+                <div className="flex items-baseline gap-1">
+                  <AdminMono className="animate-pulse font-semibold text-brand-terracotta">00</AdminMono>
+                  <span className="type-admin-meta text-brand-terracotta/60">s</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </AdminPanel>
 
-      {/* SECTION 2: WELCOME PROTOCOL */}
-      <div className="space-y-8 bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm">
-        <div className="flex items-center gap-4 mb-2">
-          <BellRing className="text-accent-700" size={24} />
-          <h2 className="text-2xl font-serif italic font-black tracking-tighter lowercase text-slate-900">Welcome Protocol (Newsletter)</h2>
+      {/* ── WELCOME MODAL ──────────────────────────────────────────────── */}
+      <AdminPanel padded className="space-y-5">
+        <div className="flex items-center gap-2.5">
+          <BellRing aria-hidden className="text-accent-700" size={16} />
+          <AdminSectionHeading>Welcome modal</AdminSectionHeading>
         </div>
 
-        <div className="flex items-center justify-between border border-slate-100 p-8 bg-slate-50/50 rounded-3xl">
-          <div className="space-y-1">
-            <label className="text-sm font-serif italic font-bold tracking-tighter lowercase text-slate-900">
-              Active Status
-            </label>
-            <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">
-              Toggle visibility of the "Peach & Indigo" welcome modal
+        <div
+          style={{ borderColor: ADMIN_RULE }}
+          className="flex items-center justify-between gap-4 rounded-card border bg-[#FBFAF8] p-4"
+        >
+          <div>
+            <p className="type-admin-body font-semibold text-ink">Show the welcome modal</p>
+            <p className="type-admin-meta text-neutral-500">
+              The newsletter sign-up shown to first-time visitors.
             </p>
           </div>
           <button
             type="button"
             onClick={() => setWelcomeActive(!welcomeActive)}
-            className={`relative w-14 h-7 rounded-full transition-colors duration-300 border-2 ${
-              welcomeActive ? "bg-accent-800 border-accent-800" : "bg-slate-200 border-slate-300"
+            role="switch"
+            aria-checked={welcomeActive}
+            aria-label="Show the welcome modal"
+            className={`relative h-6 w-11 shrink-0 rounded-full border transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-700/30 focus-visible:ring-offset-1 ${
+              welcomeActive
+                ? "border-accent-800 bg-accent-800"
+                : "border-neutral-300 bg-neutral-200"
             }`}
           >
             <span
-              className={`absolute top-[2px] left-[2px] bg-white w-5 h-5 rounded-full shadow-md transition-transform duration-300 ${
-                welcomeActive ? "translate-x-7" : "translate-x-0"
+              className={`absolute left-[2px] top-[2px] h-5 w-5 rounded-full bg-white transition-transform duration-200 ${
+                welcomeActive ? "translate-x-5" : "translate-x-0"
               }`}
             />
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="space-y-3">
-            <label className="text-[11px] font-serif italic font-bold tracking-tighter lowercase text-slate-500 block ml-2">Main Title</label>
-            <input
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <AdminField label="Main title" htmlFor="welcome-title">
+            <AdminInput
+              id="welcome-title"
               type="text"
               required
               value={welcomeTitle}
               onChange={(e) => setWelcomeTitle(e.target.value)}
-              className="w-full bg-slate-50/50 border border-slate-100 text-sm font-medium px-6 py-5 text-slate-900 focus:outline-none focus:ring-4 focus:ring-accent-500/5 focus:border-accent-800 focus:bg-white transition-all rounded-3xl"
             />
-          </div>
-          <div className="space-y-3">
-            <label className="text-[11px] font-serif italic font-bold tracking-tighter lowercase text-slate-500 block ml-2">Subtitle</label>
-            <input
+          </AdminField>
+          <AdminField label="Subtitle" htmlFor="welcome-subtitle">
+            <AdminInput
+              id="welcome-subtitle"
               type="text"
               required
               value={welcomeSubtitle}
               onChange={(e) => setWelcomeSubtitle(e.target.value)}
-              className="w-full bg-slate-50/50 border border-slate-100 text-sm font-medium px-6 py-5 text-slate-900 focus:outline-none focus:ring-4 focus:ring-accent-500/5 focus:border-accent-800 focus:bg-white transition-all rounded-3xl"
             />
-          </div>
-          <div className="space-y-3 md:col-span-2">
-            <label className="text-[11px] font-serif italic font-bold tracking-tighter lowercase text-slate-500 block ml-2">Description</label>
-            <input
+          </AdminField>
+          <AdminField
+            label="Description"
+            htmlFor="welcome-description"
+            className="md:col-span-2"
+          >
+            <AdminInput
+              id="welcome-description"
               type="text"
               required
               value={welcomeDescription}
               onChange={(e) => setWelcomeDescription(e.target.value)}
-              className="w-full bg-slate-50/50 border border-slate-100 text-sm font-medium px-6 py-5 text-slate-900 focus:outline-none focus:ring-4 focus:ring-accent-500/5 focus:border-accent-800 focus:bg-white transition-all rounded-3xl"
             />
-          </div>
+          </AdminField>
         </div>
-      </div>
+      </AdminPanel>
 
-      <div className="pt-6 sticky bottom-10 px-4">
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full bg-slate-900 text-white hover:bg-black rounded-full flex items-center justify-center gap-3 py-6 text-[10px] font-black uppercase tracking-[0.4em] transition-all shadow-2xl shadow-slate-900/20 active:scale-[0.98] disabled:opacity-50"
-        >
+      <div className="flex items-center justify-end gap-4">
+        {feedback && (
+          <p
+            className={`type-admin-body ${
+              feedback.type === "success" ? "text-accent-800" : "text-brand-terracotta"
+            }`}
+            role="status"
+          >
+            {feedback.message}
+          </p>
+        )}
+        <AdminButton type="submit" variant="primary" disabled={isLoading}>
           {isLoading ? (
             <>
-              <Loader2 className="animate-spin" size={16} />
-              Synchronizing Creative Engine...
+              <Loader2 aria-hidden className="animate-spin" size={14} />
+              Saving…
             </>
           ) : (
-            "Save Creative Protocol"
+            "Save changes"
           )}
-        </button>
+        </AdminButton>
       </div>
-
-      {feedback && (
-        <div
-          className={`p-6 text-[10px] font-black tracking-widest uppercase border text-center rounded-[2rem] animate-in fade-in slide-in-from-bottom-4 shadow-xl ${
-            feedback.type === 'success'
-              ? 'bg-green-50 text-green-700 border-green-100 shadow-green-600/5'
-              : 'bg-red-50 text-red-700 border-red-100 shadow-red-600/5'
-          }`}
-        >
-          {feedback.message}
-        </div>
-      )}
     </form>
   );
 }

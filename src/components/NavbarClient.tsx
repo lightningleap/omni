@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -109,10 +109,23 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
   const searchParams = useSearchParams();
 
   // ── Storefront mode ──────────────────────────────────────────────────────
-  // The toggle drives global state, not a route: selecting a mode re-renders
-  // every dynamic homepage section in place — no navigation, no refresh — and
-  // the choice persists across refreshes and return visits (localStorage).
+  // The persisted selection of Adult vs Kids. Switching it is a departure —
+  // see `switchStore` — but the value itself is what every dynamic section on
+  // the homepage renders from, and it survives refreshes and return visits.
   const { mode, setMode } = useHomepageMode();
+
+  /*
+   * Set for the duration of a deliberate storefront switch — see `switchStore`.
+   *
+   * Without it the switch undoes itself. Leaving `/collections/x?audience=adult`
+   * for the Kids homepage is an async client transition, and until it lands this
+   * component keeps re-rendering with the OLD url still in `searchParams`. The
+   * adoption effect below would read `audience=adult` off that stale url and
+   * immediately `setMode('adult')` again — the toggle snaps back and the shopper
+   * arrives on the homepage in the storefront they just left. This is exactly
+   * the state/route race the brief warns about.
+   */
+  const switchingRef = useRef(false);
 
   // Collection routes filter server-side on an `audience` query param, so while
   // we're on one the URL wins: the toggle can never show a mode the page isn't
@@ -120,12 +133,31 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
   const audienceParam = searchParams.get('audience')?.toLowerCase();
   const urlMode: HomepageMode | null =
     audienceParam === 'kids' ? 'kids' : audienceParam === 'adult' ? 'adult' : null;
+
+  // Mid-switch this url is the one being LEFT, so for the length of the
+  // transition the toggle still shows the storefront being departed. That is
+  // deliberate rather than unhandled: preferring the store here would mean
+  // reading `switchingRef` during render, and a ref is not reactive — React
+  // cannot re-render on it, and `react-hooks/refs` rejects it outright. Holding
+  // it in state instead would need clearing from an effect, which is its own
+  // lint violation and a worse bug if the clear is ever missed (the url would
+  // stop driving the toggle for the rest of the session). The lag is a few
+  // hundred milliseconds of a page transition and corrects itself on arrival;
+  // the reversion the guard below prevents was permanent.
   const storeMode: HomepageMode = urlMode ?? mode;
 
   // Arriving on an audience-scoped URL (a shared link, say) adopts that mode
   // globally, so the rest of the site follows the page the visitor landed on.
   useEffect(() => {
-    if (urlMode) setMode(urlMode);
+    // No `audience` in the url means either an ordinary page or the homepage we
+    // were heading for, so any switch in flight has completed. Nothing left to
+    // suppress, and the guard clears itself rather than needing a timer.
+    if (!urlMode) {
+      switchingRef.current = false;
+      return;
+    }
+    if (switchingRef.current) return;
+    setMode(urlMode);
   }, [urlMode, setMode]);
 
   // The reverse case: a collection route with no `?audience=` renders every
@@ -140,17 +172,40 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }, [urlMode, pathname, searchParams, mode, router]);
 
+  /*
+   * ── SWITCHING STOREFRONT IS A DEPARTURE, NOT A FILTER ─────────────────────
+   * This used to change state in place and, on a collection route, rewrite the
+   * `audience` param — so a shopper reading an Adult product page who pressed
+   * Kids stayed on that Adult product, and a Kids collection became the Adult
+   * cut of the same collection. Adult and Kids are two shops; asking for the
+   * other one is not a filter on the page you are reading.
+   *
+   * So every switch now lands on the storefront's home page. There is exactly
+   * one such route — `/` renders whichever mode the store holds, and no
+   * `/adult` or `/kids` index exists — so the destination is `/` and the mode
+   * decides what it renders. No new route is invented, and the URL rewriting
+   * this used to do is gone: `/` never carries an `audience` param.
+   *
+   * Already on `/`? Then no navigation. `/` in Kids mode IS the Kids home page,
+   * and pushing the url we are already on would only add a history entry and
+   * cut short the crossfade the homepage plays between the two storefronts.
+   *
+   * Both toggles — the desktop strip and the mobile drawer — call this, so
+   * there is one switching path for the whole site.
+   */
   const switchStore = (next: HomepageMode) => {
     if (next === storeMode) return;
+
+    switchingRef.current = true;
     setMode(next);
-    // On a collection route the audience also lives in the URL because the
-    // server filters on it — keep the two in step. `replace`, not `push`, so
-    // flipping the toggle doesn't pile up history entries.
-    if (pathname?.startsWith('/collections')) {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('audience', next);
-      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-    }
+
+    // The drawer used to stay open on purpose, because the menu behind it
+    // re-labelled in place and closing it would have hidden the change. Now the
+    // switch navigates, so an open drawer would just cover the page it sent the
+    // shopper to.
+    setIsMobileMenuOpen(false);
+
+    if (pathname !== '/') router.push('/');
   };
 
   // Stripe Success Detector
@@ -212,19 +267,24 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
               collection route the mark shows the storefront the page is actually
               rendering — the same rule the toggle beside it follows.
 
-              The hover plate is Adult-only. Half of the Kids lockup is the
-              accent and follows the theme, but the "KIDS" script is ink black
-              and does not: on the accent-800 ground (#0A5C4E in Kids) it would
-              disappear. The lift and the scale still run, so the target still
-              answers to the pointer. */}
+              Both storefronts hover identically: a 2% scale, and nothing
+              else. Adult used to also paint an accent-800 plate behind the mark
+              and flip it to white, which Kids could not do — half the Kids
+              lockup is ink black and would have vanished on that ground. The
+              result was one logo that grew a dark box under the pointer and one
+              that did not, on the same navbar. The plate is gone rather than
+              added to Kids: a wordmark is not a button, and the lift alone is
+              enough to say the target is live.
+
+              `px-3 py-2 -ml-3` stays. It has no appearance now that the
+              background is gone, but it is the hit area, and the negative
+              margin is what keeps the mark optically flush with the page grid. */}
           <Link
             href="/"
             aria-label="UNRWLY — home"
-            className={`group flex shrink-0 items-center -ml-3 rounded-[16px] px-3 py-2 text-[#1A1A1A] transition-all duration-200 ease-out hover:scale-[1.02] ${
-              storeMode === 'kids' ? '' : 'hover:bg-accent-800 hover:text-white'
-            }`}
+            className="group flex shrink-0 items-center -ml-3 rounded-modal px-3 py-2 text-ink transition-transform duration-200 ease-out hover:scale-[1.02] motion-reduce:transition-none motion-reduce:hover:scale-100"
           >
-            <BrandMark size="sm" mode={storeMode} dotClassName="transition-colors duration-200 group-hover:bg-[#E8956B]" />
+            <BrandMark size="sm" mode={storeMode} />
           </Link>
 
           {/* ADULT / KIDS STORE SWITCH — sits immediately right of the logo */}
@@ -244,7 +304,12 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
           <Link
             href="/meet-unrwly"
             className={`type-nav hidden shrink-0 whitespace-nowrap rounded-full px-3 py-2 text-[13px] uppercase tracking-[0.1em] transition-colors duration-200 ease-out hover:bg-accent-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 lg:inline-flex ${
-              pathname === '/meet-unrwly' ? 'text-accent-800' : 'text-accent-950'
+              // Current page = the hover treatment, held. It was a bare
+              // `text-accent-800` tint, so hovering About while ON About made
+              // the pill visibly change — the page you are on should not look
+              // like something you have yet to reach. Same classes as `hover:`
+              // above, deliberately, so the two can never drift apart.
+              pathname === '/meet-unrwly' ? 'bg-accent-800 text-white' : 'text-accent-950'
             }`}
             aria-current={pathname === '/meet-unrwly' ? 'page' : undefined}
           >
@@ -258,7 +323,7 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
               const input = (e.currentTarget.elements.namedItem('q') as HTMLInputElement).value;
               if (input.trim()) router.push(`/collections?q=${encodeURIComponent(input.trim())}`);
             }}
-            className="group/search hidden h-11 min-w-0 flex-1 items-center rounded-full border border-[rgb(var(--accent-shade-rgb)/0.10)] bg-white transition-[border-color,box-shadow] duration-200 ease-out hover:border-[rgb(var(--accent-shade-rgb)/0.18)] focus-within:border-accent-800 focus-within:ring-2 focus-within:ring-accent-800/10 md:flex"
+            className="group/search hidden h-10 min-w-0 flex-1 items-center rounded-full border border-[rgb(var(--accent-shade-rgb)/0.10)] md:max-w-[300px] lg:max-w-[380px] bg-white transition-[border-color,box-shadow] duration-200 ease-out hover:border-[rgb(var(--accent-shade-rgb)/0.18)] focus-within:border-accent-800 focus-within:ring-2 focus-within:ring-accent-800/10 md:flex"
           >
             <div className="pl-4 text-[#8a93a6] transition-colors duration-200 group-focus-within/search:text-accent-800">
               <Search size={18} strokeWidth={1.8} />
@@ -286,10 +351,16 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
             {/* Profile */}
             <button
               onClick={() => user ? router.push(isAdmin ? '/admin/products' : '/account') : router.push('/auth')}
-              aria-label="Profile"
-              className="group hidden sm:flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 ease-out hover:bg-accent-800 hover:scale-[1.02]"
+              aria-label={user ? 'Account' : 'Sign in'}
+              className="group hidden sm:flex h-10 min-w-10 items-center justify-center gap-2 rounded-full px-2.5 transition-all duration-200 ease-out hover:bg-accent-800 hover:scale-[1.02] lg:px-3"
             >
-              <User size={18} strokeWidth={1.8} className="text-accent-950 transition-colors duration-200 group-hover:text-white" />
+              <User size={18} strokeWidth={1.8} className="shrink-0 text-accent-950 transition-colors duration-200 group-hover:text-white" />
+              <span
+                aria-hidden
+                className="type-nav hidden whitespace-nowrap text-[13px] uppercase tracking-[0.1em] text-accent-950 transition-colors duration-200 group-hover:text-white lg:inline"
+              >
+                {user ? 'Account' : 'Sign in'}
+              </span>
             </button>
 
             {/* Wishlist */}
@@ -299,10 +370,10 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
                   size={18}
                   strokeWidth={1.8}
                   fill={wishlistCount > 0 ? "currentColor" : "none"}
-                  className={`transition-colors duration-200 ${wishlistCount > 0 ? 'text-[#C56A4E]' : 'text-accent-950'} group-hover:text-white`}
+                  className={`transition-colors duration-200 ${wishlistCount > 0 ? 'text-accent-700' : 'text-accent-950'} group-hover:text-white`}
                 />
                 {wishlistCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#C56A4E] text-[8px] font-bold text-white">
+                  <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent-700 text-[8px] font-bold text-white">
                     {wishlistCount}
                   </span>
                 )}
@@ -318,7 +389,7 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
               <span className="relative">
                 <ShoppingBag size={18} strokeWidth={1.8} className="text-accent-950 transition-colors duration-200 group-hover:text-white" />
                 {itemCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#C56A4E] text-[8px] font-bold text-white">
+                  <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent-700 text-[8px] font-bold text-white">
                     {itemCount}
                   </span>
                 )}
@@ -328,7 +399,7 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
             {/* Mobile Toggle */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden flex h-11 w-11 items-center justify-center rounded-[16px] text-accent-950 transition-all duration-200 ease-out hover:bg-accent-800 hover:text-white hover:scale-[1.02]"
+              className="lg:hidden flex h-11 w-11 items-center justify-center rounded-modal text-accent-950 transition-all duration-200 ease-out hover:bg-accent-800 hover:text-white hover:scale-[1.02]"
             >
               <Menu size={24} strokeWidth={1.8} />
             </button>
@@ -351,7 +422,7 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
                 href="/"
                 aria-label="UNRWLY — home"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center text-[#1A1A1A]"
+                className="flex items-center text-ink"
               >
                 <BrandMark size="md" mode={storeMode} />
               </Link>
@@ -364,9 +435,10 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
             </div>
 
             <div className="flex flex-col gap-8 overflow-y-auto pb-12">
-              {/* Store switch — same control as the desktop strip, full width.
-                  The drawer stays open: the menu below re-labels in place, so
-                  closing it would hide the very change the toggle just made. */}
+              {/* Store switch — same control and same handler as the desktop
+                  strip, full width. It now closes the drawer and leaves for the
+                  other storefront's home page, so the shopper sees where they
+                  landed instead of the menu they pressed it in. */}
               <StoreToggle mode={storeMode} onSwitch={switchStore} className="w-full" />
 
               {/* About — first, above the shop navigation. On a phone the
@@ -376,7 +448,13 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
               <Link
                 href="/meet-unrwly"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="type-nav text-3xl uppercase text-[#1A1A1A] transition-all hover:text-accent-800"
+                aria-current={pathname === '/meet-unrwly' ? 'page' : undefined}
+                // Same rule as the desktop strip: on About, hold this link's own
+                // hover colour. It had no current-page state at all, so the
+                // drawer gave no clue which page you were on.
+                className={`type-nav text-3xl uppercase transition-all hover:text-accent-800 ${
+                  pathname === '/meet-unrwly' ? 'text-accent-800' : 'text-ink'
+                }`}
               >
                 About
               </Link>
@@ -389,7 +467,7 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
                     key={link.label}
                     href={link.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="type-nav text-3xl uppercase text-[#1A1A1A] transition-all hover:text-accent-800"
+                    className="type-nav text-3xl uppercase text-ink transition-all hover:text-accent-800"
                   >
                     {link.label}
                   </Link>
@@ -405,7 +483,7 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
                       key={col.id}
                       href={`/collections/${col.handle}?audience=${storeMode}`}
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="type-nav text-3xl uppercase text-[#1A1A1A] transition-all hover:text-accent-800"
+                      className="type-nav text-3xl uppercase text-ink transition-all hover:text-accent-800"
                     >
                       {col.title || col.name}
                     </Link>
@@ -415,7 +493,7 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
               <Link
                 href={`/collections/all?audience=${storeMode}`}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="type-nav text-3xl uppercase text-[#1A1A1A] transition-all hover:text-accent-800"
+                className="type-nav text-3xl uppercase text-ink transition-all hover:text-accent-800"
               >
                 New Drops
               </Link>
@@ -442,7 +520,7 @@ const NavbarClient = ({ adultCollections = [], kidsCollections = [], user }: Nav
                     await signOutAction();
                     setIsMobileMenuOpen(false);
                   }}
-                  className="type-button col-span-2 h-12 text-[10px] text-rose-500 uppercase tracking-widest"
+                  className="type-button col-span-2 h-12 text-[10px] uppercase tracking-widest text-brand-terracotta"
                 >
                   Terminate Session
                 </button>

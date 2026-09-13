@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import OrdersClient from "@/components/admin/OrdersClient"
+import { ADMIN_SHELL } from "@/components/admin/ui/primitives"
 
 export default async function OrdersPage() {
   const orders = await prisma.order.findMany({
@@ -35,7 +36,7 @@ export default async function OrdersPage() {
   }))
 
   return (
-    <div className="space-y-8 font-sans max-w-[1400px] mx-auto w-full">
+    <div className={`${ADMIN_SHELL} space-y-8`}>
       <OrdersClient initialOrders={safeOrders} />
     </div>
   )

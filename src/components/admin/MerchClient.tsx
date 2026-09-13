@@ -1,11 +1,22 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { updateMerchSettings, updateCollectionImage, upsertDiscoveryItem, removeDiscoveryItem } from "@/app/actions/merch";
 import { uploadMerchAsset } from "@/app/actions/upload";
-import { Video, Megaphone, Image as ImageIcon, Trash2, Plus, Loader2, Star, Zap, Edit3, Check, Search, LayoutGrid, Flame, Upload, X } from "lucide-react";
+import {
+  AdminButton,
+  AdminField,
+  AdminInput,
+  AdminMono,
+  AdminPageHeader,
+  AdminPanel,
+  AdminSearch,
+  AdminSectionHeading,
+} from "@/components/admin/ui/primitives";
+import { AdminCardGrid } from "@/components/admin/ui/views";
+import ContentCard from "@/components/admin/cards/ContentCard";
+import { Video, Image as ImageIcon, Plus, Loader2, Star, Zap, Check, Search, LayoutGrid, Upload } from "lucide-react";
 
 type Config = {
   heroVideoUrls: string[];
@@ -35,9 +46,14 @@ type DiscoveryItem = {
 }
 
 const SECTIONS = [
-  { id: "BUDGET", label: "Budget Friendly Picks", icon: Zap, color: "#4f46e5", description: "Curate under ₹599 collections" },
-  { id: "OMG", label: "OMG Deals", icon: Star, color: "#f59e0b", description: "Highlight premium discounted deals" },
-  { id: "CATEGORY", label: "Shop By Category", icon: LayoutGrid, color: "#10b981", description: "Manage homepage category grid" }
+  /* `color` is gone from these three. It was never read — the section buttons
+     take their colour from `accent-800` / `neutral-100` — so it was three dead
+     hexes, one of which (`#10b981`, Tailwind's emerald-500) was the only green
+     in the whole studio that did not come from the sage ramp. Dead or not, it
+     was the exact thing a grep for stray greens trips over. */
+  { id: "BUDGET", label: "Budget Friendly Picks", icon: Zap, description: "Curate under ₹599 collections" },
+  { id: "OMG", label: "OMG Deals", icon: Star, description: "Highlight premium discounted deals" },
+  { id: "CATEGORY", label: "Shop By Category", icon: LayoutGrid, description: "Manage homepage category grid" }
 ];
 
 export default function MerchClient({ 
@@ -216,23 +232,25 @@ export default function MerchClient({
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] pb-24 text-slate-900 px-4 md:px-8">
-      <div className="max-w-7xl mx-auto mt-8 space-y-12">
-        {/* Header - Integrated */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
-          <div className="space-y-1">
-            <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight italic">Content Management</h1>
-            <p className="text-sm text-slate-500 font-medium tracking-wide">Curate your storefront experience and visual narrative.</p>
-          </div>
-          <button 
-            onClick={handleSaveConfig}
-            disabled={isSavingConfig}
-            className="w-full md:w-auto px-8 py-3.5 bg-accent-800 text-white text-sm font-bold rounded-2xl hover:bg-accent-950 transition-all flex items-center justify-center gap-3"
-          >
-            {isSavingConfig ? <Loader2 className="animate-spin" size={18} /> : <Check size={18} />} 
-            Save Global Assets
-          </button>
-        </div>
+    /* This page painted its own `min-h-screen bg-[#f8fafc]` — a cold slate
+       ground, inside an admin layout that is already a warm #F4F2ED — and set
+       its own gutters and 7xl container on top of the layout's. Both are gone;
+       it uses the shell, the ground and the header every other section uses. */
+    <div className="space-y-6 text-ink">
+        <AdminPageHeader
+          title="Content"
+          meta="Curate the storefront's collections and hero media."
+          action={
+            <AdminButton variant="primary" onClick={handleSaveConfig} disabled={isSavingConfig}>
+              {isSavingConfig ? (
+                <Loader2 aria-hidden className="animate-spin" size={14} />
+              ) : (
+                <Check aria-hidden size={14} />
+              )}
+              Save global assets
+            </AdminButton>
+          }
+        />
         {/* ── SECTION SELECTOR ─────────────────────────────────── */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {SECTIONS.map((section) => (
@@ -242,23 +260,28 @@ export default function MerchClient({
                 updateSection(section.id);
                 setIsMenuOpen(false);
               }}
-              className={`relative overflow-hidden group p-8 rounded-3xl border-2 transition-all text-left ${
-                activeSection === section.id 
-                ? 'bg-white border-accent-800 ring-4 ring-accent-50 shadow-sm' 
-                : 'bg-white border-slate-200 hover:border-slate-300'
+              aria-pressed={activeSection === section.id}
+              className={`group relative overflow-hidden rounded-panel border p-5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-700/30 ${
+                activeSection === section.id
+                  ? 'border-accent-800 bg-white ring-2 ring-accent-50'
+                  : 'border-[#E8E6E1] bg-white hover:border-neutral-300'
               }`}
             >
-              <div className="flex justify-between items-start">
-                <div className={`p-4 rounded-2xl ${activeSection === section.id ? 'bg-accent-800 text-white' : 'bg-slate-100 text-slate-600'}`}>
-                  <section.icon size={28} />
+              <div className="flex items-start justify-between">
+                <div className={`rounded-card p-3 ${activeSection === section.id ? 'bg-accent-800 text-white' : 'bg-neutral-100 text-neutral-500'}`}>
+                  <section.icon aria-hidden size={20} />
                 </div>
-                {activeSection === section.id && <div className="bg-accent-50 text-accent-800 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest">Active Scope</div>}
+                {activeSection === section.id && (
+                  <span className="type-admin-label rounded-card bg-accent-50 px-2 py-1 text-accent-800">Active</span>
+                )}
               </div>
-              <div className="mt-8 space-y-2">
-                <h3 className={`text-2xl font-black transition-colors leading-none ${activeSection === section.id ? 'text-slate-900' : 'text-slate-400'}`}>
+              <div className="mt-5">
+                {/* Was `text-2xl` (24px) — the same size as the page title above
+                    it, on three cards at once. It is a panel heading. */}
+                <h2 className={`type-admin-section transition-colors ${activeSection === section.id ? 'text-ink' : 'text-neutral-400'}`}>
                   {section.label}
-                </h3>
-                <p className="text-xs text-slate-400 font-bold uppercase tracking-tight">{section.description}</p>
+                </h2>
+                <p className="type-admin-meta mt-1 text-neutral-400">{section.description}</p>
               </div>
             </button>
           ))}
@@ -266,265 +289,200 @@ export default function MerchClient({
 
         {/* ── CURATION DECK ─────────────────────────────────────── */}
         <section className="space-y-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="space-y-1">
-              <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
-                {activeSection === "BUDGET" ? "Budget Friendly picks" : activeSection === "OMG" ? "OMG Deals" : "Shop By Category"}
-                <span className="text-slate-300 font-light px-2 border-l border-slate-200">Current Distribution</span>
-              </h2>
-              <p className="text-sm text-slate-500 font-medium">Collections currently appearing in the {activeSection} carousel.</p>
+          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+            <div>
+              {/* Was a second 24px heading on the page, competing with the page
+                  title. A section inside a page is a section heading. */}
+              <AdminSectionHeading>
+                {activeSection === "BUDGET" ? "Budget-friendly picks" : activeSection === "OMG" ? "OMG deals" : "Shop by category"}
+              </AdminSectionHeading>
+              <p className="type-admin-meta mt-1 text-neutral-500">
+                Collections currently appearing in this carousel.
+              </p>
             </div>
-            <button 
+            <AdminButton
+              variant="primary"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="w-full md:w-auto px-8 py-3 bg-accent-800 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-accent-950 transition-all"
+              aria-expanded={isMenuOpen}
             >
-              <Plus size={20} /> Select Collection from Menu
-            </button>
+              <Plus aria-hidden size={14} /> Add a collection
+            </AdminButton>
           </div>
 
           {isMenuOpen && (
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xl animate-in fade-in slide-in-from-top-4">
-              <div className="flex flex-col space-y-6">
-                <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                  <input 
-                    type="text"
-                    placeholder="Search all collections catalog..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-accent-500 focus:bg-white outline-none transition-all font-medium"
-                  />
-                </div>
+            <div className="animate-in fade-in slide-in-from-top-4 rounded-panel border border-[#E8E6E1] bg-white p-5">
+              <div className="flex flex-col space-y-5">
+                <AdminSearch
+                  value={searchTerm}
+                  onChange={setSearchTerm}
+                  placeholder="Search all collections…"
+                  label="Search the collection catalogue"
+                />
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {filteredCollections.map(coll => (
                     <button
                       key={coll.id}
                       onClick={() => handleAddDiscovery(coll.id)}
                       disabled={isAddingDiscovery === coll.id}
-                      className="group p-4 bg-white border border-slate-200 rounded-xl hover:border-accent-800 hover:ring-2 hover:ring-accent-50 transition-all text-left"
+                      className="group p-4 bg-white border border-[#E8E6E1] rounded-panel hover:border-accent-800 hover:ring-2 hover:ring-accent-50 transition-all text-left"
                     >
                       <div className="flex justify-between items-center">
-                        <span className="text-sm font-bold text-slate-700 group-hover:text-accent-700 transition-colors uppercase truncate">{coll.name}</span>
-                        {isAddingDiscovery === coll.id ? <Loader2 size={14} className="animate-spin text-accent-700" /> : <Plus size={14} className="text-slate-300 group-hover:text-accent-700" />}
+                        <span className="type-admin-body truncate font-semibold text-ink transition-colors group-hover:text-accent-700">{coll.name}</span>
+                        {isAddingDiscovery === coll.id ? <Loader2 size={14} className="animate-spin text-accent-700" /> : <Plus size={14} className="text-neutral-300 group-hover:text-accent-700" />}
                       </div>
                     </button>
                   ))}
                   {searchTerm && filteredCollections.length === 0 && (
-                    <p className="col-span-full py-4 text-center text-slate-400 font-medium italic">No collections found in catalog</p>
+                    <p className="type-admin-body col-span-full py-4 text-center text-neutral-400">No collections match that search.</p>
                   )}
                 </div>
               </div>
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {activeItems.map((item) => (
-              <div key={item.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
-                <div className="p-6 flex gap-6">
-                  <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-xl border border-slate-100 relative overflow-hidden bg-slate-50 flex-shrink-0">
-                    <Image src={item.customImageUrl || item.collection.imageUrl || ""} alt={item.collection.name} fill className="object-cover" />
-                  </div>
-                  <div className="flex-1 space-y-4">
-                    <div className="flex justify-between items-start">
-                      <div className="space-y-1">
-                        <h3 className="text-lg font-extrabold text-slate-900 tracking-tight uppercase italic">{item.collection.name}</h3>
-                        <div className="inline-block bg-accent-50 text-accent-800 text-[10px] font-black px-2 py-1 rounded-md tracking-widest uppercase">
-                          {item.customDescription || "Set description"}
-                        </div>
-                      </div>
-                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button 
-                          onClick={() => {
-                            setEditingItemId(item.id);
-                            setEditForm({ 
-                              imageUrl: item.customImageUrl || "", 
-                              description: item.customDescription || "" 
-                            });
-                          }}
-                          className="p-2 text-slate-400 hover:text-accent-700 hover:bg-accent-50 rounded-lg transition-all"
-                        >
-                          <Edit3 size={18} />
-                        </button>
-                        <button 
-                          onClick={() => handleRemoveDiscovery(item.id)}
-                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      </div>
-                    </div>
-
-                    {editingItemId === item.id && (
-                      <div className="space-y-8 pt-6 border-t border-slate-100 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <div className="grid grid-cols-1 gap-6">
-                          <div className="space-y-3">
-                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Storefront Asset Media (1080x1350px Optimized)</label>
-                            
-                            <label className="cursor-pointer group flex items-center justify-center gap-4 w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl py-12 hover:border-accent-700 hover:bg-accent-50/30 transition-all duration-300">
-                              {isUploading ? (
-                                <div className="flex flex-col items-center gap-2">
-                                  <Loader2 className="animate-spin text-accent-700" size={32} />
-                                  <span className="text-xs font-bold text-accent-700 uppercase tracking-widest">Uploading Media...</span>
-                                </div>
-                              ) : editForm.imageUrl ? (
-                                <div className="flex flex-col items-center gap-2">
-                                  <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-slate-200 shadow-sm mb-2 group-preview">
-                                    <Image src={editForm.imageUrl} alt="Preview" fill className="object-cover" />
-                                    <button 
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        setEditForm({ ...editForm, imageUrl: "" });
-                                      }}
-                                      className="absolute -top-1 -right-1 bg-red-500 text-white p-1 rounded-full shadow-lg hover:bg-red-600 transition-colors z-20"
-                                    >
-                                      <X size={12} />
-                                    </button>
-                                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-preview-hover:opacity-100 transition-opacity">
-                                      <ImageIcon size={20} className="text-white" />
-                                    </div>
-                                  </div>
-                                  <span className="text-[10px] font-black text-accent-700 uppercase tracking-[0.2em]">Change Asset</span>
-                                </div>
-                              ) : (
-                                <div className="flex flex-col items-center gap-2">
-                                  <div className="p-4 bg-white rounded-full shadow-sm group-hover:scale-110 transition-transform">
-                                    <Upload className="text-slate-400 group-hover:text-accent-700" size={24} />
-                                  </div>
-                                  <span className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] group-hover:text-accent-700">Select File from Device</span>
-                                </div>
-                              )}
-                              <input 
-                                type="file" 
-                                className="hidden" 
-                                accept="image/*,video/*"
-                                onChange={handleFileUpload}
-                                disabled={isUploading}
-                              />
-                            </label>
-                          </div>
-                          
-                          <div className="space-y-1.5">
-                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Card Legend Description (E.G. UNDER ₹599)</label>
-                            <input 
-                              type="text"
-                              value={editForm.description}
-                              onChange={(e) => setEditForm({...editForm, description: e.target.value})}
-                              placeholder="E.G. UNDER ₹599"
-                              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-4 text-sm font-bold focus:ring-2 focus:ring-accent-500 outline-none transition-all"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="flex gap-4 pt-4">
-                          <button 
-                            onClick={() => handleSaveItemEdit(item.id, item.collectionId)}
-                            className="flex-1 bg-accent-800 text-white text-sm font-bold py-4 rounded-xl hover:bg-accent-950 transition-all flex items-center justify-center gap-3"
-                          >
-                            <Check size={20} /> Finalize and Ingest Curation
-                          </button>
-                          <button 
-                            onClick={() => setEditingItemId(null)}
-                            className="px-8 py-4 bg-slate-100 text-slate-600 text-sm font-bold rounded-xl hover:bg-slate-200 transition-all flex items-center gap-2"
-                          >
-                            <X size={18} /> Cancel
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+          {activeItems.length === 0 ? (
+            /* The existing empty state, unchanged apart from dropping
+               `col-span-full` — it is no longer a grid child. */
+            <div className="py-20 text-center border border-dashed border-[#E8E6E1] rounded-panel bg-white">
+              <div className="space-y-3">
+                <div className="w-16 h-16 bg-[#FBFAF8] rounded-panel flex items-center justify-center mx-auto text-neutral-300">
+                  <Search size={32} />
                 </div>
+                <p className="type-admin-section text-neutral-500">No collections curated yet</p>
+                <p className="type-admin-meta text-neutral-400">Use “Add a collection” above to start.</p>
               </div>
-            ))}
-            {activeItems.length === 0 && (
-              <div className="col-span-full py-20 text-center border-2 border-dashed border-slate-200 rounded-3xl bg-white shadow-inner">
-                <div className="space-y-3">
-                  <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto text-slate-300">
-                    <Search size={32} />
-                  </div>
-                  <p className="text-xl font-bold text-slate-600">No collections curated yet</p>
-                  <p className="text-sm text-slate-400 font-medium">Use the "Select Collection from Menu" button to start curating.</p>
-                </div>
-              </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            /* auto-fill rather than a fixed `md:grid-cols-2`: the deck was two
+               half-width cards at every desktop width, which is most of why
+               they read as empty. This measures the content column instead, so
+               it settles at two columns on a tablet or a small laptop and three
+               from `xl` up — no breakpoint ladder to get wrong at an in-between
+               size, and one column on a phone without a special case.
+
+               `items-start` because one card can grow: opening its edit form
+               triples its height, and under the grid's default `stretch` every
+               other card in that row would grow with it and end up padded out
+               with empty space — the exact fault this redesign set out to fix.
+               Off-stretch they keep their own height, and since a card is now a
+               fixed-ratio image over two single lines, they are all the same
+               height anyway. */
+            <AdminCardGrid min={280} className="items-start">
+              {activeItems.map((item) => (
+                <ContentCard
+                  key={item.id}
+                  item={item}
+                  isEditing={editingItemId === item.id}
+                  /* The same two setState calls the old hover button made. */
+                  onEdit={() => {
+                    setEditingItemId(item.id);
+                    setEditForm({
+                      imageUrl: item.customImageUrl || "",
+                      description: item.customDescription || "",
+                    });
+                  }}
+                  onRemove={() => handleRemoveDiscovery(item.id)}
+                  editForm={editForm}
+                  onEditFormChange={setEditForm}
+                  isUploading={isUploading}
+                  onFileUpload={handleFileUpload}
+                  onSave={() => handleSaveItemEdit(item.id, item.collectionId)}
+                  onCancel={() => setEditingItemId(null)}
+                />
+              ))}
+            </AdminCardGrid>
+          )}
         </section>
 
-        <div className="pt-12 border-t border-slate-200">
-          {/* Configuration Panel */}
-          <section className="max-w-3xl space-y-8">
-            <div className="space-y-1">
-              <h2 className="text-xl font-extrabold text-slate-900 tracking-tight uppercase italic">Global Render Assets</h2>
-              <p className="text-sm text-slate-500 font-medium">Control hierarchical storefront media flow.</p>
-            </div>
-            
-            <form onSubmit={handleSaveConfig} className="space-y-8 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
-              {/* Hierarchical Poster Link */}
-              <div className="space-y-4">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Hero Static Poster (IMG) - Desktop Optimized 2000x1200px</label>
-                <div className="flex flex-col gap-4">
-                  <div className="relative">
-                    <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                    <input
-                      type="text"
-                      value={heroImageUrl}
-                      onChange={(e) => setHeroImageUrl(e.target.value)}
-                      placeholder="https://images.unsplash.com/..."
-                      className="w-full bg-slate-50 border border-slate-200 text-sm font-medium text-slate-900 rounded-xl px-12 py-4 outline-none focus:ring-2 focus:ring-accent-500 focus:bg-white transition-all"
-                    />
-                  </div>
-                  
-                  <label className="cursor-pointer group flex items-center justify-center gap-4 w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl py-8 hover:border-accent-700 hover:bg-accent-50/30 transition-all duration-300">
-                    {isUploading ? (
-                      <Loader2 className="animate-spin text-accent-700" size={24} />
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <Upload size={18} className="text-slate-400 group-hover:text-accent-700" />
-                        <span className="text-xs font-black text-slate-500 uppercase tracking-widest group-hover:text-accent-700">Upload from Device</span>
-                      </div>
-                    )}
-                    <input type="file" className="hidden" accept="image/*" onChange={handleHeroPosterUpload} disabled={isUploading} />
-                  </label>
-                </div>
-              </div>
+        <section className="max-w-3xl space-y-4 border-t border-[#E8E6E1] pt-8">
+          <div>
+            <AdminSectionHeading>Hero media</AdminSectionHeading>
+            <p className="type-admin-meta mt-1 text-neutral-500">
+              The poster image and animations behind the homepage hero.
+            </p>
+          </div>
 
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                   <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Animation Sequencer Playlist</label>
-                   <span className="text-[8px] font-bold text-accent-700 uppercase tracking-widest">Tip: Use Cloudinary f_auto,q_auto links</span>
+          <AdminPanel padded>
+            <form onSubmit={handleSaveConfig} className="space-y-5">
+              <AdminField
+                label="Hero poster image"
+                htmlFor="hero-poster-url"
+                hint="Desktop-optimised, around 2000×1200px."
+              >
+                <div className="relative">
+                  <ImageIcon
+                    aria-hidden
+                    className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+                    size={15}
+                  />
+                  <AdminInput
+                    id="hero-poster-url"
+                    type="text"
+                    value={heroImageUrl}
+                    onChange={(e) => setHeroImageUrl(e.target.value)}
+                    placeholder="https://…"
+                    className="bg-[#FBFAF8] pl-10"
+                  />
                 </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              </AdminField>
+
+              <label className="group flex w-full cursor-pointer items-center justify-center gap-3 rounded-card border border-dashed border-[#E8E6E1] bg-[#FBFAF8] py-6 transition-colors hover:border-accent-700 hover:bg-accent-50/30">
+                {isUploading ? (
+                  <Loader2 aria-hidden className="animate-spin text-accent-700" size={20} />
+                ) : (
+                  <>
+                    <Upload aria-hidden size={16} className="text-neutral-400 group-hover:text-accent-700" />
+                    <span className="type-admin-label text-neutral-500 group-hover:text-accent-700">
+                      Upload from device
+                    </span>
+                  </>
+                )}
+                <input type="file" className="hidden" accept="image/*" onChange={handleHeroPosterUpload} disabled={isUploading} />
+              </label>
+
+              <div className="space-y-2">
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <span className="type-admin-label text-neutral-500">Hero animations</span>
+                  <span className="type-admin-meta text-neutral-400">
+                    Cloudinary <AdminMono>f_auto,q_auto</AdminMono> links work best.
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                   {heroVideoUrls.map((url, idx) => (
                     <div key={idx} className="relative">
-                      <Video className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                      <input
+                      <Video
+                        aria-hidden
+                        className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+                        size={14}
+                      />
+                      <AdminInput
                         type="text"
+                        aria-label={`Hero animation ${idx + 1}`}
                         value={url}
                         onChange={(e) => {
                           const next = [...heroVideoUrls];
                           next[idx] = e.target.value;
                           setHeroVideoUrls(next);
                         }}
-                        placeholder={`Hero Animation ${idx + 1}`}
-                        className="w-full bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 rounded-xl px-10 py-3.5 outline-none focus:ring-2 focus:ring-accent-500 focus:bg-white transition-all"
+                        placeholder={`Hero animation ${idx + 1}`}
+                        className="bg-[#FBFAF8] pl-9"
                       />
                     </div>
                   ))}
                 </div>
               </div>
 
-              <button
-                type="submit"
-                disabled={isSavingConfig}
-                className="w-full bg-[#121212] text-white py-4 rounded-xl text-xs font-black uppercase tracking-[0.3em] flex items-center justify-center gap-2 hover:bg-accent-950 transition-all"
-              >
-                {isSavingConfig ? <Loader2 className="animate-spin" size={16} /> : "Finalize Global Hierarchy"}
-              </button>
+              <AdminButton type="submit" variant="primary" disabled={isSavingConfig} className="w-full">
+                {isSavingConfig ? (
+                  <Loader2 aria-hidden className="animate-spin" size={14} />
+                ) : (
+                  "Save hero media"
+                )}
+              </AdminButton>
             </form>
-          </section>
-        </div>
-      </div>
+          </AdminPanel>
+        </section>
     </div>
   );
 }

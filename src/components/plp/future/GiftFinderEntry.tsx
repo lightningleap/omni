@@ -19,7 +19,7 @@ export default function GiftFinderEntry({ onOpen }: { onOpen?: () => void }) {
     <button
       type="button"
       onClick={onOpen}
-      className="type-button inline-flex h-9 shrink-0 items-center gap-2 rounded-full border border-[#C56A4E]/40 bg-white px-4 text-[12px] tracking-[0.06em] text-[#C56A4E] transition-[background-color,border-color] duration-200 ease-out hover:border-[#C56A4E] hover:bg-[#C56A4E]/[0.06]"
+      className="type-button inline-flex h-9 shrink-0 items-center gap-2 rounded-full border border-accent-700/40 bg-white px-4 text-[12px] tracking-[0.06em] text-accent-700 transition-[background-color,border-color] duration-200 ease-out hover:border-accent-700 hover:bg-accent-700/[0.06]"
     >
       <Gift aria-hidden size={14} strokeWidth={2} />
       Gift Finder

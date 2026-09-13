@@ -64,14 +64,14 @@ export default function PlpProductGrid({
       <button
         type="button"
         onClick={onClearAll}
-        className="type-button mt-6 inline-flex h-12 items-center rounded-full border border-neutral-300 px-7 text-[12px] uppercase tracking-[0.08em] text-[#1A1A1A] transition-[background-color,border-color] duration-200 ease-out hover:border-neutral-400 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
+        className="type-button mt-6 inline-flex h-12 items-center rounded-full border border-neutral-300 px-7 text-[12px] uppercase tracking-[0.08em] text-ink transition-[background-color,border-color] duration-200 ease-out hover:border-neutral-400 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
       >
         Clear All Filters
       </button>
     ) : fallback ? (
       <Link
         href={fallback.href}
-        className="type-button mt-6 inline-flex h-12 items-center rounded-full border border-neutral-300 px-7 text-[12px] uppercase tracking-[0.08em] text-[#1A1A1A] transition-[background-color,border-color] duration-200 ease-out hover:border-neutral-400 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
+        className="type-button mt-6 inline-flex h-12 items-center rounded-full border border-neutral-300 px-7 text-[12px] uppercase tracking-[0.08em] text-ink transition-[background-color,border-color] duration-200 ease-out hover:border-neutral-400 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
       >
         Browse {fallback.label}
       </Link>

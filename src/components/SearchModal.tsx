@@ -63,7 +63,7 @@ const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[90] bg-black/90 backdrop-blur-xl flex flex-col pt-24 px-6 md:px-12"
+        className="fixed inset-0 z-[90] bg-ink/90 backdrop-blur-xl flex flex-col pt-24 px-6 md:px-12"
       >
         <div className="max-w-4xl mx-auto w-full">
           <div className="flex items-center justify-between mb-12">
@@ -115,7 +115,7 @@ const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
                         fill
                         className="object-cover transition-transform duration-700 group-hover:scale-105"
                       />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <div className="absolute inset-0 bg-ink/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                         <ArrowRight className="text-white" size={32} />
                       </div>
                     </div>

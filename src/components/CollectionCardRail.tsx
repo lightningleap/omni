@@ -119,7 +119,7 @@ function CollectionCard({
       href={href}
       aria-label={meta ? `${ariaLabel} — ${meta}` : ariaLabel}
       style={{ transitionTimingFunction: EASE }}
-      className="group relative block overflow-hidden rounded-[6px] border border-[#EAE6DF] bg-white shadow-[0_1px_2px_rgba(20,20,25,0.03)] transition-[transform,box-shadow] duration-[250ms] hover:-translate-y-1.5 hover:shadow-[0_18px_40px_-20px_rgba(20,20,25,0.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/45 focus-visible:ring-offset-2 focus-visible:ring-offset-white motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+      className="group relative block overflow-hidden rounded-card border border-[#EAE6DF] bg-white shadow-[0_1px_2px_rgba(20,20,25,0.03)] transition-[transform,box-shadow] duration-[250ms] hover:-translate-y-1.5 hover:shadow-[0_18px_40px_-20px_rgba(20,20,25,0.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/45 focus-visible:ring-offset-2 focus-visible:ring-offset-white motion-reduce:transition-none motion-reduce:hover:translate-y-0"
     >
       <div className="relative aspect-square w-full overflow-hidden bg-[#F1F1EF]">
         {/* Shared transform wrapper — both layers scale together to 1.03 */}
@@ -189,7 +189,7 @@ function CollectionCard({
               brand accent on hover. The whole card is the link. */}
           <span
             style={{ transitionTimingFunction: EASE }}
-            className="type-button mt-5 inline-flex h-10 w-fit items-center gap-2 rounded-[4px] bg-white px-4 text-[13px] text-[#111111] shadow-[0_6px_16px_-8px_rgba(0,0,0,0.45)] transition-colors duration-[250ms] group-hover:bg-accent group-hover:text-accent-on"
+            className="type-button mt-5 inline-flex h-10 w-fit items-center gap-2 rounded-card bg-white px-4 text-[13px] text-ink shadow-[0_6px_16px_-8px_rgba(0,0,0,0.45)] transition-colors duration-[250ms] group-hover:bg-accent group-hover:text-accent-on"
           >
             {ctaLabel ?? 'Explore'}
             <ArrowRight

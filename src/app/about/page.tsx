@@ -6,7 +6,7 @@ import AnimatedSection from '@/components/AnimatedSection';
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-black text-white pt-12 pb-24 overflow-hidden selection:bg-white selection:text-black">
+    <main className="min-h-screen bg-ink text-white pt-12 pb-24 overflow-hidden selection:bg-white selection:text-ink">
       {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-6 md:px-12 mb-32">
         <AnimatedSection className="max-w-4xl" direction="up">
@@ -14,7 +14,7 @@ export default function AboutPage() {
             <span className="type-label text-neutral-500">The Manifesto</span>
             <div className="h-[1px] w-12 bg-neutral-800" />
           </div>
-          <h1 className="type-h1 mb-12">
+          <h1 className="type-h2 mb-12">
             Existence is <br />
             <span className="text-neutral-500">Unrwly.</span>
           </h1>
@@ -89,7 +89,7 @@ export default function AboutPage() {
             <div className="flex justify-center">
               <Link 
                 href="/collections"
-                className="type-button bg-white px-12 py-6 text-[11px] uppercase tracking-[0.28em] text-black transition-all hover:bg-neutral-200"
+                className="type-button bg-white px-12 py-6 text-[11px] uppercase tracking-[0.28em] text-ink transition-all hover:bg-neutral-200"
               >
                 Explore Collections
               </Link>

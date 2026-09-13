@@ -2,6 +2,15 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 export interface CartItem {
+  /**
+   * The CART LINE's identity, not the product's — lines are deduplicated on it.
+   *
+   * It must therefore encode the chosen variant, not just the product: with the
+   * bare product id, adding a size S and then an XL of the same garment matched
+   * the existing line and became one line of quantity 2, losing both sizes. The
+   * detail page composes it as `<productId>-<size>-<colour>` so each variant is
+   * its own line. Anything adding to the cart must do the same.
+   */
   id: string;
   productId: string;
   name: string;
@@ -9,6 +18,10 @@ export interface CartItem {
   image: string;
   quantity: number;
   variantId: string;
+  /** Chosen size, when the product has sizes. Shown in the cart and on the order. */
+  size?: string;
+  /** Chosen colour, when the product has colours. */
+  color?: string;
 }
 
 interface CartState {

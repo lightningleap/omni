@@ -51,33 +51,33 @@ const GlobalCountdown = ({ endsAt, message, isActive }: GlobalCountdownProps) =>
         <div className="bg-[#FFF5F2] w-64 p-6 shadow-[-10px_0_30px_rgba(0,0,0,0.05)] rounded-l-2xl border-l-2 border-t-2 border-b-2 border-[#FADED7] flex flex-col gap-3 text-left">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <Zap size={14} className="text-[#D97757] fill-[#D97757]/20" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#D97757]/60">Studio Drop</span>
+              <Zap size={14} className="text-brand-terracotta fill-brand-terracotta/20" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-terracotta/60">Studio Drop</span>
             </div>
-            <h2 className="font-display text-xl font-normal tracking-[-0.01em] text-[#D97757] leading-[1.1]">
+            <h2 className="font-display text-xl font-normal tracking-[-0.01em] text-brand-terracotta leading-[1.1]">
               {message}
             </h2>
           </div>
 
           <div className="flex items-center gap-3 border-t border-[#FADED7] pt-4">
             <div className="flex items-baseline gap-1">
-              <span className="text-sm font-mono font-bold text-[#D97757]">{String(timeLeft.d).padStart(2, '0')}</span>
-              <span className="text-[9px] font-serif italic text-[#D97757]/60">d</span>
+              <span className="text-sm font-mono font-bold text-brand-terracotta">{String(timeLeft.d).padStart(2, '0')}</span>
+              <span className="text-[9px] font-serif italic text-brand-terracotta/60">d</span>
             </div>
             <div className="w-px h-3 bg-[#FADED7]" />
             <div className="flex items-baseline gap-1">
-              <span className="text-sm font-mono font-bold text-[#D97757]">{String(timeLeft.h).padStart(2, '0')}</span>
-              <span className="text-[9px] font-serif italic text-[#D97757]/60">h</span>
+              <span className="text-sm font-mono font-bold text-brand-terracotta">{String(timeLeft.h).padStart(2, '0')}</span>
+              <span className="text-[9px] font-serif italic text-brand-terracotta/60">h</span>
             </div>
             <div className="w-px h-3 bg-[#FADED7]" />
             <div className="flex items-baseline gap-1">
-              <span className="text-sm font-mono font-bold text-[#D97757]">{String(timeLeft.m).padStart(2, '0')}</span>
-              <span className="text-[9px] font-serif italic text-[#D97757]/60">m</span>
+              <span className="text-sm font-mono font-bold text-brand-terracotta">{String(timeLeft.m).padStart(2, '0')}</span>
+              <span className="text-[9px] font-serif italic text-brand-terracotta/60">m</span>
             </div>
             <div className="w-px h-3 bg-[#FADED7]" />
             <div className="flex items-baseline gap-1">
-              <span className="text-sm font-mono font-bold text-[#D97757] animate-pulse">{String(timeLeft.s).padStart(2, '0')}</span>
-              <span className="text-[9px] font-serif italic text-[#D97757]/60">s</span>
+              <span className="text-sm font-mono font-bold text-brand-terracotta animate-pulse">{String(timeLeft.s).padStart(2, '0')}</span>
+              <span className="text-[9px] font-serif italic text-brand-terracotta/60">s</span>
             </div>
           </div>
         </div>

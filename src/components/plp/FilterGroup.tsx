@@ -38,7 +38,7 @@ function GroupShell({
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-controls={panelId}
-        className="type-label mb-4 flex w-full items-center justify-between text-[#1A1A1A] transition-colors duration-200 ease-out hover:text-accent-ink"
+        className="type-label mb-4 flex w-full items-center justify-between text-ink transition-colors duration-200 ease-out hover:text-accent-ink"
       >
         {label}
         <ChevronDown
@@ -83,7 +83,7 @@ function ChipOption({ option, active, count, onToggle }: OptionProps) {
       disabled={unavailable}
       aria-pressed={active}
       title={unavailable ? `No products currently tagged ${option.label}` : undefined}
-      className={`flex flex-col items-center justify-center rounded-[4px] border px-2 py-2 text-center transition-[background-color,border-color,color] duration-200 ease-out disabled:cursor-not-allowed disabled:opacity-40 ${
+      className={`flex flex-col items-center justify-center rounded-card border px-2 py-2 text-center transition-[background-color,border-color,color] duration-200 ease-out disabled:cursor-not-allowed disabled:opacity-40 ${
         active
           ? 'border-accent bg-accent text-accent-on'
           : 'border-neutral-200 bg-white text-neutral-600 hover:border-accent hover:text-accent-ink'
@@ -112,7 +112,7 @@ function ListOption({ option, active, count, onToggle }: OptionProps) {
     >
       <span
         aria-hidden
-        className={`flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-[3px] border transition-[background-color,border-color] duration-200 ease-out ${
+        className={`flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-card border transition-[background-color,border-color] duration-200 ease-out ${
           active
             ? 'border-accent bg-accent'
             : 'border-neutral-300 bg-white group-hover/opt:border-accent'
@@ -122,7 +122,7 @@ function ListOption({ option, active, count, onToggle }: OptionProps) {
       </span>
       <span
         className={`flex-1 text-[13px] transition-colors duration-200 ease-out ${
-          active ? 'font-medium text-[#1A1A1A]' : 'text-neutral-600 group-hover/opt:text-[#1A1A1A]'
+          active ? 'font-medium text-ink' : 'text-neutral-600 group-hover/opt:text-ink'
         }`}
       >
         {option.label}
@@ -199,7 +199,7 @@ function PriceControl({
               placeholder={label}
               value={value ?? ''}
               onChange={(e) => set(parse(e.target.value))}
-              className="w-full rounded-[4px] border border-neutral-200 bg-white py-2 pl-7 pr-3 text-[12px] font-medium text-[#1A1A1A] transition-colors duration-200 placeholder:font-normal placeholder:text-neutral-400 focus:border-accent focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              className="w-full rounded-card border border-neutral-200 bg-white py-2 pl-7 pr-3 text-[12px] font-medium text-ink transition-colors duration-200 placeholder:font-normal placeholder:text-neutral-400 focus:border-accent focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             />
           </div>
         </div>

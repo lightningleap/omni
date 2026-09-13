@@ -67,7 +67,7 @@ export default function SortDropdown({
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={open ? menuId : undefined}
-        className={`type-button inline-flex items-center gap-2 rounded-full border border-neutral-300 bg-white uppercase tracking-[0.08em] text-[#1A1A1A] transition-[background-color,border-color] duration-200 ease-out hover:border-neutral-400 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2 ${trigger}`}
+        className={`type-button inline-flex items-center gap-2 rounded-full border border-neutral-300 bg-white uppercase tracking-[0.08em] text-ink transition-[background-color,border-color] duration-200 ease-out hover:border-neutral-400 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2 ${trigger}`}
       >
         <span className="text-neutral-400">Sort</span>
         <span>{active?.label}</span>
@@ -84,7 +84,7 @@ export default function SortDropdown({
           id={menuId}
           role="listbox"
           aria-label="Sort products by"
-          className="absolute right-0 z-40 mt-2 w-60 overflow-hidden rounded-[10px] border border-black/[0.06] bg-white py-1.5 shadow-[0_18px_40px_-16px_rgb(var(--accent-shade-rgb)/0.28)]"
+          className="absolute right-0 z-40 mt-2 w-60 overflow-hidden rounded-panel border border-black/[0.06] bg-white py-1.5 shadow-[0_18px_40px_-16px_rgb(var(--accent-shade-rgb)/0.28)]"
         >
           {options.map((option) => {
             const selected = option.value === value;

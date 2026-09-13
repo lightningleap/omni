@@ -108,6 +108,15 @@ export interface PlpProduct {
   /** Real units sold, aggregated from OrderItem. Drives "Best Selling". */
   unitsSold: number;
   isNew: boolean;
+  /**
+   * The exact Etsy listing this product is sold as.
+   *
+   * `ProductCard` already links to it when present (see `CardLink`), which is
+   * how the homepage feed has always behaved. The listing pages now pass it
+   * too, so a card means the same thing and goes to the same place wherever it
+   * is rendered.
+   */
+  etsyUrl?: string;
 }
 
 /** The user's current selections. The single source of truth for the grid. */

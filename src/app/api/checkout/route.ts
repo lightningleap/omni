@@ -84,20 +84,6 @@ export async function POST(req: Request) {
     }
     // ==========================================
 
-    // Built entirely from DB-verified products — client prices are ignored
-    const lineItems = priced.map(({ product, quantity, variantId }) => ({
-      price_data: {
-        currency: 'usd',
-        product_data: {
-          name: product.name,
-          ...(product.imageUrl?.startsWith('http') ? { images: [product.imageUrl] } : {}),
-          metadata: { variantId: variantId ? String(variantId) : '' },
-        },
-        unit_amount: Math.round(product.price * 100),
-      },
-      quantity,
-    }));
-
     const dbUser = user ? await prisma.user.findUnique({ where: { email: user.email } }) : null;
     const totalAmount = priced.reduce((total, { product, quantity }) => total + product.price * quantity, 0);
     const orderNumber = `UNR-${Math.random().toString(36).toUpperCase().substring(2, 10)}`;
@@ -119,29 +105,47 @@ export async function POST(req: Request) {
       },
     });
 
-    const origin = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-
-    const stripeSession = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: lineItems,
-      mode: 'payment',
-      success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/checkout?canceled=1`,
-      customer_email: user?.email || undefined,
-      shipping_address_collection: { allowed_countries: ['US', 'CA', 'IN', 'GB'] },
+    // ── PAYMENT INTENT, NOT A HOSTED CHECKOUT SESSION ──────────────────────
+    // The checkout is now embedded: contact, address and payment are collected
+    // on our own page by Stripe's Address and Payment Elements, and the card
+    // fields are Stripe-hosted iframes, so no card data ever touches this
+    // origin and the PCI position is unchanged from the hosted flow.
+    //
+    // The amount is the SERVER's total, computed from `priced` above — the same
+    // trust boundary the hosted flow had. The browser sends product ids and
+    // quantities and nothing else that can move money.
+    //
+    // `automatic_payment_methods` lets Stripe decide which methods to offer for
+    // the shopper's region from the dashboard configuration, rather than this
+    // file hardcoding `['card']` and silently excluding wallets that are
+    // already enabled on the account.
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(totalAmount * 100),
+      currency: 'usd',
+      automatic_payment_methods: { enabled: true },
+      receipt_email: user?.email || undefined,
+      // `orderId` is what the webhook fulfils against. It is the single link
+      // between Stripe's record and ours, exactly as it was on the session.
       metadata: {
         orderId: order.id,
         ga_client_id: gaClientId,
-        ga_session_id: gaSessionId
+        ga_session_id: gaSessionId,
       },
     });
 
     await prisma.order.update({
       where: { id: order.id },
-      data: { stripeSessionId: stripeSession.id }
+      data: { stripePaymentIntentId: paymentIntent.id },
     });
 
-    return NextResponse.json({ url: stripeSession.url });
+    return NextResponse.json({
+      clientSecret: paymentIntent.client_secret,
+      orderId: order.id,
+      // Returned so the client can show the server's total rather than its own
+      // arithmetic — if the two ever disagree, the server's figure is the one
+      // being charged and the one the shopper should see.
+      amount: totalAmount,
+    });
 
   } catch (error) {
     console.error("STRIPE ERROR:", error);

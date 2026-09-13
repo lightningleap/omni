@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Heart, ShoppingBag, Star, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useCartStore } from '@/store/useCartStore';
 import { useWishlistStore } from '@/store/useWishlistStore';
 import { sendGAEvent } from '@next/third-parties/google'; // Added import
@@ -83,41 +83,22 @@ function demoSwatchSlugs(id: string): readonly string[] {
 /**
  * The card's wrapping link.
  *
- * One element either way so the card's markup, classes and hover behaviour are
- * identical whichever destination applies: `next/link` for internal product
- * pages (client navigation, prefetch), a plain anchor for an Etsy listing, since
- * `Link` has nothing to prefetch off-site. External links carry
- * `rel="noopener noreferrer"` and name their destination for assistive tech —
- * a card that silently opens a new tab to another site is disorienting
- * otherwise.
+ * Always `next/link` to this site's own product page, so a card keeps client
+ * navigation and prefetch and the shopper stays on Unrwly through to the cart.
+ * It briefly linked straight to Etsy for any product with a listing, which meant
+ * no card anywhere reached the product page; see the note at its call site.
  */
 function CardLink({
-  etsyUrl,
   slug,
   onClick,
   className,
   children,
 }: {
-  etsyUrl?: string;
   slug: string;
   onClick: (e: React.MouseEvent) => void;
   className: string;
   children: React.ReactNode;
 }) {
-  if (etsyUrl) {
-    return (
-      <a
-        href={etsyUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={onClick}
-        className={className}
-      >
-        {children}
-      </a>
-    );
-  }
-
   return (
     <Link href={`/products/${slug}`} onClick={onClick} className={className}>
       {children}
@@ -151,9 +132,9 @@ interface Product {
   /** Optional pre-formatted original price for sale strikethrough. */
   originalPrice?: string;
   /**
-   * The exact Etsy listing this product is sold as. When present the card links
-   * there instead of to the internal product page — see the note on the link
-   * below. Absent for catalogue rows that are not published to Etsy.
+   * The exact Etsy listing this product is sold as. Carried for catalogue
+   * reference only — the card always links to the internal product page. Absent
+   * for rows that are not published to Etsy.
    */
   etsyUrl?: string;
   /**
@@ -371,39 +352,60 @@ const ProductCard = ({
   // Opt-in detail rhythm — defaults keep every existing card pixel-identical.
   const relaxed = detailSpacing === 'relaxed';
   const detailsMt = relaxed ? 'mt-4' : 'mt-3';
+  const reduceMotion = useReducedMotion();
   const priceMt = relaxed ? 'mt-2.5' : 'mt-2';
   const titleClamp = titleLines === 1 ? 'line-clamp-1' : 'line-clamp-2';
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      /* ── WHY THE DELAY IS CAPPED ──────────────────────────────────────────
+         `index` is a RUNNING INDEX ACROSS THE WHOLE FEED — `ProductFeedSection`
+         accumulates `startIndex` over every category — so on the homepage it
+         reaches 86. At the old `index * 0.05` that gave the last card a 4.3s
+         delay on top of a 0.6s fade: the page rendered every card at
+         `opacity: 0` and took nearly five seconds to finish revealing them.
+
+         Worse, this is `animate`, not `whileInView`, so all 87 timers start at
+         load whether or not the card is anywhere near the viewport. Scrolling
+         down two seconds after load put the reader in a band of invisible
+         cards — present in the DOM and clickable, but with nothing drawn.
+         That is the "cards not responding" report, and it hit both storefronts
+         because both feeds are this long.
+
+         Staggering by position WITHIN A ROW keeps the cascade that makes a grid
+         feel alive and caps the wait at 0.18s, so the slowest card is fully
+         drawn ~0.8s after load however many the feed holds. */
+      initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: index * 0.05, ease: [0.211, 0, 0.076, 1] }}
+      transition={
+        reduceMotion
+          ? { duration: 0.2 }
+          : { duration: 0.6, delay: (index % 4) * 0.06, ease: [0.211, 0, 0.076, 1] }
+      }
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className="group relative"
     >
       {/* ── Where the card goes ──────────────────────────────────────────────
-          A product carrying `etsyUrl` links to its exact Etsy listing and opens
-          in a new tab; everything else links to the internal product page as
-          before. Nothing about the card's appearance changes either way.
+          Always this site's own product page. Never off-site.
 
-          WORTH KNOWING: on the homepage feed every product now has a listing, so
-          every card there leads to Etsy rather than to this site's own product
-          page and checkout. The quick-add and wishlist buttons still work (they
-          stop the click before it reaches this link), but the card itself no
-          longer feeds the on-site cart. To put the feed back on internal pages,
-          stop passing `etsyUrl` in `getHomepageData` — one line, nothing here
-          needs touching. ── */}
+          This used to send any product carrying an `etsyUrl` straight to its
+          Etsy listing in a new tab — and since every product in both feeds has a
+          listing, that meant NO card anywhere reached the internal product page,
+          the variant pickers, or the on-site cart and checkout. The detail page
+          existed but nothing linked to it.
+
+          `etsyUrl` is still carried on the product for internal reference (it is
+          how the catalogue is kept in step with the shops), it simply no longer
+          decides where a shopper lands. The card's appearance is unchanged. ── */}
       <CardLink
-        etsyUrl={product.etsyUrl}
         slug={product.slug}
         onClick={handleCardClick}
-        className="block rounded-[2px] focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[rgb(var(--accent-ring-rgb)/0.30)]"
+        className="block rounded-card focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[rgb(var(--accent-ring-rgb)/0.30)]"
       >
         {/* ── Image area: one layer, soft neutral background, product is the hero.
                No inner card — the image sits directly at the top of the card. ── */}
-        <div className="relative w-full overflow-hidden rounded-[4px] aspect-[3/4] bg-[#F5F5F2]">
+        <div className="relative w-full overflow-hidden rounded-card aspect-[3/4] bg-[#F5F5F2]">
           <AnimatePresence mode="wait">
             <motion.div
               key={shownImage}
@@ -443,7 +445,7 @@ const ProductCard = ({
               whileTap={{ scale: 0.85 }}
               onClick={handleRemove}
               aria-label={`Remove ${product.name} from wishlist`}
-              className="absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/70 text-neutral-600 shadow-[0_2px_8px_rgba(0,0,0,0.08)] backdrop-blur-[6px] transition-transform duration-[250ms] ease-out hover:scale-110 hover:text-[#1E2D4F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-ring-rgb)/0.30)]"
+              className="absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/70 text-neutral-600 shadow-[0_2px_8px_rgba(0,0,0,0.08)] backdrop-blur-[6px] transition-transform duration-[250ms] ease-out hover:scale-110 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-ring-rgb)/0.30)]"
             >
               <X size={17} />
             </motion.button>
@@ -471,7 +473,7 @@ const ProductCard = ({
                 className={`transition-all duration-[250ms] ease-out ${
                   isInWishlist
                     ? 'fill-[#E53935] text-[#E53935] scale-110'
-                    : 'fill-transparent text-neutral-500 group-hover/wish:text-[#1E2D4F]'
+                    : 'fill-transparent text-neutral-500 group-hover/wish:text-ink'
                 }`}
               />
             </motion.button>
@@ -513,7 +515,7 @@ const ProductCard = ({
                         setSelectedSize(active ? null : size);
                       }}
                       className={`flex h-7 w-7 items-center justify-center rounded-full border text-[11px] font-medium shadow-[0_2px_8px_rgba(20,20,25,0.16)] backdrop-blur-[6px] transition-[background-color,border-color,color,transform] duration-200 ease-out hover:scale-110 ${
-                        active ? 'border-accent bg-accent text-accent-on' : 'border-white/60 bg-white/80 text-[#1A1A1A] hover:bg-white'
+                        active ? 'border-accent bg-accent text-accent-on' : 'border-white/60 bg-white/80 text-ink hover:bg-white'
                       }`}
                     >
                       {size}
@@ -546,7 +548,7 @@ const ProductCard = ({
                           setSelectedSize(active ? null : size);
                         }}
                         className={`flex h-[26px] min-w-[24px] items-center justify-center rounded-full px-1.5 text-[11px] font-semibold transition-colors duration-150 ${
-                          active ? 'bg-accent text-accent-on' : 'text-[#1A1A1A] hover:bg-black/[0.06]'
+                          active ? 'bg-accent text-accent-on' : 'text-ink hover:bg-ink/[0.06]'
                         }`}
                       >
                         {size}
@@ -650,20 +652,20 @@ const ProductCard = ({
           )}
 
           <h3
-            className={`type-product-name ${titleClamp} text-[14px] leading-snug text-[#1A1A1A] md:text-[15px]`}
+            className={`type-product-name ${titleClamp} text-[14px] leading-snug text-ink md:text-[15px]`}
           >
             {product.name}
           </h3>
 
           {typeof product.rating === 'number' && (
             <div className="type-rating mt-1.5 flex items-center gap-1 text-[13px] text-neutral-600">
-              <Star size={13} className="fill-[#1A1A1A] text-[#1A1A1A]" />
+              <Star size={13} className="fill-ink text-ink" />
               <span>{product.rating.toFixed(1)}</span>
             </div>
           )}
 
           <div className={`${priceMt} flex items-center gap-2`}>
-            <p className="type-price text-[15px] text-[#1A1A1A] md:text-base">
+            <p className="type-price text-[15px] text-ink md:text-base">
               {product.price}
             </p>
             {product.originalPrice && (
